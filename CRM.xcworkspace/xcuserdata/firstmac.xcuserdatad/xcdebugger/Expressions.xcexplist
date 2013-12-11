@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "-[AppDelegate parseBrands]:AppDelegate.m">
+      </ContextState>
+      <ContextState
+         contextName = "__26-[AppDelegate parseVisits]_block_invoke_2:AppDelegate.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[VisitsViewController tableView:numberOfRowsInSection:]:VisitsViewController.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "[AppDelegate sharedDelegate].visits.count">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "-[SidePanelController tableView:didSelectRowAtIndexPath:]:SidePanelController.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "[AppDelegate sharedDelegate]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "-[ParticipantsViewController addParticipant:]:ParticipantsViewController.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "self.conference.participants">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "-[MFSideMenuContainerViewController setCenterViewController:]:MFSideMenuContainerViewController.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "_centerViewController.view.frame">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "-[AppDelegate application:didFinishLaunchingWithOptions:]:AppDelegate.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "brands">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "-[VisitsViewController tableView:cellForRowAtIndexPath:]:VisitsViewController.m">
+      </ContextState>
+      <ContextState
+         contextName = "__26-[AppDelegate parseVisits]_block_invoke:AppDelegate.m">
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>
