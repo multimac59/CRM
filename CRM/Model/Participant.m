@@ -1,13 +1,17 @@
 //
 //  Participant.m
-//  CRM
+//  
 //
-//  Created by FirstMac on 09.12.13.
-//  Copyright (c) 2013 Nestline. All rights reserved.
+//  Created by FirstMac on 11.12.13.
+//
 //
 
 #import "Participant.h"
 
+
 @implementation Participant
+
+@dynamic participantId;
+@dynamic name;
 
 @end

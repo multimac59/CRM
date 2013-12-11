@@ -36,21 +36,33 @@
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Add" style:UIBarButtonSystemItemAdd target:self action:@selector(addBrand)];
     self.navigationItem.title = @"Бренды";
-    _brands = [[AppDelegate sharedDelegate].brands sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2)
-    {
-        if ([self.conference.brands containsObject:obj1] && ![self.conference.brands containsObject:obj2])
-        {
-            return NSOrderedAscending;
-        }
-        else if (![self.conference.brands containsObject:obj1] && [self.conference.brands containsObject:obj2])
-        {
-            return NSOrderedDescending;
-        }
-        else
-        {
-            return NSOrderedSame;
-        }
-    }];
+    [self sortBrands];
+    
+}
+
+- (void)sortBrands
+{
+    NSManagedObjectContext* context = [AppDelegate sharedDelegate].managedObjectContext;
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:[NSEntityDescription entityForName:@"Brand" inManagedObjectContext:context]];
+    NSError *error = nil;
+    NSArray *results = [context executeFetchRequest:request error:&error];
+    
+    _brands = [results sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2)
+               {
+                   if ([self.conference.brands containsObject:obj1] && ![self.conference.brands containsObject:obj2])
+                   {
+                       return NSOrderedAscending;
+                   }
+                   else if (![self.conference.brands containsObject:obj1] && [self.conference.brands containsObject:obj2])
+                   {
+                       return NSOrderedDescending;
+                   }
+                   else
+                   {
+                       return NSOrderedSame;
+                   }
+               }];
 }
 
 - (void)didReceiveMemoryWarning
@@ -61,7 +73,13 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [AppDelegate sharedDelegate].brands.count;
+    NSManagedObjectContext* context = [AppDelegate sharedDelegate].managedObjectContext;
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:[NSEntityDescription entityForName:@"Brand" inManagedObjectContext:context]];
+    [request setIncludesSubentities:NO];
+    NSError *error = nil;
+    NSInteger count = [context countForFetchRequest:request error:&error];
+    return count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -93,12 +111,12 @@
     Brand* brand = self.brands[indexPath.row];
     if ([self.conference.brands containsObject:brand])
     {
-        [self.conference.brands removeObject:brand];
+        [self.conference removeBrandsObject:brand];
         cell.accessoryType = UITableViewCellAccessoryNone;
     }
     else
     {
-        [self.conference.brands addObject:brand];
+        [self.conference addBrandsObject:brand];
         cell.accessoryType = UITableViewCellAccessoryCheckmark;
     }
 }
@@ -114,9 +132,11 @@
 
 - (void)addBrand:(NSString *)brand
 {
-    Brand* newBrand = [Brand new];
+    Brand* newBrand = [NSEntityDescription
+                    insertNewObjectForEntityForName:@"Brand"
+                    inManagedObjectContext:[AppDelegate sharedDelegate].managedObjectContext];
     newBrand.name = brand;
-    [[AppDelegate sharedDelegate].brands addObject:newBrand];
+    [self sortBrands];
     [self.tableView reloadData];
     [self dismissViewControllerAnimated:YES completion:nil];
 }

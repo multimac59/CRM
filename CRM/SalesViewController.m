@@ -11,6 +11,7 @@
 #import "Drug.h"
 #import "AppDelegate.h"
 #import "SaleCell.h"
+#import "User.h"
 
 @interface SalesViewController ()
 
@@ -47,7 +48,7 @@
         cell = [[NSBundle mainBundle]loadNibNamed:@"SaleCell" owner:self options:nil][0];
     }
     User* currentUser = [AppDelegate sharedDelegate].currentUser;
-    Drug* drug = currentUser.drugs[indexPath.row];
+    Drug* drug = currentUser.drugs.allObjects[indexPath.row];
     Sale* sale;
     if (self.segmentedControl.selectedSegmentIndex == 1)
     {
@@ -67,15 +68,27 @@
     
     NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
     dateFormatter.dateFormat = @"dd.MM.yyyy HH:mm";
+    if (sale != nil)
+    {
     cell.dateLabel.text = [dateFormatter stringFromDate:sale.visit.date];
     cell.nameLabel.text = sale.user.name;
     cell.drugLabel.text = sale.drug.name;
-    cell.orderLabel.text = [NSString stringWithFormat:@"%ld", (long)sale.order];
-    cell.soldLabel.text = [NSString stringWithFormat:@"%ld", (long)sale.sold];
-    cell.remainderLabel.text = [NSString stringWithFormat:@"%ld", (long)sale.remainder];
-    cell.orderField.text = [NSString stringWithFormat:@"%ld", (long)currentSale.order];
-    cell.soldField.text = [NSString stringWithFormat:@"%ld", (long)currentSale.sold];
-    cell.remainderField.text = [NSString stringWithFormat:@"%ld", (long)currentSale.remainder];
+    cell.orderLabel.text = [NSString stringWithFormat:@"%@", sale.order];
+    cell.soldLabel.text = [NSString stringWithFormat:@"%@", sale.sold];
+    cell.remainderLabel.text = [NSString stringWithFormat:@"%@", sale.remainder];
+    }
+    else
+    {
+        cell.dateLabel.text = @"";
+        cell.nameLabel.text = @"";
+        cell.drugLabel.text = @"";
+        cell.orderLabel.text = @"";
+        cell.soldLabel.text = @"";
+        cell.remainderLabel.text = @"";
+    }
+    cell.orderField.text = [NSString stringWithFormat:@"%@", currentSale.order];
+    cell.soldField.text = [NSString stringWithFormat:@"%@", currentSale.sold];
+    cell.remainderField.text = [NSString stringWithFormat:@"%@", currentSale.remainder];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     return cell;
 }
@@ -100,7 +113,7 @@
             continue;
         for (Sale* sale in visit.sales)
         {
-            if (sale.drug == drug)
+            if (sale.drug.drugId.integerValue == drug.drugId.integerValue)
             {
                 [sales addObject:sale];
             }
@@ -110,9 +123,7 @@
         return [self sortSales:sales][0];
     else
     {
-        Sale* sale = [Sale new];
-        sale.drug = drug;
-        return sale;
+        return nil;
     }
 }
 
@@ -125,7 +136,7 @@
             continue;
         for (Sale* sale in visit.sales)
         {
-            if (sale.user == [AppDelegate sharedDelegate].currentUser && sale.drug == drug)
+            if (sale.user.userId.integerValue == [AppDelegate sharedDelegate].currentUser.userId.integerValue && sale.drug.drugId.integerValue == drug.drugId.integerValue)
             {
                 [sales addObject:sale];
             }
@@ -135,9 +146,7 @@
         return [self sortSales:sales][0];
     else
     {
-        Sale* sale = [Sale new];
-        sale.drug = drug;
-        return sale;
+        return nil;
     }
 }
 
@@ -170,16 +179,16 @@
     User* currentUser = [AppDelegate sharedDelegate].currentUser;
     for (int i = 0; i < currentUser.drugs.count; i++)
     {
-        Drug* drug = currentUser.drugs[i];
+        Drug* drug = currentUser.drugs.allObjects[i];
         SaleCell* cell = (SaleCell*)[self.table cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
         Sale* sale = [Sale new];
         sale.drug = drug;
         sale.visit = self.visit;
         sale.user = currentUser;
-        sale.sold = cell.soldField.text.integerValue;
-        sale.remainder = cell.remainderField.text.integerValue;
-        sale.order = cell.orderField.text.integerValue;
-        [self.visit.sales addObject:sale];
+        sale.sold = @(cell.soldField.text.integerValue);
+        sale.remainder = @(cell.remainderField.text.integerValue);
+        sale.order = @(cell.orderField.text.integerValue);
+        [self.visit addSalesObject:sale];
     }
     [self dismissViewControllerAnimated:YES completion:nil];
 }

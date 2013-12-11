@@ -1,14 +1,18 @@
 //
 //  Participant.h
-//  CRM
+//  
 //
-//  Created by FirstMac on 09.12.13.
-//  Copyright (c) 2013 Nestline. All rights reserved.
+//  Created by FirstMac on 11.12.13.
+//
 //
 
 #import <Foundation/Foundation.h>
+#import <CoreData/CoreData.h>
 
-@interface Participant : NSObject
-@property (nonatomic) NSInteger participantId;
-@property (nonatomic, strong) NSString* name;
+
+@interface Participant : NSManagedObject
+
+@property (nonatomic, retain) NSNumber * participantId;
+@property (nonatomic, retain) NSString * name;
+
 @end

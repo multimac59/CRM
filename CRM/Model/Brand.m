@@ -1,13 +1,17 @@
 //
 //  Brand.m
-//  CRM
+//  
 //
-//  Created by FirstMac on 09.12.13.
-//  Copyright (c) 2013 Nestline. All rights reserved.
+//  Created by FirstMac on 11.12.13.
+//
 //
 
 #import "Brand.h"
 
+
 @implementation Brand
+
+@dynamic name;
+@dynamic brandId;
 
 @end

@@ -25,10 +25,14 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         // Custom initialization
-        _visit = [Visit new];
-        self.visit.sales = [NSMutableArray new];
-        _conference = [Conference new];
-        _conference.participants = [NSMutableArray new];
+        _visit = [NSEntityDescription
+                              insertNewObjectForEntityForName:@"Visit"
+                              inManagedObjectContext:[AppDelegate sharedDelegate].managedObjectContext];
+        self.visit.sales = [NSSet new];
+        _conference = [NSEntityDescription
+                       insertNewObjectForEntityForName:@"Conference"
+                       inManagedObjectContext:[AppDelegate sharedDelegate].managedObjectContext];
+        _conference.participants = [NSSet new];
     }
     return self;
 }
@@ -44,6 +48,12 @@
         self.conferenceControls.hidden = NO;
     else
         self.conferenceControls.hidden = YES;
+    
+    NSManagedObjectContext* context = [AppDelegate sharedDelegate].managedObjectContext;
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:[NSEntityDescription entityForName:@"Pharmacy" inManagedObjectContext:context]];
+    NSError *error = nil;
+    _pharmacies = [[context executeFetchRequest:request error:&error]mutableCopy];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -66,7 +76,7 @@
 {
     if (self.isConference)
     {
-        self.conference.pharmacy = [AppDelegate sharedDelegate].pharmacies[_selectedIndexPath.row];
+        self.conference.pharmacy = self.pharmacies[_selectedIndexPath.row];
         self.conference.user = [AppDelegate sharedDelegate].currentUser;
         NSDateFormatter* dateFormatter = [NSDateFormatter new];
         dateFormatter.dateFormat = @"dd.MM.yyyy HH:mm";
@@ -77,7 +87,7 @@
     }
     else
     {
-        self.visit.pharmacy = [AppDelegate sharedDelegate].pharmacies[_selectedIndexPath.row];
+        self.visit.pharmacy = self.pharmacies[_selectedIndexPath.row];
         self.visit.user = [AppDelegate sharedDelegate].currentUser; //our visit
         NSDateFormatter* dateFormatter = [NSDateFormatter new];
         dateFormatter.dateFormat = @"dd.MM.yyyy HH:mm";
@@ -96,7 +106,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [AppDelegate sharedDelegate].pharmacies.count;
+    return self.pharmacies.count;
 }
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -106,7 +116,7 @@
     {
         cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell"];
     }
-    Pharmacy* pharmacy = [AppDelegate sharedDelegate].pharmacies[indexPath.row];
+    Pharmacy* pharmacy = self.pharmacies[indexPath.row];
     cell.textLabel.text = pharmacy.name;
     if (self.selectedIndexPath.row == indexPath.row)
     {

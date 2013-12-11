@@ -22,6 +22,7 @@
 @property (nonatomic, weak) IBOutlet UITextField* nameField;
 @property (nonatomic, weak) IBOutlet UITextField* participantsField;
 
+@property (nonatomic, strong) NSArray* pharmacies;
 @property (nonatomic) BOOL isConference;
 @property (nonatomic, weak) IBOutlet UIView* conferenceControls;
 

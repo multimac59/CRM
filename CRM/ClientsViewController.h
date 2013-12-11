@@ -10,5 +10,6 @@
 #import "NewPharmacyViewController.h"
 
 @interface ClientsViewController : UIViewController<NewPharmacyViewDelegate>
+@property (nonatomic, strong) NSMutableArray* pharmacies;
 @property (nonatomic, weak) IBOutlet UITableView* table;
 @end

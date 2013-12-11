@@ -1,22 +1,23 @@
 //
 //  Sale.h
-//  CRM
+//  
 //
 //  Created by FirstMac on 11.12.13.
-//  Copyright (c) 2013 Nestline. All rights reserved.
+//
 //
 
 #import <Foundation/Foundation.h>
-#import "Drug.h"
-#import "User.h"
-@class Visit;
+#import <CoreData/CoreData.h>
 
-@interface Sale : NSObject
-@property (nonatomic) NSInteger saleId;
-@property (nonatomic, strong) Drug* drug;
-@property (nonatomic, weak) Visit* visit;
-@property (nonatomic, strong) User* user;
-@property (nonatomic) NSInteger order;
-@property (nonatomic) NSInteger remainder;
-@property (nonatomic) NSInteger sold;
+@class Drug, Visit, User;
+@interface Sale : NSManagedObject
+
+@property (nonatomic, retain) NSNumber * saleId;
+@property (nonatomic, retain) NSNumber * order;
+@property (nonatomic, retain) NSNumber * remainder;
+@property (nonatomic, retain) NSNumber * sold;
+@property (nonatomic, retain) Drug *drug;
+@property (nonatomic, retain) Visit *visit;
+@property (nonatomic, retain) User *user;
+
 @end

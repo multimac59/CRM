@@ -1,13 +1,19 @@
 //
 //  User.m
-//  CRM
+//  
 //
 //  Created by FirstMac on 11.12.13.
-//  Copyright (c) 2013 Nestline. All rights reserved.
+//
 //
 
 #import "User.h"
+#import "Drug.h"
+
 
 @implementation User
+
+@dynamic userId;
+@dynamic name;
+@dynamic drugs;
 
 @end

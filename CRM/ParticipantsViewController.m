@@ -8,6 +8,8 @@
 
 #import "ParticipantsViewController.h"
 #import "NewParticipantViewController.h"
+#import "AppDelegate.h"
+#import "Participant.h"
 
 @interface ParticipantsViewController ()
 
@@ -50,7 +52,8 @@
     {
         cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell"];
     }
-    cell.textLabel.text = (NSString*)[self.conference.participants objectAtIndex:indexPath.row];
+    Participant* participant = [self.conference.participants.allObjects objectAtIndex:indexPath.row];
+    cell.textLabel.text = participant.name;
     return cell;
 }
 
@@ -65,7 +68,11 @@
 
 - (void)addParticipant:(NSString *)participant
 {
-    [self.conference.participants addObject:participant];
+    Participant* participantObj = [NSEntityDescription
+                              insertNewObjectForEntityForName:@"Participant"
+                              inManagedObjectContext:[AppDelegate sharedDelegate].managedObjectContext];
+    participantObj.name = participant;
+    [self.conference addParticipantsObject:participantObj];
     [self.tableView reloadData];
     [self dismissViewControllerAnimated:YES completion:nil];
 }

@@ -12,9 +12,12 @@
 #import "Conference.h"
 #import "VisitViewController.h"
 #import "ChoiseTableController.h"
+#import "Pharmacy.h"
 
 @interface VisitsViewController ()
 @property (nonatomic, strong) NSMutableArray* visits;
+@property (nonatomic, strong) NSMutableArray* conferences;
+@property (nonatomic, strong) NSMutableArray* visitsAndConferences;
 @property (nonatomic, strong) UIPopoverController* popover;
 @property (nonatomic, strong) NSDate* filterDate;
 @end
@@ -60,10 +63,12 @@
     ChoiseTableController* choiseTableController = [ChoiseTableController new];
     choiseTableController.delegate = self;
     self.popover = [[UIPopoverController alloc]initWithContentViewController:choiseTableController];
-    [self filterVisits];
+    
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Clear Filter" style:UIBarButtonSystemItemAdd target:self action:@selector(clearFilter)];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Add" style:UIBarButtonSystemItemAdd target:self action:@selector(showPopover)];
     self.navigationItem.title = @"Визиты";
+    [self loadAll];
+    [self filterVisits];
 }
 
 - (void)clearFilter
@@ -73,22 +78,37 @@
     [self.table reloadData];
 }
 
+- (void)loadAll
+{
+    NSManagedObjectContext* context = [AppDelegate sharedDelegate].managedObjectContext;
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:[NSEntityDescription entityForName:@"Visit" inManagedObjectContext:context]];
+    NSError *error = nil;
+    _visits = [[context executeFetchRequest:request error:&error]mutableCopy];
+    
+    [request setEntity:[NSEntityDescription entityForName:@"Conference" inManagedObjectContext:context]];
+    _conferences = [[context executeFetchRequest:request error:&error]mutableCopy];
+}
+
 - (void)filterVisits
 {
-    _visits = [NSMutableArray new];
+    _visitsAndConferences = [NSMutableArray new];
     // Use predicate instead
-    [[AppDelegate sharedDelegate].visits enumerateObjectsUsingBlock:^(Visit* visit, NSUInteger idx, BOOL *stop) {
-        if (visit.user == [AppDelegate sharedDelegate].currentUser)
+    [self.visits enumerateObjectsUsingBlock:^(Visit* visit, NSUInteger idx, BOOL *stop) {
+        if (visit.user.userId.integerValue == [AppDelegate sharedDelegate].currentUser.userId.integerValue)
         {
             if (self.filterDate == nil || [self date:self.filterDate equalToDate:visit.date])
-                [self.visits addObject:visit];
+                [self.visitsAndConferences addObject:visit];
         }
     }];
-    [[AppDelegate sharedDelegate].conferences enumerateObjectsUsingBlock:^(Conference* conference, NSUInteger idx, BOOL *stop) {
-        if (conference.user == [AppDelegate sharedDelegate].currentUser)
+    
+    //Not optimal, too many requests to database
+    
+    [self.conferences enumerateObjectsUsingBlock:^(Conference* conference, NSUInteger idx, BOOL *stop) {
+        if (conference.user.userId.integerValue == [AppDelegate sharedDelegate].currentUser.userId.integerValue)
         {
             if (self.filterDate == nil || [self date:self.filterDate equalToDate:conference.date])
-                [self.visits addObject:conference];
+                [self.visitsAndConferences addObject:conference];
         }
     }];
     [self.visits sortUsingComparator:^NSComparisonResult(id obj1, id obj2) {
@@ -115,7 +135,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return self.visits.count;
+    return self.visitsAndConferences.count;
 }
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -125,7 +145,7 @@
     {
         cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell"];
     }
-    NSObject* object = self.visits[indexPath.row];
+    NSObject* object = self.visitsAndConferences[indexPath.row];
     if ([object isKindOfClass:[Visit class]])
     {
         Visit* visit = (Visit*)object;
@@ -145,7 +165,7 @@
     [hostController popToRootViewControllerAnimated:NO];
     VisitViewController* visitViewController = (VisitViewController*)hostController.topViewController;
     NSLog(@"Clicked, row = %ld", (long)indexPath.row);
-    NSObject* object = self.visits[indexPath.row];
+    NSObject* object = self.visitsAndConferences[indexPath.row];
     if ([object isKindOfClass:[Visit class]])
     {
         Visit* visit = (Visit*)object;
@@ -200,7 +220,7 @@
 
 - (void)newVisitViewController:(NewVisitViewController *)newVisitViewController didAddConference:(Conference *)conference
 {
-    [[AppDelegate sharedDelegate].conferences addObject:conference];
+    [self.conferences addObject:conference];
     [self filterVisits];
     [self.table reloadData];
     [self dismissViewControllerAnimated:YES completion:nil];
@@ -208,7 +228,7 @@
 
 - (void)newVisitViewController:(NewVisitViewController *)newVisitViewController didAddVisit:(Visit *)visit
 {
-    [[AppDelegate sharedDelegate].visits addObject:visit];
+    [self.visits addObject:visit];
     [self filterVisits];
     [self.table reloadData];
     [self dismissViewControllerAnimated:YES completion:nil];

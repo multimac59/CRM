@@ -8,6 +8,7 @@
 
 #import "NewPharmacyViewController.h"
 #import "Pharmacy.h"
+#import "AppDelegate.h"
 
 @interface NewPharmacyViewController ()
 
@@ -40,7 +41,9 @@
 
 - (void)save
 {
-    Pharmacy* pharmacy = [Pharmacy new];
+    Pharmacy* pharmacy = [NSEntityDescription
+                          insertNewObjectForEntityForName:@"Pharmacy"
+                          inManagedObjectContext:[AppDelegate sharedDelegate].managedObjectContext];
     pharmacy.name = self.nameField.text;
     pharmacy.network = self.networkField.text;
     pharmacy.city = self.cityField.text;
@@ -48,7 +51,7 @@
     pharmacy.house = self.houseField.text;
     pharmacy.phone = self.phoneField.text;
     pharmacy.doctorName = self.doctorField.text;
-    pharmacy.visits = [NSMutableArray new];
+    pharmacy.visits = [NSSet new];
     [self.delegate addPharmacy:pharmacy];
 }
 

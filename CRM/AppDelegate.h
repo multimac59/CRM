@@ -19,12 +19,6 @@
 @property (strong, nonatomic) UISplitViewController* visitsSplitController;
 @property (strong, nonatomic) UISplitViewController* clientsSplitController;
 
-@property (strong, nonatomic) NSMutableArray* brands;
-@property (strong, nonatomic) NSMutableArray* drugs;
-@property (strong, nonatomic) NSMutableArray* pharmacies;
-@property (strong, nonatomic) NSMutableArray* visits;
-@property (strong, nonatomic) NSMutableArray* conferences;
-@property (strong, nonatomic) NSMutableArray* users;
 @property (strong, nonatomic) User* currentUser;
 
 + (AppDelegate*)sharedDelegate;

@@ -1,14 +1,18 @@
 //
 //  Brand.h
-//  CRM
+//  
 //
-//  Created by FirstMac on 09.12.13.
-//  Copyright (c) 2013 Nestline. All rights reserved.
+//  Created by FirstMac on 11.12.13.
+//
 //
 
 #import <Foundation/Foundation.h>
+#import <CoreData/CoreData.h>
 
-@interface Brand : NSObject
-@property (nonatomic) NSInteger brandId;
-@property (nonatomic, strong) NSString* name;
+
+@interface Brand : NSManagedObject
+
+@property (nonatomic, retain) NSString * name;
+@property (nonatomic, retain) NSNumber * brandId;
+
 @end

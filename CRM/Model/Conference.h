@@ -1,21 +1,37 @@
 //
 //  Conference.h
-//  CRM
+//  
 //
-//  Created by FirstMac on 09.12.13.
-//  Copyright (c) 2013 Nestline. All rights reserved.
+//  Created by FirstMac on 11.12.13.
+//
 //
 
 #import <Foundation/Foundation.h>
-#import "Pharmacy.h"
-#import "User.h"
+#import <CoreData/CoreData.h>
 
-@interface Conference : NSObject
-@property (nonatomic) NSInteger conferenceId;
-@property (nonatomic) User* user;
-@property (nonatomic, strong) NSString* name;
-@property (nonatomic, strong) Pharmacy* pharmacy;
-@property (nonatomic, strong) NSDate* date;
-@property (nonatomic, strong) NSMutableArray* participants;
-@property (nonatomic, strong) NSMutableArray* brands;
+@class Brand, Participant, Pharmacy, User;
+
+@interface Conference : NSManagedObject
+
+@property (nonatomic, retain) NSNumber * conferenceId;
+@property (nonatomic, retain) NSString * name;
+@property (nonatomic, retain) NSDate * date;
+@property (nonatomic, retain) User *user;
+@property (nonatomic, retain) Pharmacy *pharmacy;
+@property (nonatomic, retain) NSSet *participants;
+@property (nonatomic, retain) NSSet *brands;
+@end
+
+@interface Conference (CoreDataGeneratedAccessors)
+
+- (void)addParticipantsObject:(Participant *)value;
+- (void)removeParticipantsObject:(Participant *)value;
+- (void)addParticipants:(NSSet *)values;
+- (void)removeParticipants:(NSSet *)values;
+
+- (void)addBrandsObject:(Brand *)value;
+- (void)removeBrandsObject:(Brand *)value;
+- (void)addBrands:(NSSet *)values;
+- (void)removeBrands:(NSSet *)values;
+
 @end

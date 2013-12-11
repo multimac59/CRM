@@ -1,14 +1,18 @@
 //
 //  Drug.h
-//  CRM
+//  
 //
-//  Created by FirstMac on 09.12.13.
-//  Copyright (c) 2013 Nestline. All rights reserved.
+//  Created by FirstMac on 11.12.13.
+//
 //
 
 #import <Foundation/Foundation.h>
+#import <CoreData/CoreData.h>
 
-@interface Drug : NSObject
-@property (nonatomic) NSInteger drugId;
-@property (nonatomic, strong) NSString* name;
+
+@interface Drug : NSManagedObject
+
+@property (nonatomic, retain) NSNumber * drugId;
+@property (nonatomic, retain) NSString * name;
+
 @end

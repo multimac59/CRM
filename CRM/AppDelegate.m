@@ -22,6 +22,7 @@
 #import "Visit.h"
 #import "Conference.h"
 #import "Sale.h"
+#import "Participant.h"
 
 @implementation AppDelegate
 
@@ -33,15 +34,25 @@ static AppDelegate* sharedDelegate = nil;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    
+    [self deleteAllObjects:@"Conference"];
+    [self deleteAllObjects:@"Visit"];
+    [self deleteAllObjects:@"Pharmacy"];
+    [self deleteAllObjects:@"Drug"];
+    [self deleteAllObjects:@"Sale"];
+    [self deleteAllObjects:@"Participant"];
+    [self deleteAllObjects:@"Brand"];
+    [self deleteAllObjects:@"User"];
     sharedDelegate = self;
     
-    self.brands = [self parseBrands];
-    self.drugs = [self parseDrugs];
-    self.users = [self parseUsers];
-    self.pharmacies = [self parsePharmacies];
-    self.visits = [self parseVisits];
-    self.conferences = [self parseConferences];
-    self.currentUser = self.users[0];
+    [self parseBrands];
+    [self parseDrugs];
+    [self parseUsers];
+    [self parsePharmacies];
+    [self parseVisits];
+    [self parseConferences];
+    
+    self.currentUser = [self findUserById:1];
     
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
@@ -73,11 +84,18 @@ static AppDelegate* sharedDelegate = nil;
     NSMutableArray* brands = [NSMutableArray new];
     [brandsJSON enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop)
      {
-         Brand* brand = [Brand new];
-         brand.brandId = ((NSNumber*)[obj objectForKey:@"id"]).integerValue;
+         Brand* brand = [NSEntityDescription
+                                   insertNewObjectForEntityForName:@"Brand"
+                                   inManagedObjectContext:self.managedObjectContext];
+         brand.brandId = (NSNumber*)[obj objectForKey:@"id"];
          brand.name = [obj objectForKey:@"name"];
          [brands addObject:brand];
      }];
+    NSError *error;
+    if (![self.managedObjectContext save:&error])
+    {
+        NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
+    }
     return brands;
 }
 
@@ -89,11 +107,18 @@ static AppDelegate* sharedDelegate = nil;
     NSMutableArray* drugs = [NSMutableArray new];
     [drugsJSON enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop)
      {
-         Drug* drug = [Drug new];
-         drug.drugId = ((NSNumber*)[obj objectForKey:@"id"]).integerValue;
+         Drug* drug = [NSEntityDescription
+                         insertNewObjectForEntityForName:@"Drug"
+                         inManagedObjectContext:self.managedObjectContext];
+         drug.drugId = (NSNumber*)[obj objectForKey:@"id"];
          drug.name = [obj objectForKey:@"name"];
          [drugs addObject:drug];
      }];
+    NSError *error;
+    if (![self.managedObjectContext save:&error])
+    {
+        NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
+    }
     return drugs;
 }
 
@@ -105,8 +130,10 @@ static AppDelegate* sharedDelegate = nil;
     NSMutableArray* pharmacies = [NSMutableArray new];
     [pharmaciesJSON enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop)
      {
-         Pharmacy* pharmacy = [Pharmacy new];
-         pharmacy.pharmacyId = ((NSNumber*)[obj objectForKey:@"id"]).integerValue;
+         Pharmacy* pharmacy = [NSEntityDescription
+                       insertNewObjectForEntityForName:@"Pharmacy"
+                       inManagedObjectContext:self.managedObjectContext];
+         pharmacy.pharmacyId = (NSNumber*)[obj objectForKey:@"id"];
          pharmacy.name = [obj objectForKey:@"name"];
          pharmacy.network = [obj objectForKey:@"network"];
          pharmacy.city = [obj objectForKey:@"city"];
@@ -114,9 +141,14 @@ static AppDelegate* sharedDelegate = nil;
          pharmacy.house = [obj objectForKey:@"house"];
          pharmacy.phone = [obj objectForKey:@"phone"];
          pharmacy.doctorName = [obj objectForKey:@"doctorName"];
-         pharmacy.visits = [NSMutableArray new];
+         pharmacy.visits = [NSSet new];
          [pharmacies addObject:pharmacy];
      }];
+    NSError *error;
+    if (![self.managedObjectContext save:&error])
+    {
+        NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
+    }
     return pharmacies;
 }
 
@@ -128,36 +160,48 @@ static AppDelegate* sharedDelegate = nil;
     NSMutableArray* visits = [NSMutableArray new];
     [visitsJSON enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop)
      {
-         Visit* visit = [Visit new];
+         Visit* visit = [NSEntityDescription
+                               insertNewObjectForEntityForName:@"Visit"
+                               inManagedObjectContext:self.managedObjectContext];
          NSString* visitDateString = [obj objectForKey:@"date"];
          NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
          dateFormatter.dateFormat = @"dd.MM.yyyy HH:mm";
          visit.date = [dateFormatter dateFromString:visitDateString];
-         visit.visitId = ((NSNumber*)[obj objectForKey:@"id"]).integerValue;
+         visit.visitId = (NSNumber*)[obj objectForKey:@"id"];
+         //TODO: fix it
          NSInteger userId = ((NSNumber*)[obj objectForKey:@"userId"]).integerValue;
          visit.user = [self findUserById:userId];
-         visit.sales = [NSMutableArray new];
+         visit.sales = [NSSet new];
          NSMutableArray* sales = [obj objectForKey:@"sales"];
          [sales enumerateObjectsUsingBlock:^(id saleObj, NSUInteger idx, BOOL *stop) {
-             Sale* sale = [Sale new];
-             sale.saleId = ((NSNumber*)[saleObj objectForKey:@"id"]).integerValue;
+             Sale* sale = [NSEntityDescription
+                             insertNewObjectForEntityForName:@"Sale"
+                             inManagedObjectContext:self.managedObjectContext];
+             sale.saleId = (NSNumber*)[saleObj objectForKey:@"id"];
+             //TODO: fix it
              NSInteger drugId = ((NSNumber*)[saleObj objectForKey:@"drug"]).integerValue;
              Drug* drug = [self findDrugById:drugId];
              sale.user = visit.user;
              sale.drug = drug;
-             sale.order = ((NSNumber*)[saleObj objectForKey:@"order"]).integerValue;
-             sale.sold = ((NSNumber*)[saleObj objectForKey:@"sold"]).integerValue;
-             sale.remainder = ((NSNumber*)[saleObj objectForKey:@"remainder"]).integerValue;
+             sale.order = (NSNumber*)[saleObj objectForKey:@"order"];
+             sale.sold = (NSNumber*)[saleObj objectForKey:@"sold"];
+             sale.remainder = (NSNumber*)[saleObj objectForKey:@"remainder"];
              sale.visit = visit;
-             [visit.sales addObject:sale];
+             [visit addSalesObject:sale];
          }];
          
+         //TODO: fix it
          NSInteger pharmacyId = ((NSNumber*)[obj objectForKey:@"pharmacy"]).integerValue;
          Pharmacy* pharmacy = [self findPharmacyById:pharmacyId];
          visit.pharmacy = pharmacy;
-         [pharmacy.visits addObject:visit];
+         [pharmacy addVisitsObject:visit];
          [visits addObject:visit];
      }];
+    NSError *error;
+    if (![self.managedObjectContext save:&error])
+    {
+        NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
+    }
     return visits;
 }
 
@@ -169,28 +213,46 @@ static AppDelegate* sharedDelegate = nil;
     NSMutableArray* conferences = [NSMutableArray new];
     [conferencesJSON enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop)
      {
-         Conference* conference = [Conference new];
+         Conference* conference = [NSEntityDescription
+                         insertNewObjectForEntityForName:@"Conference"
+                         inManagedObjectContext:self.managedObjectContext];
          NSString* visitDateString = [obj objectForKey:@"date"];
          NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
          dateFormatter.dateFormat = @"dd.MM.yyyy HH:mm";
          conference.date = [dateFormatter dateFromString:visitDateString];
-         conference.conferenceId = ((NSNumber*)[obj objectForKey:@"id"]).integerValue;
+         conference.conferenceId = (NSNumber*)[obj objectForKey:@"id"];
+         //TODO: fix it
          NSInteger userId = ((NSNumber*)[obj objectForKey:@"userId"]).integerValue;
          conference.user = [self findUserById:userId];
          conference.name = [obj objectForKey:@"name"];
-         conference.participants = [[obj objectForKey:@"participants"]mutableCopy];
-         conference.brands = [NSMutableArray new];
+         conference.participants = [NSSet new];
+         NSArray* participants = [obj objectForKey:@"participants"];
+         [participants enumerateObjectsUsingBlock:^(NSString *name, NSUInteger idx, BOOL *stop) {
+             Participant* participant = [NSEntityDescription
+                                       insertNewObjectForEntityForName:@"Participant"
+                                       inManagedObjectContext:self.managedObjectContext];
+             participant.name = name;
+             [conference addParticipantsObject:participant];
+         }];
+         conference.brands = [NSSet new];
          NSMutableArray* brandIds = [obj objectForKey:@"brands"];
          [brandIds enumerateObjectsUsingBlock:^(NSNumber* brandObj, NSUInteger idx, BOOL *stop) {
+             //TODO: fix it
              NSInteger brandId = brandObj.integerValue;
              Brand* brand = [self findBrandById:brandId];
-             [conference.brands addObject:brand];
+             [conference addBrandsObject:brand];
          }];
+         //TODO: fix it
          NSInteger pharmacyId = ((NSNumber*)[obj objectForKey:@"pharmacy"]).integerValue;
          Pharmacy* pharmacy = [self findPharmacyById:pharmacyId];
          conference.pharmacy = pharmacy;
          [conferences addObject:conference];
      }];
+    NSError *error;
+    if (![self.managedObjectContext save:&error])
+    {
+        NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
+    }
     return conferences;
 }
 
@@ -201,63 +263,87 @@ static AppDelegate* sharedDelegate = nil;
     NSMutableArray* usersJSON = [NSJSONSerialization JSONObjectWithData:usersData options:kNilOptions error:nil];
     NSMutableArray* users = [NSMutableArray new];
     [usersJSON enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        User* user = [User new];
-        user.userId = ((NSNumber*)[obj objectForKey:@"id"]).integerValue;
+        User* user = [NSEntityDescription
+                                  insertNewObjectForEntityForName:@"User"
+                                  inManagedObjectContext:self.managedObjectContext];
+        user.userId = (NSNumber*)[obj objectForKey:@"id"];
         user.name = [obj objectForKey:@"name"];
-        user.drugs = [NSMutableArray new];
+        user.drugs = [NSSet new];
         NSMutableArray* drugIds = [obj objectForKey:@"drugs"];
         [drugIds enumerateObjectsUsingBlock:^(NSNumber* drugObj, NSUInteger idx, BOOL *stop) {
+            //TODO: fix it
             NSInteger drugId = drugObj.integerValue;
             Drug* drug = [self findDrugById:drugId];
-            [user.drugs addObject:drug];
+            [user addDrugsObject:drug];
         }];
         [users addObject:user];
     }];
+    NSError *error;
+    if (![self.managedObjectContext save:&error])
+    {
+        NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
+    }
     return users;
 }
 
 - (Drug*)findDrugById:(NSInteger)drugId
 {
-    for (Drug* drug in self.drugs)
-    {
-        if (drug.drugId == drugId)
-            return drug;
-    }
-    return nil;
+    NSManagedObjectContext* context = self.managedObjectContext;
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:[NSEntityDescription entityForName:@"Drug" inManagedObjectContext:context]];
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"drugId=%@", [NSNumber numberWithFloat:drugId]];
+    [request setPredicate:predicate];
+    NSError *error = nil;
+    NSArray *results = [context executeFetchRequest:request error:&error];
+    if (results.count > 0)
+        return results[0];
+    else
+        return nil;
 }
 
 - (Brand*)findBrandById:(NSInteger)brandId
 {
-    for (Brand* brand in self.brands)
-    {
-        if (brand.brandId == brandId)
-            return brand;
-    }
-    return nil;
+    NSManagedObjectContext* context = self.managedObjectContext;
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:[NSEntityDescription entityForName:@"Brand" inManagedObjectContext:context]];
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"brandId=%@", [NSNumber numberWithFloat:brandId]];
+    [request setPredicate:predicate];
+    NSError *error = nil;
+    NSArray *results = [context executeFetchRequest:request error:&error];
+    if (results.count > 0)
+        return results[0];
+    else
+        return nil;
 }
 
 - (Pharmacy*)findPharmacyById:(NSInteger)pharmacyId
 {
-    for (Pharmacy* pharmacy in self.pharmacies)
-    {
-        if (pharmacy.pharmacyId == pharmacyId)
-        {
-            return pharmacy;
-        }
-    }
-    return nil;
+    NSManagedObjectContext* context = self.managedObjectContext;
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:[NSEntityDescription entityForName:@"Pharmacy" inManagedObjectContext:context]];
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"pharmacyId=%@", [NSNumber numberWithFloat:pharmacyId]];
+    [request setPredicate:predicate];
+    NSError *error = nil;
+    NSArray *results = [context executeFetchRequest:request error:&error];
+    if (results.count > 0)
+        return results[0];
+    else
+        return nil;
 }
 
 - (User*)findUserById:(NSInteger)userId
 {
-    for (User* user in self.users)
-    {
-        if (user.userId == userId)
-        {
-            return user;
-        }
-    }
-    return nil;
+    NSManagedObjectContext* context = self.managedObjectContext;
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:[NSEntityDescription entityForName:@"User" inManagedObjectContext:context]];
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"userId=%@", [NSNumber numberWithFloat:userId]];
+    [request setPredicate:predicate];
+    NSError *error = nil;
+    NSArray *results = [context executeFetchRequest:request error:&error];
+    if (results.count > 0)
+        return results[0];
+    else
+        return nil;
 }
 				
 - (void)applicationWillResignActive:(UIApplication *)application
@@ -319,7 +405,7 @@ static AppDelegate* sharedDelegate = nil;
     if (_managedObjectModel != nil) {
         return _managedObjectModel;
     }
-    NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"CardioRiskModel" withExtension:@"momd"];
+    NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"MainDatabase" withExtension:@"momd"];
     _managedObjectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
     return _managedObjectModel;
 }
@@ -332,7 +418,7 @@ static AppDelegate* sharedDelegate = nil;
         return _persistentStoreCoordinator;
     }
     
-    NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"CardioRiskModel.sqlite"];
+    NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"MainDatabase.sqlite"];
     
     NSError *error = nil;
     _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
@@ -365,6 +451,47 @@ static AppDelegate* sharedDelegate = nil;
     }
     
     return _persistentStoreCoordinator;
+}
+
+// Returns the URL to the application's Documents directory.
+- (NSURL *)applicationDocumentsDirectory
+{
+    return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
+}
+
+- (void)saveContext
+{
+    NSError *error = nil;
+    NSManagedObjectContext *managedObjectContext = self.managedObjectContext;
+    if (managedObjectContext != nil) {
+        if ([managedObjectContext hasChanges] && ![managedObjectContext save:&error]) {
+            // Replace this implementation with code to handle the error appropriately.
+            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+            NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+            abort();
+        }
+    }
+}
+
+- (void) deleteAllObjects: (NSString *) entityDescription
+{
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:entityDescription inManagedObjectContext:self.managedObjectContext];
+    [fetchRequest setEntity:entity];
+    
+    NSError *error;
+    NSArray *items = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
+    
+    for (NSManagedObject *managedObject in items)
+    {
+    	[self.managedObjectContext deleteObject:managedObject];
+        NSLog(@"Try to delete %@",entityDescription);
+    }
+    if (![self.managedObjectContext save:&error])
+    {
+    	NSLog(@"Error deleting %@ - error:%@",entityDescription,error);
+    }
+    
 }
 
 
