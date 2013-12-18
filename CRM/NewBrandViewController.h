@@ -7,8 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Brand.h"
+@class NewBrandViewController;
 @protocol NewBrandViewDelegate
-- (void)addBrand:(NSString*)brand;
+- (void)newBrandViewController:(NewBrandViewController*)newBrandViewController didAddBrand:(Brand*)brand;
 @end
 
 @interface NewBrandViewController : UIViewController

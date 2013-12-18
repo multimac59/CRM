@@ -7,8 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Participant.h"
+
+@class NewParticipantViewController;
 @protocol NewParticipantViewDelegate
-- (void)addParticipant:(NSString*)participant;
+- (void)newParticipantViewController:(NewParticipantViewController*)newParticipantViewController didAddParticipant:(Participant*)participant;
 @end
 
 @interface NewParticipantViewController : UIViewController

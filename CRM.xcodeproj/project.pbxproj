@@ -57,8 +57,8 @@
 		70C4ADF61855AB6000BD0E8B /* VisitsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70C4ADF41855AB6000BD0E8B /* VisitsViewController.xib */; };
 		70C4ADFA1855ABD300BD0E8B /* VisitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 70C4ADF81855ABD300BD0E8B /* VisitViewController.m */; };
 		70C4ADFB1855ABD300BD0E8B /* VisitViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70C4ADF91855ABD300BD0E8B /* VisitViewController.xib */; };
-		70C4AE031855B4BF00BD0E8B /* ClientsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 70C4AE011855B4BF00BD0E8B /* ClientsViewController.m */; };
-		70C4AE041855B4BF00BD0E8B /* ClientsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70C4AE021855B4BF00BD0E8B /* ClientsViewController.xib */; };
+		70C4AE031855B4BF00BD0E8B /* PharmaciesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 70C4AE011855B4BF00BD0E8B /* PharmaciesViewController.m */; };
+		70C4AE041855B4BF00BD0E8B /* PharmaciesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70C4AE021855B4BF00BD0E8B /* PharmaciesViewController.xib */; };
 		70C4AE1F1855E8FB00BD0E8B /* Brands.json in Resources */ = {isa = PBXBuildFile; fileRef = 70C4AE191855E8FB00BD0E8B /* Brands.json */; };
 		70C4AE201855E8FB00BD0E8B /* Conferences.json in Resources */ = {isa = PBXBuildFile; fileRef = 70C4AE1A1855E8FB00BD0E8B /* Conferences.json */; };
 		70C4AE211855E8FB00BD0E8B /* Drugs.json in Resources */ = {isa = PBXBuildFile; fileRef = 70C4AE1B1855E8FB00BD0E8B /* Drugs.json */; };
@@ -158,9 +158,9 @@
 		70C4ADF71855ABD300BD0E8B /* VisitViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VisitViewController.h; sourceTree = "<group>"; };
 		70C4ADF81855ABD300BD0E8B /* VisitViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VisitViewController.m; sourceTree = "<group>"; };
 		70C4ADF91855ABD300BD0E8B /* VisitViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = VisitViewController.xib; sourceTree = "<group>"; };
-		70C4AE001855B4BF00BD0E8B /* ClientsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClientsViewController.h; sourceTree = "<group>"; };
-		70C4AE011855B4BF00BD0E8B /* ClientsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ClientsViewController.m; sourceTree = "<group>"; };
-		70C4AE021855B4BF00BD0E8B /* ClientsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ClientsViewController.xib; sourceTree = "<group>"; };
+		70C4AE001855B4BF00BD0E8B /* PharmaciesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PharmaciesViewController.h; sourceTree = "<group>"; };
+		70C4AE011855B4BF00BD0E8B /* PharmaciesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PharmaciesViewController.m; sourceTree = "<group>"; };
+		70C4AE021855B4BF00BD0E8B /* PharmaciesViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PharmaciesViewController.xib; sourceTree = "<group>"; };
 		70C4AE191855E8FB00BD0E8B /* Brands.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Brands.json; sourceTree = "<group>"; };
 		70C4AE1A1855E8FB00BD0E8B /* Conferences.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Conferences.json; sourceTree = "<group>"; };
 		70C4AE1B1855E8FB00BD0E8B /* Drugs.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Drugs.json; sourceTree = "<group>"; };
@@ -275,9 +275,9 @@
 				7071FFC718560D4500EF352D /* SalesViewController.h */,
 				7071FFC818560D4500EF352D /* SalesViewController.m */,
 				7071FFC918560D4500EF352D /* SalesViewController.xib */,
-				70C4AE001855B4BF00BD0E8B /* ClientsViewController.h */,
-				70C4AE011855B4BF00BD0E8B /* ClientsViewController.m */,
-				70C4AE021855B4BF00BD0E8B /* ClientsViewController.xib */,
+				70C4AE001855B4BF00BD0E8B /* PharmaciesViewController.h */,
+				70C4AE011855B4BF00BD0E8B /* PharmaciesViewController.m */,
+				70C4AE021855B4BF00BD0E8B /* PharmaciesViewController.xib */,
 				7071FFCC185612C700EF352D /* PharmacyViewController.h */,
 				7071FFCD185612C700EF352D /* PharmacyViewController.m */,
 				7071FFCE185612C700EF352D /* PharmacyViewController.xib */,
@@ -446,7 +446,7 @@
 				70C4AE241855E8FB00BD0E8B /* Visits.json in Resources */,
 				70C4AE201855E8FB00BD0E8B /* Conferences.json in Resources */,
 				702FEBB918574442009A95BA /* NewParticipantViewController.xib in Resources */,
-				70C4AE041855B4BF00BD0E8B /* ClientsViewController.xib in Resources */,
+				70C4AE041855B4BF00BD0E8B /* PharmaciesViewController.xib in Resources */,
 				7071FFD8185707A300EF352D /* NewVisitViewController.xib in Resources */,
 				70C4AE1F1855E8FB00BD0E8B /* Brands.json in Resources */,
 				7071FFDD185709F300EF352D /* NewPharmacyViewController.xib in Resources */,
@@ -532,7 +532,7 @@
 				7071FFD3185616FB00EF352D /* CustomSplitController.m in Sources */,
 				702FEBF01858AA2D009A95BA /* Brand.m in Sources */,
 				70043F8D1855A70A006138CC /* main.m in Sources */,
-				70C4AE031855B4BF00BD0E8B /* ClientsViewController.m in Sources */,
+				70C4AE031855B4BF00BD0E8B /* PharmaciesViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -660,7 +660,7 @@
 				GCC_PREFIX_HEADER = "CRM/CRM-Prefix.pch";
 				INFOPLIST_FILE = "CRM/CRM-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
-				MOMC_NO_INVERSE_RELATIONSHIP_WARNINGS = YES;
+				MOMC_NO_INVERSE_RELATIONSHIP_WARNINGS = NO;
 				MOMC_NO_WARNINGS = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
@@ -677,7 +677,7 @@
 				GCC_PREFIX_HEADER = "CRM/CRM-Prefix.pch";
 				INFOPLIST_FILE = "CRM/CRM-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
-				MOMC_NO_INVERSE_RELATIONSHIP_WARNINGS = YES;
+				MOMC_NO_INVERSE_RELATIONSHIP_WARNINGS = NO;
 				MOMC_NO_WARNINGS = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;

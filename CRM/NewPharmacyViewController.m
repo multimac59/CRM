@@ -52,12 +52,12 @@
     pharmacy.phone = self.phoneField.text;
     pharmacy.doctorName = self.doctorField.text;
     pharmacy.visits = [NSSet new];
-    [self.delegate addPharmacy:pharmacy];
+    [[AppDelegate sharedDelegate]saveContext];
+    [self.delegate newPharmacyViewController:self didAddPharmacy:pharmacy];
 }
 
 - (void)cancel
 {
     [self dismissViewControllerAnimated:YES completion:nil];
 }
-
 @end

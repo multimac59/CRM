@@ -22,5 +22,6 @@
 @property (strong, nonatomic) User* currentUser;
 
 + (AppDelegate*)sharedDelegate;
+- (void)saveContext;
 
 @end

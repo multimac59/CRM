@@ -11,7 +11,8 @@
 #import "NewBrandViewController.h"
 
 @interface BrandsViewController ()
-@property (nonatomic, strong) NSArray* brands;
+@property (nonatomic, strong) NSMutableArray* brands;
+@property (nonatomic, strong) NSArray* sortedBrands;
 @end
 
 @implementation BrandsViewController
@@ -36,33 +37,35 @@
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Add" style:UIBarButtonSystemItemAdd target:self action:@selector(addBrand)];
     self.navigationItem.title = @"Бренды";
+    
+    NSManagedObjectContext* context = [AppDelegate sharedDelegate].managedObjectContext;
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:[NSEntityDescription entityForName:@"Brand" inManagedObjectContext:context]];
+    NSError *error = nil;
+    _brands = [[context executeFetchRequest:request error:&error]mutableCopy];
     [self sortBrands];
     
 }
 
 - (void)sortBrands
 {
-    NSManagedObjectContext* context = [AppDelegate sharedDelegate].managedObjectContext;
-    NSFetchRequest *request = [[NSFetchRequest alloc] init];
-    [request setEntity:[NSEntityDescription entityForName:@"Brand" inManagedObjectContext:context]];
-    NSError *error = nil;
-    NSArray *results = [context executeFetchRequest:request error:&error];
-    
-    _brands = [results sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2)
-               {
-                   if ([self.conference.brands containsObject:obj1] && ![self.conference.brands containsObject:obj2])
-                   {
-                       return NSOrderedAscending;
-                   }
-                   else if (![self.conference.brands containsObject:obj1] && [self.conference.brands containsObject:obj2])
-                   {
-                       return NSOrderedDescending;
-                   }
-                   else
-                   {
-                       return NSOrderedSame;
-                   }
-               }];
+    //We must use it after fetching, because we can't pass self as key while fetching for some reason
+    NSSortDescriptor* sortDescriptor = [[NSSortDescriptor alloc]initWithKey:@"self" ascending:YES comparator:^NSComparisonResult(id obj1, id obj2) {
+        if ([self.conference.brands containsObject:obj1] && ![self.conference.brands containsObject:obj2])
+        {
+            return NSOrderedAscending;
+        }
+        else if (![self.conference.brands containsObject:obj1] && [self.conference.brands containsObject:obj2])
+        {
+            return NSOrderedDescending;
+        }
+        else
+        {
+            return NSOrderedSame;
+        }
+    }];
+    NSSortDescriptor* sortByNameDescriptor = [[NSSortDescriptor alloc]initWithKey:@"name" ascending:YES];
+    _sortedBrands = [_brands sortedArrayUsingDescriptors:@[sortDescriptor, sortByNameDescriptor]];
 }
 
 - (void)didReceiveMemoryWarning
@@ -73,13 +76,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    NSManagedObjectContext* context = [AppDelegate sharedDelegate].managedObjectContext;
-    NSFetchRequest *request = [[NSFetchRequest alloc] init];
-    [request setEntity:[NSEntityDescription entityForName:@"Brand" inManagedObjectContext:context]];
-    [request setIncludesSubentities:NO];
-    NSError *error = nil;
-    NSInteger count = [context countForFetchRequest:request error:&error];
-    return count;
+    return self.sortedBrands.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -90,7 +87,7 @@
     {
         cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
-    Brand* brand = self.brands[indexPath.row];
+    Brand* brand = self.sortedBrands[indexPath.row];
     cell.textLabel.text = brand.name;
     if ([self.conference.brands containsObject:brand])
     {
@@ -101,14 +98,13 @@
         cell.accessoryType = UITableViewCellAccessoryNone;
     }
     // Configure the cell...
-    
     return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell* cell = [tableView cellForRowAtIndexPath:indexPath];
-    Brand* brand = self.brands[indexPath.row];
+    Brand* brand = self.sortedBrands[indexPath.row];
     if ([self.conference.brands containsObject:brand])
     {
         [self.conference removeBrandsObject:brand];
@@ -130,12 +126,9 @@
     [self presentViewController:hostingController animated:YES completion:nil];
 }
 
-- (void)addBrand:(NSString *)brand
+- (void)newBrandViewController:(NewBrandViewController *)newBrandViewController didAddBrand:(Brand *)brand
 {
-    Brand* newBrand = [NSEntityDescription
-                    insertNewObjectForEntityForName:@"Brand"
-                    inManagedObjectContext:[AppDelegate sharedDelegate].managedObjectContext];
-    newBrand.name = brand;
+    [self.brands addObject:brand];
     [self sortBrands];
     [self.tableView reloadData];
     [self dismissViewControllerAnimated:YES completion:nil];

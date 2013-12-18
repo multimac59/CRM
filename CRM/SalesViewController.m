@@ -37,6 +37,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     User* currentUser = [AppDelegate sharedDelegate].currentUser;
+    NSLog(@"Table will contain %d drugs", currentUser.drugs.count);
     return currentUser.drugs.count;
 }
 
@@ -49,6 +50,7 @@
     }
     User* currentUser = [AppDelegate sharedDelegate].currentUser;
     Drug* drug = currentUser.drugs.allObjects[indexPath.row];
+    NSLog(@"drug name = %@", drug.name);
     Sale* sale;
     if (self.segmentedControl.selectedSegmentIndex == 1)
     {
@@ -68,27 +70,35 @@
     
     NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
     dateFormatter.dateFormat = @"dd.MM.yyyy HH:mm";
+    cell.drugLabel.text = drug.name;
     if (sale != nil)
     {
-    cell.dateLabel.text = [dateFormatter stringFromDate:sale.visit.date];
-    cell.nameLabel.text = sale.user.name;
-    cell.drugLabel.text = sale.drug.name;
-    cell.orderLabel.text = [NSString stringWithFormat:@"%@", sale.order];
-    cell.soldLabel.text = [NSString stringWithFormat:@"%@", sale.sold];
-    cell.remainderLabel.text = [NSString stringWithFormat:@"%@", sale.remainder];
+        cell.dateLabel.text = [dateFormatter stringFromDate:sale.visit.date];
+        cell.nameLabel.text = sale.user.name;
+        cell.orderLabel.text = [NSString stringWithFormat:@"%@", sale.order];
+        cell.soldLabel.text = [NSString stringWithFormat:@"%@", sale.sold];
+        cell.remainderLabel.text = [NSString stringWithFormat:@"%@", sale.remainder];
     }
     else
     {
-        cell.dateLabel.text = @"";
-        cell.nameLabel.text = @"";
-        cell.drugLabel.text = @"";
-        cell.orderLabel.text = @"";
-        cell.soldLabel.text = @"";
-        cell.remainderLabel.text = @"";
+        cell.dateLabel.text = @" - ";
+        cell.nameLabel.text = @" - ";
+        cell.orderLabel.text = @"0";
+        cell.soldLabel.text = @"0";
+        cell.remainderLabel.text = @"0";
     }
-    cell.orderField.text = [NSString stringWithFormat:@"%@", currentSale.order];
-    cell.soldField.text = [NSString stringWithFormat:@"%@", currentSale.sold];
-    cell.remainderField.text = [NSString stringWithFormat:@"%@", currentSale.remainder];
+    if (currentSale != nil)
+    {
+        cell.orderField.text = [NSString stringWithFormat:@"%@", currentSale.order];
+        cell.soldField.text = [NSString stringWithFormat:@"%@", currentSale.sold];
+        cell.remainderField.text = [NSString stringWithFormat:@"%@", currentSale.remainder];
+    }
+    else
+    {
+        cell.orderField.text = @"0";
+        cell.soldField.text = @"0";
+        cell.remainderField.text = @"0";
+    }
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     return cell;
 }
@@ -107,10 +117,17 @@
 - (Sale*)getLastSaleFor:(Drug*)drug
 {
     NSMutableArray* sales = [NSMutableArray new];
+    NSLog(@"total %d visits in pharmacy %@", self.visit.pharmacy.visits.count, self.visit.pharmacy.name);
     for (Visit* visit in self.visit.pharmacy.visits)
     {
-        if (visit.date >= self.visit.date)
+        //We need to get data for old visits, not current
+        if ([visit.date compare:self.visit.date] == NSOrderedSame || [visit.date compare:self.visit.date] == NSOrderedDescending)
+        {
+            NSLog(@"This is current visit date = %@, current date = %@", visit.date, self.visit.date);
             continue;
+        }
+        NSLog(@"This is old visit date = %@, current date = %@", visit.date, self.visit.date);
+        //Here we get all old sales in the pharmacy for current drug
         for (Sale* sale in visit.sales)
         {
             if (sale.drug.drugId.integerValue == drug.drugId.integerValue)
@@ -119,6 +136,7 @@
             }
         }
     }
+    //Sort list by date, and return last
     if (sales.count > 0)
         return [self sortSales:sales][0];
     else
@@ -132,7 +150,7 @@
     NSMutableArray* sales = [NSMutableArray new];
     for (Visit* visit in self.visit.pharmacy.visits)
     {
-        if (visit.date >= self.visit.date)
+        if ([visit.date compare:self.visit.date] == NSOrderedSame || [visit.date compare:self.visit.date] == NSOrderedDescending)
             continue;
         for (Sale* sale in visit.sales)
         {
@@ -154,18 +172,7 @@
 {
     return [sales sortedArrayUsingComparator:^NSComparisonResult(Sale* sale1, Sale* sale2)
      {
-         if (sale1.visit.date > sale2.visit.date)
-         {
-             return NSOrderedAscending;
-         }
-         else if (sale1.visit.date < sale2.visit.date)
-         {
-             return NSOrderedDescending;
-         }
-         else
-         {
-             return NSOrderedSame;
-         }
+         return [sale1.visit.date compare:sale2.visit.date];
      }];
 }
 
@@ -181,7 +188,9 @@
     {
         Drug* drug = currentUser.drugs.allObjects[i];
         SaleCell* cell = (SaleCell*)[self.table cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
-        Sale* sale = [Sale new];
+        Sale* sale = [NSEntityDescription
+                      insertNewObjectForEntityForName:@"Sale"
+                      inManagedObjectContext:[AppDelegate sharedDelegate].managedObjectContext];
         sale.drug = drug;
         sale.visit = self.visit;
         sale.user = currentUser;
@@ -190,6 +199,7 @@
         sale.order = @(cell.orderField.text.integerValue);
         [self.visit addSalesObject:sale];
     }
+    [[AppDelegate sharedDelegate]saveContext];
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 @end

@@ -7,6 +7,8 @@
 //
 
 #import "NewBrandViewController.h"
+#import "AppDelegate.h"
+#import "Brand.h"
 
 @interface NewBrandViewController ()
 
@@ -45,6 +47,11 @@
 
 - (void)save
 {
-    [self.delegate addBrand:self.brandField.text];
+    Brand* brand = [NSEntityDescription
+                       insertNewObjectForEntityForName:@"Brand"
+                       inManagedObjectContext:[AppDelegate sharedDelegate].managedObjectContext];
+    brand.name = self.brandField.text;
+    [[AppDelegate sharedDelegate]saveContext];
+    [self.delegate newBrandViewController:self didAddBrand:brand];
 }
 @end

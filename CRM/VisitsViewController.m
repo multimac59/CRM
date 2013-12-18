@@ -33,6 +33,8 @@
     return self;
 }
 
+//Compare without time
+//Maybe it's better to create extension NSDate -(NSComparisionResult)compare method and use it in sort descriptor?
 - (BOOL)date:(NSDate*)date1 equalToDate:(NSDate*)date2
 {
     NSCalendar *calendar = [NSCalendar currentCalendar];
@@ -69,6 +71,14 @@
     self.navigationItem.title = @"Визиты";
     [self loadAll];
     [self filterVisits];
+    //TODO: you can make it better
+    [self performSelector:@selector(selectObjectAtIndex:) withObject:0 afterDelay:1];
+
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    
 }
 
 - (void)clearFilter
@@ -93,38 +103,21 @@
 - (void)filterVisits
 {
     _visitsAndConferences = [NSMutableArray new];
-    // Use predicate instead
-    [self.visits enumerateObjectsUsingBlock:^(Visit* visit, NSUInteger idx, BOOL *stop) {
-        if (visit.user.userId.integerValue == [AppDelegate sharedDelegate].currentUser.userId.integerValue)
-        {
-            if (self.filterDate == nil || [self date:self.filterDate equalToDate:visit.date])
-                [self.visitsAndConferences addObject:visit];
-        }
-    }];
-    
-    //Not optimal, too many requests to database
-    
-    [self.conferences enumerateObjectsUsingBlock:^(Conference* conference, NSUInteger idx, BOOL *stop) {
-        if (conference.user.userId.integerValue == [AppDelegate sharedDelegate].currentUser.userId.integerValue)
-        {
-            if (self.filterDate == nil || [self date:self.filterDate equalToDate:conference.date])
-                [self.visitsAndConferences addObject:conference];
-        }
-    }];
-    [self.visits sortUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-        NSDate* date1 = [obj1 date];
-        NSDate* date2 = [obj2 date];
-        if (date1 > date2)
-            return NSOrderedAscending;
-        else if (date1 < date2)
-            return NSOrderedDescending;
-        else
-            return NSOrderedSame;
-    }];
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
+    [_visitsAndConferences addObjectsFromArray:self.visits];
+    [_visitsAndConferences addObjectsFromArray:self.conferences];
+    NSPredicate* filterByUserPredicate = [NSPredicate predicateWithFormat:@"user.userId=%@", [AppDelegate sharedDelegate].currentUser.userId];
+    if (self.filterDate)
+    {
+        NSPredicate* datePredicate = [NSPredicate predicateWithFormat:@"date=%@", self.filterDate, [AppDelegate sharedDelegate].currentUser];
+        NSPredicate* compoundPredicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[filterByUserPredicate, datePredicate]];
+        [_visitsAndConferences filterUsingPredicate:compoundPredicate];
+    }
+    else
+    {
+        [_visitsAndConferences filterUsingPredicate:filterByUserPredicate];
+    }
+    NSSortDescriptor* sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"date" ascending:YES];
+    [_visitsAndConferences sortUsingDescriptors:@[sortDescriptor]];
 }
 
 - (void)didReceiveMemoryWarning
@@ -161,16 +154,21 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    [self selectObjectAtIndex:indexPath.row];
+}
+
+- (void)selectObjectAtIndex:(NSInteger)index
+{
     UINavigationController* hostController = [AppDelegate sharedDelegate].visitsSplitController.viewControllers[1];
     [hostController popToRootViewControllerAnimated:NO];
     VisitViewController* visitViewController = (VisitViewController*)hostController.topViewController;
-    NSLog(@"Clicked, row = %ld", (long)indexPath.row);
-    NSObject* object = self.visitsAndConferences[indexPath.row];
+    NSLog(@"Clicked, row = %d", index);
+    NSObject* object = self.visitsAndConferences[index];
     if ([object isKindOfClass:[Visit class]])
     {
         Visit* visit = (Visit*)object;
         [visitViewController showVisit:visit];
-
+        
     }
     else
     {
@@ -179,6 +177,7 @@
         
     }
 }
+
 
 - (void)showPopover
 {
@@ -221,6 +220,7 @@
 - (void)newVisitViewController:(NewVisitViewController *)newVisitViewController didAddConference:(Conference *)conference
 {
     [self.conferences addObject:conference];
+    [[AppDelegate sharedDelegate]saveContext];
     [self filterVisits];
     [self.table reloadData];
     [self dismissViewControllerAnimated:YES completion:nil];
@@ -229,6 +229,7 @@
 - (void)newVisitViewController:(NewVisitViewController *)newVisitViewController didAddVisit:(Visit *)visit
 {
     [self.visits addObject:visit];
+    [[AppDelegate sharedDelegate]saveContext];
     [self filterVisits];
     [self.table reloadData];
     [self dismissViewControllerAnimated:YES completion:nil];

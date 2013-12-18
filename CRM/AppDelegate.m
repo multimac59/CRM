@@ -11,7 +11,7 @@
 #import "VisitsViewController.h"
 #import "VisitViewController.h"
 #import "SidePanelController.h"
-#import "ClientsViewController.h"
+#import "PharmaciesViewController.h"
 #import "PharmacyViewController.h"
 #import "CustomSplitController.h"
 #import "LoginViewController.h"
@@ -61,7 +61,7 @@ static AppDelegate* sharedDelegate = nil;
     _visitsSplitController = [[CustomSplitController alloc]init];
     self.visitsSplitController.viewControllers = @[[[UINavigationController alloc]initWithRootViewController:[VisitsViewController new]],[[UINavigationController alloc]initWithRootViewController:[VisitViewController new]]];
     _clientsSplitController = [[CustomSplitController alloc]init];
-    self.clientsSplitController.viewControllers = @[[[UINavigationController alloc]initWithRootViewController:[ClientsViewController new]],[[UINavigationController alloc]initWithRootViewController:[PharmacyViewController new]]];
+    self.clientsSplitController.viewControllers = @[[[UINavigationController alloc]initWithRootViewController:[PharmaciesViewController new]],[[UINavigationController alloc]initWithRootViewController:[PharmacyViewController new]]];
 
     
     MFSideMenuContainerViewController *container = [MFSideMenuContainerViewController

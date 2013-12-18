@@ -7,6 +7,7 @@
 //
 
 #import "NewParticipantViewController.h"
+#import "AppDelegate.h"
 
 @interface NewParticipantViewController ()
 
@@ -45,6 +46,11 @@
 
 - (void)save
 {
-    [self.delegate addParticipant:self.participantField.text];
+    Participant* participant = [NSEntityDescription
+                                   insertNewObjectForEntityForName:@"Participant"
+                                   inManagedObjectContext:[AppDelegate sharedDelegate].managedObjectContext];
+    participant.name = self.participantField.text;
+    [[AppDelegate sharedDelegate]saveContext];
+    [self.delegate newParticipantViewController:self didAddParticipant:participant];
 }
 @end

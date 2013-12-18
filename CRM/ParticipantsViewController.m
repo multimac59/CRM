@@ -12,7 +12,9 @@
 #import "Participant.h"
 
 @interface ParticipantsViewController ()
-
+{
+}
+@property (nonatomic, strong) NSArray* participants;
 @end
 
 @implementation ParticipantsViewController
@@ -32,6 +34,14 @@
     // Do any additional setup after loading the view from its nib.
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Add" style:UIBarButtonSystemItemAdd target:self action:@selector(addParticipant)];
     self.navigationItem.title = @"Участники";
+    [self sortParticipants];
+    [self.tableView reloadData];
+}
+
+- (void)sortParticipants
+{
+    NSSortDescriptor* sortByNameDescriptor = [[NSSortDescriptor alloc]initWithKey:@"name" ascending:YES];
+    _participants = [self.conference.participants sortedArrayUsingDescriptors:@[sortByNameDescriptor]];
 }
 
 - (void)didReceiveMemoryWarning
@@ -42,7 +52,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return self.conference.participants.count;
+    return [self.participants count];
 }
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -52,7 +62,7 @@
     {
         cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell"];
     }
-    Participant* participant = [self.conference.participants.allObjects objectAtIndex:indexPath.row];
+    Participant* participant = [self.participants objectAtIndex:indexPath.row];
     cell.textLabel.text = participant.name;
     return cell;
 }
@@ -66,15 +76,11 @@
    [self presentViewController:hostingController animated:YES completion:nil];
 }
 
-- (void)addParticipant:(NSString *)participant
+- (void)newParticipantViewController:(NewParticipantViewController *)newParticipantViewController didAddParticipant:(Participant *)participant
 {
-    Participant* participantObj = [NSEntityDescription
-                              insertNewObjectForEntityForName:@"Participant"
-                              inManagedObjectContext:[AppDelegate sharedDelegate].managedObjectContext];
-    participantObj.name = participant;
-    [self.conference addParticipantsObject:participantObj];
+    [self.conference addParticipantsObject:participant];
+    [self sortParticipants];
     [self.tableView reloadData];
     [self dismissViewControllerAnimated:YES completion:nil];
 }
-
 @end

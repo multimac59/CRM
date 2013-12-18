@@ -69,6 +69,9 @@
 
 - (void)cancel
 {
+    NSManagedObjectContext* context = [[AppDelegate sharedDelegate]managedObjectContext];
+    [context deleteObject:self.visit];
+    [context deleteObject:self.conference];
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 

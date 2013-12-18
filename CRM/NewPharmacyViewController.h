@@ -8,8 +8,11 @@
 
 #import <UIKit/UIKit.h>
 #import "Pharmacy.h"
+
+@class NewPharmacyViewController;
+
 @protocol NewPharmacyViewDelegate
-- (void)addPharmacy:(Pharmacy*)pharmacy;
+- (void)newPharmacyViewController:(NewPharmacyViewController*)newPharmacyViewcontroller didAddPharmacy:(Pharmacy*)pharmacy;
 @end
 
 @interface NewPharmacyViewController : UIViewController

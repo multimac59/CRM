@@ -9,7 +9,7 @@
 #import "SidePanelController.h"
 #import "MFSideMenu.h"
 #import "VisitsViewController.h"
-#import "ClientsViewController.h"
+#import "PharmaciesViewController.h"
 #import "AppDelegate.h"
 
 @interface SidePanelController ()
