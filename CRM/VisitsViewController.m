@@ -162,7 +162,7 @@
     UINavigationController* hostController = [AppDelegate sharedDelegate].visitsSplitController.viewControllers[1];
     [hostController popToRootViewControllerAnimated:NO];
     VisitViewController* visitViewController = (VisitViewController*)hostController.topViewController;
-    NSLog(@"Clicked, row = %d", index);
+    NSLog(@"Clicked, row = %ld", (long)index);
     NSObject* object = self.visitsAndConferences[index];
     if ([object isKindOfClass:[Visit class]])
     {

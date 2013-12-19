@@ -493,6 +493,4 @@ static AppDelegate* sharedDelegate = nil;
     }
     
 }
-
-
 @end

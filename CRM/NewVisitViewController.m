@@ -16,6 +16,11 @@
 
 @property (nonatomic, strong) Conference* conference;
 @property (nonatomic, strong) Visit* visit;
+
+@property (nonatomic, strong) NSArray* pharmacies;
+@property (nonatomic, strong) NSArray* filteredPharmacies;
+//@property (nonatomic, strong) UISearchDisplayController* searchController;
+
 @end
 
 @implementation NewVisitViewController
@@ -41,6 +46,7 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
+    //_searchController = [[UISearchDisplayController alloc]initWithSearchBar:self.searchBar contentsController:self];
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancel)];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(save)];
     self.navigationItem.title = @"Новый визит";
@@ -54,6 +60,7 @@
     [request setEntity:[NSEntityDescription entityForName:@"Pharmacy" inManagedObjectContext:context]];
     NSError *error = nil;
     _pharmacies = [[context executeFetchRequest:request error:&error]mutableCopy];
+    _filteredPharmacies = _pharmacies;
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -109,7 +116,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return self.pharmacies.count;
+    return self.filteredPharmacies.count;
 }
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -119,7 +126,7 @@
     {
         cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell"];
     }
-    Pharmacy* pharmacy = self.pharmacies[indexPath.row];
+    Pharmacy* pharmacy = self.filteredPharmacies[indexPath.row];
     cell.textLabel.text = pharmacy.name;
     if (self.selectedIndexPath.row == indexPath.row)
     {
@@ -137,4 +144,26 @@
     self.selectedIndexPath = indexPath;
     [tableView reloadData];
 }
+
+- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
+{
+    NSLog(@"Trying to search with text = %@", searchText);
+    if (!searchText)
+    {
+        _filteredPharmacies = _pharmacies;
+    }
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"(name contains[cd] %@) || (network contains[cd] %@) || (city contains[cd] %@) || (street contains[cd] %@) || (house contains[cd] %@) || (phone contains[cd] %@) || (doctorName contains[cd] %@)", searchText, searchText, searchText, searchText, searchText, searchText, searchText];
+    _filteredPharmacies = [_pharmacies filteredArrayUsingPredicate:predicate];
+    [self.table reloadData];
+}
+                              /*
+                              @property (nonatomic, retain) NSNumber * pharmacyId;
+                              @property (nonatomic, retain) NSString * name;
+                              @property (nonatomic, retain) NSString * network;
+                              @property (nonatomic, retain) NSString * city;
+                              @property (nonatomic, retain) NSString * street;
+                              @property (nonatomic, retain) NSString * house;
+                              @property (nonatomic, retain) NSString * phone;
+                              @property (nonatomic, retain) NSString * doctorName;
+                              @property (nonatomic, retain) NSSet *visits;*/
 @end

@@ -14,7 +14,7 @@
 #import "User.h"
 
 @interface SalesViewController ()
-
+@property (nonatomic, strong) NSArray* drugs;
 @end
 
 @implementation SalesViewController
@@ -32,13 +32,15 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
+    User* currentUser = [AppDelegate sharedDelegate].currentUser;
+    NSSortDescriptor* sortByNameDescriptor = [[NSSortDescriptor alloc]initWithKey:@"name" ascending:YES];
+    _drugs = [currentUser.drugs.allObjects sortedArrayUsingDescriptors:@[sortByNameDescriptor]];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    User* currentUser = [AppDelegate sharedDelegate].currentUser;
-    NSLog(@"Table will contain %d drugs", currentUser.drugs.count);
-    return currentUser.drugs.count;
+    NSLog(@"Table will contain %lu drugs", (unsigned long)self.drugs.count);
+    return self.drugs.count;
 }
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -48,20 +50,20 @@
     {
         cell = [[NSBundle mainBundle]loadNibNamed:@"SaleCell" owner:self options:nil][0];
     }
-    User* currentUser = [AppDelegate sharedDelegate].currentUser;
-    Drug* drug = currentUser.drugs.allObjects[indexPath.row];
-    NSLog(@"drug name = %@", drug.name);
-    Sale* sale;
+    Drug* drug = self.drugs[indexPath.row];
+    //NSLog(@"drug name = %@", drug.name);
+    Sale* lastSale;
     if (self.segmentedControl.selectedSegmentIndex == 1)
     {
-        sale = [self getMyLastSaleFor:drug];
+        lastSale = [self getLastSaleFor:drug mySale:YES];
     }
     else
     {
-        sale = [self getLastSaleFor:drug];
+        lastSale = [self getLastSaleFor:drug mySale:NO];
     }
     
-    Sale* currentSale;
+    Sale* currentSale = [self getCurrentSaleFor:drug];
+    
     for (Sale* visitSale in self.visit.sales)
     {
         if (visitSale.drug == drug)
@@ -71,13 +73,13 @@
     NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
     dateFormatter.dateFormat = @"dd.MM.yyyy HH:mm";
     cell.drugLabel.text = drug.name;
-    if (sale != nil)
+    if (lastSale != nil)
     {
-        cell.dateLabel.text = [dateFormatter stringFromDate:sale.visit.date];
-        cell.nameLabel.text = sale.user.name;
-        cell.orderLabel.text = [NSString stringWithFormat:@"%@", sale.order];
-        cell.soldLabel.text = [NSString stringWithFormat:@"%@", sale.sold];
-        cell.remainderLabel.text = [NSString stringWithFormat:@"%@", sale.remainder];
+        cell.dateLabel.text = [dateFormatter stringFromDate:lastSale.visit.date];
+        cell.nameLabel.text = lastSale.user.name;
+        cell.orderLabel.text = [NSString stringWithFormat:@"%@", lastSale.order];
+        cell.soldLabel.text = [NSString stringWithFormat:@"%@", lastSale.sold];
+        cell.remainderLabel.text = [NSString stringWithFormat:@"%@", lastSale.remainder];
     }
     else
     {
@@ -114,66 +116,34 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (Sale*)getLastSaleFor:(Drug*)drug
+- (Sale*)getCurrentSaleFor:(Drug*)drug
 {
-    NSMutableArray* sales = [NSMutableArray new];
-    NSLog(@"total %d visits in pharmacy %@", self.visit.pharmacy.visits.count, self.visit.pharmacy.name);
-    for (Visit* visit in self.visit.pharmacy.visits)
+    //Or use predicate instead
+    for (Sale* currentSale in self.visit.sales)
     {
-        //We need to get data for old visits, not current
-        if ([visit.date compare:self.visit.date] == NSOrderedSame || [visit.date compare:self.visit.date] == NSOrderedDescending)
-        {
-            NSLog(@"This is current visit date = %@, current date = %@", visit.date, self.visit.date);
-            continue;
-        }
-        NSLog(@"This is old visit date = %@, current date = %@", visit.date, self.visit.date);
-        //Here we get all old sales in the pharmacy for current drug
-        for (Sale* sale in visit.sales)
-        {
-            if (sale.drug.drugId.integerValue == drug.drugId.integerValue)
-            {
-                [sales addObject:sale];
-            }
-        }
+        if (currentSale.drug == drug)
+            return currentSale;
     }
-    //Sort list by date, and return last
-    if (sales.count > 0)
-        return [self sortSales:sales][0];
-    else
-    {
-        return nil;
-    }
+    return nil;
 }
 
-- (Sale*)getMyLastSaleFor:(Drug*)drug
+- (Sale*)getLastSaleFor:(Drug*)drug mySale:(BOOL)isMine
 {
-    NSMutableArray* sales = [NSMutableArray new];
-    for (Visit* visit in self.visit.pharmacy.visits)
-    {
-        if ([visit.date compare:self.visit.date] == NSOrderedSame || [visit.date compare:self.visit.date] == NSOrderedDescending)
-            continue;
-        for (Sale* sale in visit.sales)
-        {
-            if (sale.user.userId.integerValue == [AppDelegate sharedDelegate].currentUser.userId.integerValue && sale.drug.drugId.integerValue == drug.drugId.integerValue)
-            {
-                [sales addObject:sale];
-            }
-        }
-    }
-    if (sales.count > 0)
-        return [self sortSales:sales][0];
+    NSManagedObjectContext* context = [AppDelegate sharedDelegate].managedObjectContext;
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:[NSEntityDescription entityForName:@"Sale" inManagedObjectContext:context]];
+    NSPredicate* predicate;
+    if (isMine)
+        predicate = [NSPredicate predicateWithFormat:@"(visit.pharmacy=%@) && (visit.date<%@) && (drug=%@) && (visit.user=%@)", self.visit.pharmacy, self.visit.date, drug, [AppDelegate sharedDelegate].currentUser];
     else
-    {
-        return nil;
-    }
-}
-
-- (NSArray*)sortSales:(NSArray*)sales
-{
-    return [sales sortedArrayUsingComparator:^NSComparisonResult(Sale* sale1, Sale* sale2)
-     {
-         return [sale1.visit.date compare:sale2.visit.date];
-     }];
+        predicate = [NSPredicate predicateWithFormat:@"(visit.pharmacy=%@) && (visit.date<%@) && (drug=%@)", self.visit.pharmacy, self.visit.date, drug];
+    NSSortDescriptor* sortByDateDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"visit.date" ascending:YES];
+    request.predicate = predicate;
+    request.sortDescriptors = @[sortByDateDescriptor];
+    request.fetchLimit = 1;
+    NSError *error = nil;
+    NSArray* sales = [[context executeFetchRequest:request error:&error]mutableCopy];
+    return sales.count>0 ? sales[0] : nil;
 }
 
 - (IBAction)switchFilter:(id)sender
@@ -184,13 +154,17 @@
 - (IBAction)saveVisit:(id)sender
 {
     User* currentUser = [AppDelegate sharedDelegate].currentUser;
-    for (int i = 0; i < currentUser.drugs.count; i++)
+    for (int i = 0; i < self.drugs.count; i++)
     {
-        Drug* drug = currentUser.drugs.allObjects[i];
+        Drug* drug = self.drugs[i];
         SaleCell* cell = (SaleCell*)[self.table cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
-        Sale* sale = [NSEntityDescription
+        
+        Sale* sale = [self getCurrentSaleFor:drug];
+        if (!sale)
+            sale = [NSEntityDescription
                       insertNewObjectForEntityForName:@"Sale"
                       inManagedObjectContext:[AppDelegate sharedDelegate].managedObjectContext];
+        
         sale.drug = drug;
         sale.visit = self.visit;
         sale.user = currentUser;
@@ -201,5 +175,15 @@
     }
     [[AppDelegate sharedDelegate]saveContext];
     [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    return 110;
+}
+
+- (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    return [[[NSBundle mainBundle]loadNibNamed:@"SaleHeader" owner:self options:nil]firstObject];
 }
 @end

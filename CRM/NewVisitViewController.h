@@ -16,13 +16,14 @@
 - (void)newVisitViewController:(NewVisitViewController*)newVisitViewController didAddConference:(Conference*)conference;
 @end
 
-@interface NewVisitViewController : UIViewController
+@interface NewVisitViewController : UIViewController<UISearchBarDelegate>
 @property (nonatomic, weak) IBOutlet UITextField* dateField;
 @property (nonatomic, weak) IBOutlet UITextField* timeField;
 @property (nonatomic, weak) IBOutlet UITextField* nameField;
 @property (nonatomic, weak) IBOutlet UITextField* participantsField;
+@property (nonatomic, weak) IBOutlet UISearchBar* searchBar;
+@property (nonatomic, weak) IBOutlet UITableView* table;
 
-@property (nonatomic, strong) NSArray* pharmacies;
 @property (nonatomic) BOOL isConference;
 @property (nonatomic, weak) IBOutlet UIView* conferenceControls;
 

@@ -65,6 +65,7 @@
 		70C4AE221855E8FB00BD0E8B /* Participants.json in Resources */ = {isa = PBXBuildFile; fileRef = 70C4AE1C1855E8FB00BD0E8B /* Participants.json */; };
 		70C4AE231855E8FB00BD0E8B /* Pharmacies.json in Resources */ = {isa = PBXBuildFile; fileRef = 70C4AE1D1855E8FB00BD0E8B /* Pharmacies.json */; };
 		70C4AE241855E8FB00BD0E8B /* Visits.json in Resources */ = {isa = PBXBuildFile; fileRef = 70C4AE1E1855E8FB00BD0E8B /* Visits.json */; };
+		70DE57801862F59A00123B1E /* SaleHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70DE577F1862F59A00123B1E /* SaleHeader.xib */; };
 		E409309283D4489A899AFC48 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 82182041B3C04DD69CCC4ACA /* libPods.a */; };
 /* End PBXBuildFile section */
 
@@ -167,6 +168,7 @@
 		70C4AE1C1855E8FB00BD0E8B /* Participants.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Participants.json; sourceTree = "<group>"; };
 		70C4AE1D1855E8FB00BD0E8B /* Pharmacies.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Pharmacies.json; sourceTree = "<group>"; };
 		70C4AE1E1855E8FB00BD0E8B /* Visits.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Visits.json; sourceTree = "<group>"; };
+		70DE577F1862F59A00123B1E /* SaleHeader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SaleHeader.xib; sourceTree = "<group>"; };
 		82182041B3C04DD69CCC4ACA /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -233,6 +235,7 @@
 		70043F861855A70A006138CC /* CRM */ = {
 			isa = PBXGroup;
 			children = (
+				70DE577F1862F59A00123B1E /* SaleHeader.xib */,
 				702FEBCF1858759D009A95BA /* SaleCell.h */,
 				702FEBD01858759D009A95BA /* SaleCell.m */,
 				702FEBD2185875B6009A95BA /* SaleCell.xib */,
@@ -438,6 +441,7 @@
 				702FEBD3185875B6009A95BA /* SaleCell.xib in Resources */,
 				70C4ADF11855AB3800BD0E8B /* SidePanelController.xib in Resources */,
 				702FEBC618585656009A95BA /* LoginViewController.xib in Resources */,
+				70DE57801862F59A00123B1E /* SaleHeader.xib in Resources */,
 				702FEBBE18574CA0009A95BA /* NewBrandViewController.xib in Resources */,
 				7071FFD0185612C700EF352D /* PharmacyViewController.xib in Resources */,
 				70C4AE231855E8FB00BD0E8B /* Pharmacies.json in Resources */,

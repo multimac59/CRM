@@ -11,6 +11,8 @@
                 <outlet property="dateField" destination="Brt-qY-WSi" id="fYK-8i-ywF"/>
                 <outlet property="nameField" destination="qCE-9B-xP8" id="xZQ-HF-K91"/>
                 <outlet property="participantsField" destination="9Zl-eX-JmM" id="476-sO-3qS"/>
+                <outlet property="searchBar" destination="rIf-IR-6bl" id="hAg-8a-vmh"/>
+                <outlet property="table" destination="2kM-Qm-HXV" id="bIt-nY-BqH"/>
                 <outlet property="timeField" destination="IJ2-Op-hr1" id="fkI-W8-y0N"/>
                 <outlet property="view" destination="2" id="3"/>
             </connections>
@@ -33,7 +35,7 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="2kM-Qm-HXV">
-                    <rect key="frame" x="0.0" y="122" width="475" height="354"/>
+                    <rect key="frame" x="0.0" y="149" width="475" height="327"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <connections>
@@ -95,6 +97,18 @@
                     </subviews>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </view>
+                <searchBar contentMode="redraw" id="rIf-IR-6bl">
+                    <rect key="frame" x="0.0" y="105" width="475" height="44"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                    <textInputTraits key="textInputTraits"/>
+                    <scopeButtonTitles>
+                        <string>Title</string>
+                        <string>Title</string>
+                    </scopeButtonTitles>
+                    <connections>
+                        <outlet property="delegate" destination="-1" id="7HN-kU-VGW"/>
+                    </connections>
+                </searchBar>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
