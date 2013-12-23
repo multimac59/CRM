@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="3.0" toolsVersion="4514" systemVersion="13A603" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="3.0" toolsVersion="4514" systemVersion="13B42" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none">
     <dependencies>
         <deployment defaultVersion="1536" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3747"/>
@@ -11,6 +11,7 @@
                 <outlet property="brandsButton" destination="mWi-Yc-KvN" id="Ssv-Da-Hmo"/>
                 <outlet property="dateLabel" destination="oF8-vT-ajZ" id="nPd-Ag-Ht6"/>
                 <outlet property="doctorLabel" destination="SUp-BO-qfL" id="W7v-sM-49i"/>
+                <outlet property="mapView" destination="D2K-G0-Qqa" id="WGw-Nz-vlf"/>
                 <outlet property="nameLabel" destination="1J9-Uq-VZ1" id="jRm-cD-akv"/>
                 <outlet property="networkLabel" destination="prz-B7-AA1" id="75u-FN-JGq"/>
                 <outlet property="participantsButton" destination="PAC-T5-Vqw" id="GuH-mG-7mr"/>
@@ -160,6 +161,11 @@
                         <action selector="goToBrands:" destination="-1" eventType="touchUpInside" id="rSZ-dW-bRr"/>
                     </connections>
                 </button>
+                <view contentMode="scaleToFill" id="D2K-G0-Qqa" customClass="YMKMapView">
+                    <rect key="frame" x="103" y="407" width="375" height="361"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                </view>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>

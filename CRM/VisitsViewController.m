@@ -14,6 +14,7 @@
 #import "ChoiseTableController.h"
 #import "Pharmacy.h"
 
+
 @interface VisitsViewController ()
 @property (nonatomic, strong) NSMutableArray* visits;
 @property (nonatomic, strong) NSMutableArray* conferences;
@@ -73,7 +74,13 @@
     [self filterVisits];
     //TODO: you can make it better
     [self performSelector:@selector(selectObjectAtIndex:) withObject:0 afterDelay:1];
-
+    
+    CKCalendarView* calendar = [[CKCalendarView alloc]init];
+    CGRect frame = calendar.frame;
+    frame.origin = CGPointMake(0, 412);
+    calendar.frame = frame;
+    [self.view addSubview:calendar];
+    calendar.delegate = self;
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -108,7 +115,16 @@
     NSPredicate* filterByUserPredicate = [NSPredicate predicateWithFormat:@"user.userId=%@", [AppDelegate sharedDelegate].currentUser.userId];
     if (self.filterDate)
     {
-        NSPredicate* datePredicate = [NSPredicate predicateWithFormat:@"date=%@", self.filterDate, [AppDelegate sharedDelegate].currentUser];
+        //get date without time component. We don't need it in fact, because we already have it without time from calendar control
+        NSDate* startDate;
+        [[NSCalendar currentCalendar] rangeOfUnit:NSDayCalendarUnit startDate:&startDate interval:NULL forDate:self.filterDate];
+        //Add one day
+        NSDateComponents *oneDay = [NSDateComponents new];
+        oneDay.day = 1;
+        NSDate *endDate = [[NSCalendar currentCalendar] dateByAddingComponents:oneDay
+                                                                        toDate:startDate
+                                                                       options:0];
+        NSPredicate* datePredicate = [NSPredicate predicateWithFormat:@"(date>=%@) AND (date<=%@)", startDate, endDate];
         NSPredicate* compoundPredicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[filterByUserPredicate, datePredicate]];
         [_visitsAndConferences filterUsingPredicate:compoundPredicate];
     }
@@ -235,9 +251,9 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (IBAction)changeFilterDate:(id)sender
+- (void)calendar:(CKCalendarView *)calendar didSelectDate:(NSDate *)date
 {
-    self.filterDate = self.datePicker.date;
+    self.filterDate = date;
     [self filterVisits];
     [self.table reloadData];
 }

@@ -51,6 +51,13 @@
 		7071FFD8185707A300EF352D /* NewVisitViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7071FFD6185707A300EF352D /* NewVisitViewController.xib */; };
 		7071FFDC185709F300EF352D /* NewPharmacyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7071FFDA185709F300EF352D /* NewPharmacyViewController.m */; };
 		7071FFDD185709F300EF352D /* NewPharmacyViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7071FFDB185709F300EF352D /* NewPharmacyViewController.xib */; };
+		70A2BA4918630C960028E1E6 /* libstdc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 70A2BA4718630C960028E1E6 /* libstdc++.dylib */; };
+		70A2BA4B18630D100028E1E6 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 70A2BA4A18630D100028E1E6 /* libz.dylib */; };
+		70AEE91D18630D4D00148B0A /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 70AEE91C18630D4D00148B0A /* libxml2.dylib */; };
+		70AEE9211863103800148B0A /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 70AEE91F1863103800148B0A /* MapViewController.m */; };
+		70AEE9221863103800148B0A /* MapViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70AEE9201863103800148B0A /* MapViewController.xib */; };
+		70B188811864538800C5A211 /* RaptureXMLResponseSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 70B188801864538800C5A211 /* RaptureXMLResponseSerializer.m */; };
+		70B188881868449300C5A211 /* MapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 70B188871868449300C5A211 /* MapAnnotation.m */; };
 		70C4ADF01855AB3800BD0E8B /* SidePanelController.m in Sources */ = {isa = PBXBuildFile; fileRef = 70C4ADEE1855AB3800BD0E8B /* SidePanelController.m */; };
 		70C4ADF11855AB3800BD0E8B /* SidePanelController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70C4ADEF1855AB3800BD0E8B /* SidePanelController.xib */; };
 		70C4ADF51855AB6000BD0E8B /* VisitsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 70C4ADF31855AB6000BD0E8B /* VisitsViewController.m */; };
@@ -100,7 +107,7 @@
 		70043FA91855A70A006138CC /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		70043FAB1855A70A006138CC /* CRMTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CRMTests.m; sourceTree = "<group>"; };
 		702FEBAD18573FC6009A95BA /* ParticipantsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticipantsViewController.h; sourceTree = "<group>"; };
-		702FEBAE18573FC6009A95BA /* ParticipantsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ParticipantsViewController.m; sourceTree = "<group>"; };
+		702FEBAE18573FC6009A95BA /* ParticipantsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ParticipantsViewController.m; path = CRM/ParticipantsViewController.m; sourceTree = "<group>"; };
 		702FEBB218574392009A95BA /* BrandsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BrandsViewController.h; sourceTree = "<group>"; };
 		702FEBB318574392009A95BA /* BrandsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BrandsViewController.m; sourceTree = "<group>"; };
 		702FEBB518574442009A95BA /* NewParticipantViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewParticipantViewController.h; sourceTree = "<group>"; };
@@ -150,6 +157,17 @@
 		7071FFD9185709F300EF352D /* NewPharmacyViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewPharmacyViewController.h; sourceTree = "<group>"; };
 		7071FFDA185709F300EF352D /* NewPharmacyViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewPharmacyViewController.m; sourceTree = "<group>"; };
 		7071FFDB185709F300EF352D /* NewPharmacyViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NewPharmacyViewController.xib; sourceTree = "<group>"; };
+		70A2BA4618630C960028E1E6 /* libstdc++.6.0.9.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.6.0.9.dylib"; path = "usr/lib/libstdc++.6.0.9.dylib"; sourceTree = SDKROOT; };
+		70A2BA4718630C960028E1E6 /* libstdc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.dylib"; path = "usr/lib/libstdc++.dylib"; sourceTree = SDKROOT; };
+		70A2BA4A18630D100028E1E6 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		70AEE91C18630D4D00148B0A /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
+		70AEE91E1863103800148B0A /* MapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapViewController.h; sourceTree = "<group>"; };
+		70AEE91F1863103800148B0A /* MapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapViewController.m; sourceTree = "<group>"; };
+		70AEE9201863103800148B0A /* MapViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MapViewController.xib; sourceTree = "<group>"; };
+		70B1887F1864538800C5A211 /* RaptureXMLResponseSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RaptureXMLResponseSerializer.h; sourceTree = "<group>"; };
+		70B188801864538800C5A211 /* RaptureXMLResponseSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RaptureXMLResponseSerializer.m; sourceTree = "<group>"; };
+		70B188861868449300C5A211 /* MapAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapAnnotation.h; sourceTree = "<group>"; };
+		70B188871868449300C5A211 /* MapAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapAnnotation.m; sourceTree = "<group>"; };
 		70C4ADED1855AB3800BD0E8B /* SidePanelController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SidePanelController.h; sourceTree = "<group>"; };
 		70C4ADEE1855AB3800BD0E8B /* SidePanelController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SidePanelController.m; sourceTree = "<group>"; };
 		70C4ADEF1855AB3800BD0E8B /* SidePanelController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SidePanelController.xib; sourceTree = "<group>"; };
@@ -177,6 +195,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				70AEE91D18630D4D00148B0A /* libxml2.dylib in Frameworks */,
+				70A2BA4B18630D100028E1E6 /* libz.dylib in Frameworks */,
+				70A2BA4918630C960028E1E6 /* libstdc++.dylib in Frameworks */,
 				702FEBD51858A3E2009A95BA /* CoreData.framework in Frameworks */,
 				70043F831855A70A006138CC /* CoreGraphics.framework in Frameworks */,
 				70043F851855A70A006138CC /* UIKit.framework in Frameworks */,
@@ -222,6 +243,10 @@
 		70043F7F1855A70A006138CC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				70AEE91C18630D4D00148B0A /* libxml2.dylib */,
+				70A2BA4A18630D100028E1E6 /* libz.dylib */,
+				70A2BA4618630C960028E1E6 /* libstdc++.6.0.9.dylib */,
+				70A2BA4718630C960028E1E6 /* libstdc++.dylib */,
 				702FEBD41858A3E2009A95BA /* CoreData.framework */,
 				70043F801855A70A006138CC /* Foundation.framework */,
 				70043F821855A70A006138CC /* CoreGraphics.framework */,
@@ -235,12 +260,13 @@
 		70043F861855A70A006138CC /* CRM */ = {
 			isa = PBXGroup;
 			children = (
+				70043F981855A70A006138CC /* Images.xcassets */,
+				70043F871855A70A006138CC /* Supporting Files */,
 				70DE577F1862F59A00123B1E /* SaleHeader.xib */,
 				702FEBCF1858759D009A95BA /* SaleCell.h */,
 				702FEBD01858759D009A95BA /* SaleCell.m */,
 				702FEBD2185875B6009A95BA /* SaleCell.xib */,
 				702FEBAD18573FC6009A95BA /* ParticipantsViewController.h */,
-				702FEBAE18573FC6009A95BA /* ParticipantsViewController.m */,
 				702FEBB218574392009A95BA /* BrandsViewController.h */,
 				702FEBB318574392009A95BA /* BrandsViewController.m */,
 				70043F8F1855A70A006138CC /* AppDelegate.h */,
@@ -250,8 +276,6 @@
 				702FEBC218585656009A95BA /* LoginViewController.h */,
 				702FEBC318585656009A95BA /* LoginViewController.m */,
 				702FEBC418585656009A95BA /* LoginViewController.xib */,
-				70043F981855A70A006138CC /* Images.xcassets */,
-				70043F871855A70A006138CC /* Supporting Files */,
 				70C4ADED1855AB3800BD0E8B /* SidePanelController.h */,
 				70C4ADEE1855AB3800BD0E8B /* SidePanelController.m */,
 				70C4ADEF1855AB3800BD0E8B /* SidePanelController.xib */,
@@ -286,6 +310,13 @@
 				7071FFCE185612C700EF352D /* PharmacyViewController.xib */,
 				7071FFD1185616FB00EF352D /* CustomSplitController.h */,
 				7071FFD2185616FB00EF352D /* CustomSplitController.m */,
+				70AEE91E1863103800148B0A /* MapViewController.h */,
+				70AEE91F1863103800148B0A /* MapViewController.m */,
+				70AEE9201863103800148B0A /* MapViewController.xib */,
+				70B188861868449300C5A211 /* MapAnnotation.h */,
+				70B188871868449300C5A211 /* MapAnnotation.m */,
+				70B1887F1864538800C5A211 /* RaptureXMLResponseSerializer.h */,
+				70B188801864538800C5A211 /* RaptureXMLResponseSerializer.m */,
 			);
 			path = CRM;
 			sourceTree = "<group>";
@@ -337,6 +368,7 @@
 				702FEBE71858AA2D009A95BA /* Brand.h */,
 				702FEBE81858AA2D009A95BA /* Brand.m */,
 				702FEBF41858ADCC009A95BA /* User.h */,
+				702FEBAE18573FC6009A95BA /* ParticipantsViewController.m */,
 				702FEBF51858ADCC009A95BA /* User.m */,
 				70C4AE181855E8FB00BD0E8B /* JSON */,
 				702FEBD61858A6B7009A95BA /* MainDatabase.xcdatamodeld */,
@@ -450,6 +482,7 @@
 				70C4AE241855E8FB00BD0E8B /* Visits.json in Resources */,
 				70C4AE201855E8FB00BD0E8B /* Conferences.json in Resources */,
 				702FEBB918574442009A95BA /* NewParticipantViewController.xib in Resources */,
+				70AEE9221863103800148B0A /* MapViewController.xib in Resources */,
 				70C4AE041855B4BF00BD0E8B /* PharmaciesViewController.xib in Resources */,
 				7071FFD8185707A300EF352D /* NewVisitViewController.xib in Resources */,
 				70C4AE1F1855E8FB00BD0E8B /* Brands.json in Resources */,
@@ -515,6 +548,7 @@
 				70043F971855A70A006138CC /* ViewController.m in Sources */,
 				70C4ADF51855AB6000BD0E8B /* VisitsViewController.m in Sources */,
 				702FEBC1185752BB009A95BA /* ChoiseTableController.m in Sources */,
+				70B188881868449300C5A211 /* MapAnnotation.m in Sources */,
 				70C4ADFA1855ABD300BD0E8B /* VisitViewController.m in Sources */,
 				702FEBC518585656009A95BA /* LoginViewController.m in Sources */,
 				702FEBF61858ADCC009A95BA /* User.m in Sources */,
@@ -527,11 +561,13 @@
 				7071FFCA18560D4500EF352D /* SalesViewController.m in Sources */,
 				7071FFD7185707A300EF352D /* NewVisitViewController.m in Sources */,
 				7071FFCF185612C700EF352D /* PharmacyViewController.m in Sources */,
+				70B188811864538800C5A211 /* RaptureXMLResponseSerializer.m in Sources */,
 				70043F911855A70A006138CC /* AppDelegate.m in Sources */,
 				702FEBD11858759D009A95BA /* SaleCell.m in Sources */,
 				702FEBB418574392009A95BA /* BrandsViewController.m in Sources */,
 				702FEBEF1858AA2D009A95BA /* Participant.m in Sources */,
 				702FEBBD18574CA0009A95BA /* NewBrandViewController.m in Sources */,
+				70AEE9211863103800148B0A /* MapViewController.m in Sources */,
 				702FEBB018573FC6009A95BA /* ParticipantsViewController.m in Sources */,
 				7071FFD3185616FB00EF352D /* CustomSplitController.m in Sources */,
 				702FEBF01858AA2D009A95BA /* Brand.m in Sources */,
@@ -658,8 +694,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 52792385F4584DFA8DBE0ED0 /* Pods.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer: Damir Samigullin (7GJNQ4MWXT)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CRM/CRM-Prefix.pch";
 				INFOPLIST_FILE = "CRM/CRM-Info.plist";
@@ -675,8 +713,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 52792385F4584DFA8DBE0ED0 /* Pods.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer: Damir Samigullin (7GJNQ4MWXT)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CRM/CRM-Prefix.pch";
 				INFOPLIST_FILE = "CRM/CRM-Info.plist";

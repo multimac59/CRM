@@ -148,7 +148,7 @@
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
     NSLog(@"Trying to search with text = %@", searchText);
-    if (!searchText)
+    if (!searchText || [searchText isEqualToString:@""])
     {
         _filteredPharmacies = _pharmacies;
     }

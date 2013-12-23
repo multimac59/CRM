@@ -10,11 +10,15 @@
 #import "SalesViewController.h"
 #import "ParticipantsViewController.h"
 #import "BrandsViewController.h"
+#import "AFNetworking.h"
+#import "RaptureXMLResponseSerializer.h"
+#import "MapAnnotation.h"
 
 @interface VisitViewController ()
 @property (nonatomic, strong) Conference* conference;
 @property (nonatomic, strong) Visit* visit;
 @property (nonatomic) BOOL isConference;
+@property (nonatomic, weak) IBOutlet YMKMapView* mapView;
 @end
 
 @implementation VisitViewController
@@ -61,6 +65,8 @@
     
     self.visit = visit;
     self.isConference = NO;
+    
+    [self setMapLocationForPharmacy:visit.pharmacy];
 }
 
 - (void)showConference:(Conference *)conference
@@ -83,6 +89,39 @@
     
     self.conference = conference;
     self.isConference = YES;
+    
+    [self setMapLocationForPharmacy:conference.pharmacy];
+}
+
+- (void)setMapLocationForPharmacy:(Pharmacy*)pharmacy
+{
+    self.mapView.showTraffic = NO;
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    manager.responseSerializer = [RaptureXMLResponseSerializer serializer];
+    manager.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/xml"];
+    NSString* address = [NSString stringWithFormat:@"г. %@ %@ %@", pharmacy.city, pharmacy.street, pharmacy.house];
+    NSString* urlString = [[NSString stringWithFormat:@"http://geocode-maps.yandex.ru/1.x/?geocode=%@", address]stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    [manager GET:urlString parameters:nil success:^(AFHTTPRequestOperation *operation, NSArray* positionArray)
+     {
+         NSLog(@"JSON: %@", positionArray);
+         if (positionArray.count == 0)
+         {
+             NSLog(@"Not found");
+             return;
+         }
+         CLLocation* location = positionArray[0];
+         
+         [self.mapView setCenterCoordinate:location.coordinate atZoomLevel:15 animated:YES];
+         MapAnnotation* annotation = [MapAnnotation new];
+         annotation.coordinate = location.coordinate;
+         annotation.title = address;
+         annotation.subtitle = @"";
+         [self.mapView removeAnnotations:self.mapView.annotations];
+         [self.mapView addAnnotation:annotation];
+     }
+         failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+             NSLog(@"Error: %@", error);
+         }];
 }
 
 - (IBAction)goToSalesList:(id)sender

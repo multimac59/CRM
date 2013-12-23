@@ -24,6 +24,9 @@
 #import "Sale.h"
 #import "Participant.h"
 
+#import "YandexMapKit.h"
+#import "MapViewController.h"
+
 @implementation AppDelegate
 
 @synthesize managedObjectContext = _managedObjectContext;
@@ -34,6 +37,7 @@ static AppDelegate* sharedDelegate = nil;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    [YMKConfiguration sharedInstance].apiKey = @"hXrz~xe2oFLYuH257NMSBUhahF0sisGJ3uybwfYT5qXIn69olKJ03CdzMTtptAj24~mLAQJcYS6nW3UCuK-sNxBAaS17YlGPZaz0jrOEPr8=";
     
     [self deleteAllObjects:@"Conference"];
     [self deleteAllObjects:@"Visit"];
@@ -71,6 +75,7 @@ static AppDelegate* sharedDelegate = nil;
     container.shadow.enabled = YES;
     container.menuSlideAnimationEnabled = NO;
     self.window.rootViewController = container;
+    //self.window.rootViewController = [MapViewController new];
     [self.window makeKeyAndVisible];
     [container presentViewController:[LoginViewController new] animated:NO completion:nil];
     return YES;

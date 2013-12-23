@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "Visit.h"
 #import "Conference.h"
+#import "YandexMapKit.h"
 
 @interface VisitViewController : UIViewController
 @property (nonatomic, weak) IBOutlet UILabel* dateLabel;
