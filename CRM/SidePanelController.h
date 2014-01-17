@@ -7,7 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+@class SidePanelController;
+@protocol SidePanelDelegate<NSObject>
+- (void)sidePanelController:(SidePanelController*)controller didSelectItem:(NSInteger)item;
+@end
 
 @interface SidePanelController : UIViewController<UITableViewDataSource, UITableViewDelegate>
-
+@property (nonatomic, weak) id<SidePanelDelegate> delegate;
+@property (nonatomic, weak) IBOutlet UITableView* table;
 @end

@@ -13,6 +13,7 @@
 #import "VisitViewController.h"
 #import "ChoiseTableController.h"
 #import "Pharmacy.h"
+#import "VisitsCell.h"
 
 
 @interface VisitsViewController ()
@@ -63,24 +64,42 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    self.navigationController.navigationBar.translucent = NO;
     ChoiseTableController* choiseTableController = [ChoiseTableController new];
     choiseTableController.delegate = self;
     self.popover = [[UIPopoverController alloc]initWithContentViewController:choiseTableController];
     
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Clear Filter" style:UIBarButtonSystemItemAdd target:self action:@selector(clearFilter)];
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Add" style:UIBarButtonSystemItemAdd target:self action:@selector(showPopover)];
+    //self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Clear Filter" style:UIBarButtonSystemItemAdd target:self action:@selector(clearFilter)];
+    //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Add" style:UIBarButtonSystemItemAdd target:self action:@selector(showPopover)];
+    UIButton* addButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 15, 15)];
+    [addButton setBackgroundImage:[UIImage imageNamed:@"addButton"] forState:UIControlStateNormal];
+    [addButton setBackgroundImage:[UIImage imageNamed:@"addButtonPressed"] forState:UIControlStateHighlighted];
+    [addButton addTarget:self action:@selector(showPopover) forControlEvents:UIControlEventTouchDown];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:addButton];
     self.navigationItem.title = @"Визиты";
     [self loadAll];
     [self filterVisits];
-    //TODO: you can make it better
-    [self performSelector:@selector(selectObjectAtIndex:) withObject:0 afterDelay:1];
+
+    //[self performSelector:@selector(selectObjectAtIndex:) withObject:0 afterDelay:1];
+    [self selectObjectAtIndex:0];
+    [self.table selectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] animated:NO scrollPosition:UITableViewScrollPositionNone];
     
     CKCalendarView* calendar = [[CKCalendarView alloc]init];
+    calendar.dayOfWeekTextColor = [UIColor whiteColor];
+    calendar.dateOfWeekFont = [UIFont systemFontOfSize:10];
+    calendar.dateFont = [UIFont systemFontOfSize:15];
     CGRect frame = calendar.frame;
     frame.origin = CGPointMake(0, 412);
     calendar.frame = frame;
     [self.view addSubview:calendar];
     calendar.delegate = self;
+    
+    self.popoverView = [[NSBundle mainBundle]loadNibNamed:@"PopoverController" owner:self options:nil][0];
+    //popover.frame = CGRectMake(220, 50, 168, 147);
+    self.popoverView.frame = CGRectMake(0, 0, 1024, 768);
+    AppDelegate* delegate = [AppDelegate sharedDelegate];
+    [delegate.container.view addSubview:self.popoverView];
+    self.popoverView.alpha = 0;
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -144,33 +163,87 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return self.visitsAndConferences.count;
+    if (tableView == self.popoverTable)
+        return 3;
+    else
+        return self.visitsAndConferences.count;
 }
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
-    if (cell == nil)
+    if (tableView == self.popoverTable)
     {
-        cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell"];
-    }
-    NSObject* object = self.visitsAndConferences[indexPath.row];
-    if ([object isKindOfClass:[Visit class]])
-    {
-        Visit* visit = (Visit*)object;
-        cell.textLabel.text = visit.pharmacy.name;
+        UITableViewCell* cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"popoverCell"];
+        cell.textLabel.textColor = [UIColor colorWithRed:109/255.0 green:89/255.0 blue:137/255.0 alpha:1.0];
+        cell.textLabel.textAlignment = NSTextAlignmentCenter;
+        cell.textLabel.font = [UIFont systemFontOfSize:16];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        switch (indexPath.row)
+        {
+            case 0:
+                cell.textLabel.text = @"Визит";
+                break;
+            case 1:
+                cell.textLabel.text = @"Конференция";
+                break;
+            case 2:
+                cell.textLabel.text = @"Фармкружок";
+                break;
+            default:
+                break;
+        }
+        return cell;
     }
     else
     {
-        Conference* conference = (Conference*)object;
-        cell.textLabel.text = conference.name;
+        VisitsCell* cell = [tableView dequeueReusableCellWithIdentifier:@"visitsCell"];
+        if (cell == nil)
+        {
+            cell = [[[NSBundle mainBundle]loadNibNamed:@"VisitsCell" owner:self options:Nil]objectAtIndex:0];
+        }
+        NSObject* object = self.visitsAndConferences[indexPath.row];
+        if ([object isKindOfClass:[Visit class]])
+        {
+            Visit* visit = (Visit*)object;
+            cell.pharmacyLabel.text = visit.pharmacy.name;
+            NSDateFormatter *timeFormatter = [[NSDateFormatter alloc] init];
+            [timeFormatter setDateFormat:@"HH:mm"];
+            cell.timeLabel.text = [timeFormatter stringFromDate:visit.date];
+        }
+        else
+        {
+            Conference* conference = (Conference*)object;
+            cell.pharmacyLabel.text = conference.name;
+            NSDateFormatter *timeFormatter = [[NSDateFormatter alloc] init];
+            [timeFormatter setDateFormat:@"HH:mm"];
+            cell.timeLabel.text = [timeFormatter stringFromDate:conference.date];
+        }
+        return cell;
     }
-    return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [self selectObjectAtIndex:indexPath.row];
+    if (tableView == self.popoverTable)
+    {
+        self.popoverView.alpha = 0;
+        switch (indexPath.row)
+        {
+            case 0:
+                [self addVisit];
+                break;
+            case 1:
+                [self addConference];
+                break;
+            case 2:
+                [self addConference];
+                break;
+            default:
+                break;
+        }
+    }
+    else
+        [self selectObjectAtIndex:indexPath.row];
 }
 
 - (void)selectObjectAtIndex:(NSInteger)index
@@ -197,7 +270,12 @@
 
 - (void)showPopover
 {
-    [[self popover]presentPopoverFromBarButtonItem:self.navigationItem.rightBarButtonItem permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
+    AppDelegate* delegate = [AppDelegate sharedDelegate];
+    [delegate.container.view bringSubviewToFront:self.popoverView];
+    [UIView animateWithDuration:0.3 animations:^{
+        self.popoverView.alpha = 1;
+    }];
+    //[[self popover]presentPopoverFromBarButtonItem:self.navigationItem.rightBarButtonItem permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
 }
 
 - (void)addVisit
@@ -205,8 +283,10 @@
     NewVisitViewController* visitViewController = [NewVisitViewController new];
     visitViewController.isConference = NO;
     visitViewController.delegate = self;
-    UINavigationController* hostingController = [[UINavigationController alloc]initWithRootViewController:visitViewController];
+    ModalNavigationController* hostingController = [[ModalNavigationController alloc]initWithRootViewController:visitViewController];
     hostingController.modalPresentationStyle = UIModalPresentationFormSheet;
+    hostingController.modalWidth = 590;
+    hostingController.modalHeight =750;
     [self presentViewController:hostingController animated:YES completion:nil];
 }
 
@@ -215,8 +295,10 @@
     NewVisitViewController* visitViewController = [NewVisitViewController new];
     visitViewController.isConference = YES;
     visitViewController.delegate = self;
-    UINavigationController* hostingController = [[UINavigationController alloc]initWithRootViewController:visitViewController];
+    ModalNavigationController* hostingController = [[ModalNavigationController alloc]initWithRootViewController:visitViewController];
     hostingController.modalPresentationStyle = UIModalPresentationFormSheet;
+    hostingController.modalWidth = 590;
+    hostingController.modalHeight =750;
     [self presentViewController:hostingController animated:YES completion:nil];
 }
 
@@ -256,5 +338,12 @@
     self.filterDate = date;
     [self filterVisits];
     [self.table reloadData];
+}
+
+- (IBAction)hidePopover:(id)sender
+{
+    [UIView animateWithDuration:0.2 animations:^{
+        self.popoverView.alpha = 0;
+    }];
 }
 @end

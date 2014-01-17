@@ -11,12 +11,20 @@
 #import "Pharmacy.h"
 #import "Sale.h"
 
-@interface SalesViewController : UIViewController<UITableViewDataSource, UITableViewDelegate>
+@interface SalesViewController : UIViewController<UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate>
 @property (nonatomic, strong) Visit* visit;
 @property (nonatomic, strong) NSMutableArray* sales;
 @property (nonatomic, weak) IBOutlet UITableView* table;
 @property (nonatomic, weak) IBOutlet UISegmentedControl* segmentedControl;
+
+@property (nonatomic, weak) IBOutlet UIButton* lastVisitButton;
+@property (nonatomic, weak) IBOutlet UIButton* myLastVisitButton;
+
 - (IBAction)back;
 - (IBAction)switchFilter:(id)sender;
 - (IBAction)saveVisit:(id)sender;
+
+- (IBAction)lastVisitButtonPressed:(id)sender;
+- (IBAction)myLastVisitButtonPressed:(id)sender;
+
 @end

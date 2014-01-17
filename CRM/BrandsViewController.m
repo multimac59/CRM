@@ -9,6 +9,7 @@
 #import "BrandsViewController.h"
 #import "AppDelegate.h"
 #import "NewBrandViewController.h"
+#import "ParticipantCell.h"
 
 @interface BrandsViewController ()
 @property (nonatomic, strong) NSMutableArray* brands;
@@ -16,15 +17,6 @@
 @end
 
 @implementation BrandsViewController
-
-- (id)initWithStyle:(UITableViewStyle)style
-{
-    self = [super initWithStyle:style];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
-}
 
 - (void)viewDidLoad
 {
@@ -35,7 +27,17 @@
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Add" style:UIBarButtonSystemItemAdd target:self action:@selector(addBrand)];
+    UIButton* leftButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 63, 20)];
+    [leftButton setBackgroundImage:[UIImage imageNamed:@"backButton"] forState:UIControlStateNormal];
+    [leftButton setBackgroundImage:[UIImage imageNamed:@"backButtonPressed"] forState:UIControlStateHighlighted];
+    [leftButton addTarget:self action:@selector(back) forControlEvents:UIControlEventTouchDown];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:leftButton];
+    
+    UIButton* addButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 15, 15)];
+    [addButton setBackgroundImage:[UIImage imageNamed:@"addButton"] forState:UIControlStateNormal];
+    [addButton setBackgroundImage:[UIImage imageNamed:@"addButtonPressed"] forState:UIControlStateHighlighted];
+    [addButton addTarget:self action:@selector(addBrand) forControlEvents:UIControlEventTouchDown];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:addButton];
     self.navigationItem.title = @"Бренды";
     
     NSManagedObjectContext* context = [AppDelegate sharedDelegate].managedObjectContext;
@@ -44,7 +46,13 @@
     NSError *error = nil;
     _brands = [[context executeFetchRequest:request error:&error]mutableCopy];
     [self sortBrands];
+    [self countBrands];
     
+}
+
+- (void)back
+{
+    [self.navigationController popToRootViewControllerAnimated:YES];
 }
 
 - (void)sortBrands
@@ -68,6 +76,11 @@
     _sortedBrands = [_brands sortedArrayUsingDescriptors:@[sortDescriptor, sortByNameDescriptor]];
 }
 
+- (void)countBrands
+{
+    self.countLabel.text = [NSString stringWithFormat:@"%d", self.brands.count];
+}
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -81,21 +94,23 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *CellIdentifier = @"Cell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    static NSString *CellIdentifier = @"participantCell";
+    ParticipantCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil)
     {
-        cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+        cell = [[NSBundle mainBundle]loadNibNamed:@"ParticipantCell" owner:self options:nil][0];
     }
     Brand* brand = self.sortedBrands[indexPath.row];
-    cell.textLabel.text = brand.name;
+    cell.nameLabel.text = brand.name;
     if ([self.conference.brands containsObject:brand])
     {
-        cell.accessoryType = UITableViewCellAccessoryCheckmark;
+        //cell.accessoryType = UITableViewCellAccessoryCheckmark;
+        cell.checkmark.hidden = NO;
     }
     else
     {
-        cell.accessoryType = UITableViewCellAccessoryNone;
+        //cell.accessoryType = UITableViewCellAccessoryNone;
+        cell.checkmark.hidden = YES;
     }
     // Configure the cell...
     return cell;
@@ -103,17 +118,20 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell* cell = [tableView cellForRowAtIndexPath:indexPath];
+    ParticipantCell* cell = (ParticipantCell*)[tableView cellForRowAtIndexPath:indexPath];
     Brand* brand = self.sortedBrands[indexPath.row];
     if ([self.conference.brands containsObject:brand])
     {
         [self.conference removeBrandsObject:brand];
-        cell.accessoryType = UITableViewCellAccessoryNone;
+        //cell.accessoryType = UITableViewCellAccessoryNone;
+        cell.checkmark.hidden = YES;
+        
     }
     else
     {
         [self.conference addBrandsObject:brand];
-        cell.accessoryType = UITableViewCellAccessoryCheckmark;
+        //cell.accessoryType = UITableViewCellAccessoryCheckmark;
+        cell.checkmark.hidden = NO;
     }
 }
 
@@ -121,8 +139,10 @@
 {
     NewBrandViewController* brandViewController = [NewBrandViewController new];
     brandViewController.delegate = self;
-    UINavigationController* hostingController = [[UINavigationController alloc]initWithRootViewController:brandViewController];
+    ModalNavigationController* hostingController = [[ModalNavigationController alloc]initWithRootViewController:brandViewController];
     hostingController.modalPresentationStyle = UIModalPresentationFormSheet;
+    hostingController.modalWidth = 540;
+    hostingController.modalHeight = 130;
     [self presentViewController:hostingController animated:YES completion:nil];
 }
 
@@ -131,6 +151,7 @@
     [self.brands addObject:brand];
     [self sortBrands];
     [self.tableView reloadData];
+    [self countBrands];
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 

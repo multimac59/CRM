@@ -19,6 +19,7 @@ PODS:
     - AFNetworking/NSURLConnection
   - CKCalendar (1.0.0)
   - MFSideMenu (0.5.4)
+  - MGSplitViewController (1.0.0)
   - RaptureXML (1.0.1)
   - YandexMapKit (1.0.5)
 
@@ -26,6 +27,7 @@ DEPENDENCIES:
   - AFNetworking (~> 2.0.3)
   - CKCalendar (~> 1.0.0)
   - MFSideMenu (~> 0.5.4)
+  - MGSplitViewController (~> 1.0.0)
   - RaptureXML (~> 1.0.1)
   - YandexMapKit (~> 1.0.5)
 
@@ -33,6 +35,7 @@ SPEC CHECKSUMS:
   AFNetworking: e499052cbf3d743e9bb727bb37adb9dc2547ba15
   CKCalendar: c8a377cc0ddd24cef51bd45aa0c25abbcaa3d92b
   MFSideMenu: f59e25c080097a701e108459c207fb22e1f62c30
+  MGSplitViewController: bb9408953857b1c89d4a8db41fbbaa56a4bf889d
   RaptureXML: ef017fda62eb95c60300108366d1f0cd0c28cbd4
   YandexMapKit: 39bf4861f552f727be19cc8eb7584c8ab331f505
 

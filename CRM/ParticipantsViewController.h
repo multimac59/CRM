@@ -10,6 +10,8 @@
 #import "Conference.h"
 #import "NewParticipantViewController.h"
 
-@interface ParticipantsViewController : UITableViewController<NewParticipantViewDelegate>
+@interface ParticipantsViewController : UIViewController<NewParticipantViewDelegate>
 @property (nonatomic, strong) Conference* conference;
+@property (nonatomic, weak) IBOutlet UITableView* tableView;
+@property (nonatomic, weak) IBOutlet UILabel* countLabel;
 @end

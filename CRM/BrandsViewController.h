@@ -11,6 +11,8 @@
 #import "Brand.h"
 #import "NewBrandViewController.h"
 
-@interface BrandsViewController : UITableViewController<NewBrandViewDelegate>
+@interface BrandsViewController : UIViewController<NewBrandViewDelegate>
 @property (nonatomic, weak) Conference* conference;
+@property (nonatomic, weak) IBOutlet UITableView* tableView;
+@property (nonatomic, weak) IBOutlet UILabel* countLabel;
 @end

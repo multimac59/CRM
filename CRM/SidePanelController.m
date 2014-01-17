@@ -11,6 +11,7 @@
 #import "VisitsViewController.h"
 #import "PharmaciesViewController.h"
 #import "AppDelegate.h"
+#import "TopicSideCell.h"
 
 @interface SidePanelController ()
 
@@ -29,8 +30,11 @@
 
 - (void)viewDidLoad
 {
+    
     [super viewDidLoad];
+    self.navigationController.navigationBar.translucent = NO;
     // Do any additional setup after loading the view from its nib.
+    [self.table registerNib:[UINib nibWithNibName:@"TopicSideCell" bundle:[NSBundle mainBundle]] forCellReuseIdentifier:@"upperCell"];
 }
 
 - (void)didReceiveMemoryWarning
@@ -41,34 +45,22 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 5;
+    return 2;
 }
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
-    if (cell == nil)
-    {
-        cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell"];
-    }
+    TopicSideCell* cell;
+    cell = [tableView dequeueReusableCellWithIdentifier:@"upperCell"];
     switch (indexPath.row)
     {
         case 0:
-            cell.textLabel.text = @"Визиты";
+            cell.topicLabel.text = @"Визиты";
+            cell.tag = 0;
             break;
         case 1:
-            cell.textLabel.text = @"Клиенты";
-            break;
-        case 2:
-            cell.textLabel.text = @"Цели";
-            break;
-        case 3:
-            cell.textLabel.text = @"Синхронизация";
-            break;
-        case 4:
-            cell.textLabel.text = @"Настройки";
-            break;
-        default:
+            cell.topicLabel.text = @"Клиенты";
+            cell.tag = 1;
             break;
     }
     return cell;
@@ -76,6 +68,10 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    [self.delegate sidePanelController:self didSelectItem:indexPath.row];
+    return;
+    
+    
     NSLog(@"Clicked, row = %ld", (long)indexPath.row);
     //[tableView deselectRowAtIndexPath:indexPath animated:YES];
 

@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 
 @interface SaleCell : UITableViewCell
+@property (nonatomic, strong) IBOutlet UIImageView* cellBg;
 @property (nonatomic, strong) IBOutlet UILabel* nameLabel;
 @property (nonatomic, strong) IBOutlet UILabel* drugLabel;
 @property (nonatomic, strong) IBOutlet UILabel* dateLabel;

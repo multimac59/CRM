@@ -13,4 +13,8 @@
 
 @interface VisitsViewController : UIViewController<NewVisitViewDelegate, ChoiseTableDelegate, CKCalendarDelegate>
 @property (nonatomic, weak) IBOutlet UITableView* table;
+@property (nonatomic, weak) IBOutlet UITableView* popoverTable;
+@property (nonatomic, strong) UIView* popoverView;
+
+- (IBAction)hidePopover:(id)sender;
 @end

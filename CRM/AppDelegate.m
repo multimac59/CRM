@@ -7,13 +7,13 @@
 //
 
 #import "AppDelegate.h"
-#import "MFSideMenuContainerViewController.h"
 #import "VisitsViewController.h"
 #import "VisitViewController.h"
 #import "SidePanelController.h"
 #import "PharmaciesViewController.h"
 #import "PharmacyViewController.h"
 #import "CustomSplitController.h"
+#import "MGSplitViewController.h"
 #import "LoginViewController.h"
 
 #import "Brand.h"
@@ -26,6 +26,7 @@
 
 #import "YandexMapKit.h"
 #import "MapViewController.h"
+#import "MGSplitDividerView.h"
 
 @implementation AppDelegate
 
@@ -38,6 +39,17 @@ static AppDelegate* sharedDelegate = nil;
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     [YMKConfiguration sharedInstance].apiKey = @"hXrz~xe2oFLYuH257NMSBUhahF0sisGJ3uybwfYT5qXIn69olKJ03CdzMTtptAj24~mLAQJcYS6nW3UCuK-sNxBAaS17YlGPZaz0jrOEPr8=";
+    
+    if (SYSTEM_VERSION_LESS_THAN(@"7.0"))
+    {
+        [[UINavigationBar appearance]setBackgroundImage:[UIImage imageNamed:@"navBarBg"] forBarMetrics:UIBarMetricsDefault];
+    }
+    else
+    {
+        [[UINavigationBar appearance]setBackgroundImage:[UIImage imageNamed:@"navBarBg2"] forBarMetrics:UIBarMetricsDefault];
+    }
+    
+    
     
     [self deleteAllObjects:@"Conference"];
     [self deleteAllObjects:@"Visit"];
@@ -62,23 +74,98 @@ static AppDelegate* sharedDelegate = nil;
     // Override point for customization after application launch.
     self.window.backgroundColor = [UIColor whiteColor];
     
-    _visitsSplitController = [[CustomSplitController alloc]init];
+    _visitsSplitController = [[MGSplitViewController alloc]init];
+    //_visitsSplitController.dividerStyle = MGSplitViewDividerStylePaneSplitter;
+    //_visitsSplitController.dividerView.hidden = YES;
     self.visitsSplitController.viewControllers = @[[[UINavigationController alloc]initWithRootViewController:[VisitsViewController new]],[[UINavigationController alloc]initWithRootViewController:[VisitViewController new]]];
-    _clientsSplitController = [[CustomSplitController alloc]init];
+    _clientsSplitController = [[MGSplitViewController alloc]init];
     self.clientsSplitController.viewControllers = @[[[UINavigationController alloc]initWithRootViewController:[PharmaciesViewController new]],[[UINavigationController alloc]initWithRootViewController:[PharmacyViewController new]]];
 
-    
-    MFSideMenuContainerViewController *container = [MFSideMenuContainerViewController
-                                                    containerWithCenterViewController:self.visitsSplitController
-                                                    leftMenuViewController:[SidePanelController new]
+    _container = [MFSideMenuContainerViewController
+                  containerWithCenterViewController:self.visitsSplitController
+                                                    leftMenuViewController:nil
                                                     rightMenuViewController:nil];
-    container.shadow.enabled = YES;
-    container.menuSlideAnimationEnabled = NO;
-    self.window.rootViewController = container;
+    
+    self.sidePanelController = [SidePanelController new];
+    self.sidePanelController.delegate = self;
+    self.sidePanelController.view.frame = CGRectMake(0, 0, 270, 768);
+    self.overlay = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 1024, 768)];
+    self.overlay.backgroundColor = [UIColor blackColor];
+    self.overlay.alpha = 0.8;
+    [self.container.view addSubview:self.overlay];
+    [self.container.view addSubview:self.sidePanelController.view];
+    
+    
+    UIPanGestureRecognizer* gestureRecognizer = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(movePanel:)];
+    [self.sidePanelController.view addGestureRecognizer:gestureRecognizer];
+    
+    self.container.shadow.enabled = YES;
+    self.container.menuSlideAnimationEnabled = NO;
+    self.window.rootViewController = self.container;
     //self.window.rootViewController = [MapViewController new];
     [self.window makeKeyAndVisible];
-    [container presentViewController:[LoginViewController new] animated:NO completion:nil];
+    [self.container presentViewController:[LoginViewController new] animated:NO completion:nil];
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+    
+    NSDictionary *navbarTitleTextAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                               [UIColor whiteColor],UITextAttributeTextColor,
+                                               [UIColor blackColor], UITextAttributeTextShadowColor,
+                                               [NSValue valueWithUIOffset:UIOffsetMake(-1, 0)], UITextAttributeTextShadowOffset, nil];
+    
+    [[UINavigationBar appearance] setTitleTextAttributes:navbarTitleTextAttributes];
+    
     return YES;
+}
+
+- (void)sidePanelController:(SidePanelController *)controller didSelectItem:(NSInteger)item
+{
+    switch (item)
+    {
+        case 0:
+            self.container.centerViewController = self.visitsSplitController;
+            break;
+        case 1:
+            self.container.centerViewController = self.clientsSplitController;
+            break;
+        default:
+            break;
+    }
+    //Seems that container removes panel after change in centerviewcontroller, so we reuse it here
+    [self.container.view addSubview:self.sidePanelController.view];
+    [UIView animateWithDuration:0.3 animations:^{
+        self.sidePanelController.view.frame = CGRectMake(-275, 0, 290, 768);
+        self.overlay.alpha = 0;
+    }];
+}
+
+- (void)movePanel:(UIPanGestureRecognizer*)recognizer
+{
+    CGPoint point = [recognizer locationInView:self.container.view];
+    NSLog(@" %f", point.x);
+    if (point.x > 290 ||  point.x < 15)
+        return;
+    self.sidePanelController.view.frame = CGRectMake(point.x - 290, 0, 290, 768);
+    self.overlay.alpha = 0.8 / (290.0 / point.x);
+    
+    if (recognizer.state == UIGestureRecognizerStateEnded)
+    {
+        CGPoint velocity = [recognizer velocityInView:self.container.view];
+        NSLog(@"Velocity = %f", velocity.x);
+        if (velocity.x < 0)
+        {
+        [UIView animateWithDuration:0.3 animations:^{
+            self.sidePanelController.view.frame = CGRectMake(-275, 0, 290, 768);
+            self.overlay.alpha = 0;
+        }];
+        }
+        else
+        {
+            [UIView animateWithDuration:0.3 animations:^{
+                self.sidePanelController.view.frame = CGRectMake(0, 0, 290, 768);
+                self.overlay.alpha = 0.8;
+            }];
+        }
+    }
 }
 
 - (NSMutableArray*)parseBrands

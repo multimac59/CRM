@@ -10,15 +10,25 @@
 #import "ParticipantsViewController.h"
 #import "AppDelegate.h"
 #import "Pharmacy.h"
+#import "AFNetworking.h"
+#import "RaptureXMLResponseSerializer.h"
+#import "MapAnnotation.h"
+#import "UIViewController+ShowModalFromView.h"
+#import "AppDelegate.h"
 
 @interface NewVisitViewController ()
 @property (nonatomic, strong) NSIndexPath* selectedIndexPath;
+@property (nonatomic, strong) Pharmacy* selectedPharmacy;
 
 @property (nonatomic, strong) Conference* conference;
 @property (nonatomic, strong) Visit* visit;
 
 @property (nonatomic, strong) NSArray* pharmacies;
 @property (nonatomic, strong) NSArray* filteredPharmacies;
+
+@property (nonatomic, weak) IBOutlet YMKMapView* mapView;
+
+@property (nonatomic, strong) SelectPharmacyViewController* selectPharmacyViewController;
 //@property (nonatomic, strong) UISearchDisplayController* searchController;
 
 @end
@@ -47,13 +57,31 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     //_searchController = [[UISearchDisplayController alloc]initWithSearchBar:self.searchBar contentsController:self];
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancel)];
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(save)];
-    self.navigationItem.title = @"Новый визит";
+
     if (self.isConference)
+    {
         self.conferenceControls.hidden = NO;
+        self.navigationItem.title = @"Новая конференция";
+    }
     else
+    {
         self.conferenceControls.hidden = YES;
+        self.navigationItem.title = @"Новый визит";
+    }
+    
+    self.navigationController.navigationBar.translucent = NO;
+    
+    UIButton* cancelButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 63, 20)];
+    [cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton"] forState:UIControlStateNormal];
+    [cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButtonPressed"] forState:UIControlStateHighlighted];
+    [cancelButton addTarget:self action:@selector(cancel) forControlEvents:UIControlEventTouchDown];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:cancelButton];
+    
+    UIButton* saveButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 82, 20)];
+    [saveButton setBackgroundImage:[UIImage imageNamed:@"saveButton"] forState:UIControlStateNormal];
+    [saveButton setBackgroundImage:[UIImage imageNamed:@"saveButtonPressed"] forState:UIControlStateHighlighted];
+    [saveButton addTarget:self action:@selector(save) forControlEvents:UIControlEventTouchDown];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:saveButton];
     
     NSManagedObjectContext* context = [AppDelegate sharedDelegate].managedObjectContext;
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
@@ -92,7 +120,7 @@
         dateFormatter.dateFormat = @"dd.MM.yyyy HH:mm";
         NSString* dateString = [NSString stringWithFormat:@"%@ %@", self.dateField.text, self.timeField.text];
         self.conference.date = [dateFormatter dateFromString:dateString];
-        self.conference.name = self.nameField.text;
+        self.conference.name = self.visitNameField.text;
         [self.delegate newVisitViewController:self didAddConference:self.conference];
     }
     else
@@ -156,14 +184,56 @@
     _filteredPharmacies = [_pharmacies filteredArrayUsingPredicate:predicate];
     [self.table reloadData];
 }
-                              /*
-                              @property (nonatomic, retain) NSNumber * pharmacyId;
-                              @property (nonatomic, retain) NSString * name;
-                              @property (nonatomic, retain) NSString * network;
-                              @property (nonatomic, retain) NSString * city;
-                              @property (nonatomic, retain) NSString * street;
-                              @property (nonatomic, retain) NSString * house;
-                              @property (nonatomic, retain) NSString * phone;
-                              @property (nonatomic, retain) NSString * doctorName;
-                              @property (nonatomic, retain) NSSet *visits;*/
+
+- (IBAction)selectPharmacy:(id)sender
+{
+    _selectPharmacyViewController = [SelectPharmacyViewController new];
+    self.selectPharmacyViewController.delegate = self;
+    self.selectPharmacyViewController.selectedPharmacy = self.selectedPharmacy;
+    [self.navigationController pushViewController:self.selectPharmacyViewController animated:YES];
+}
+
+- (void)selectPharmacyDelegate:(SelectPharmacyViewController *)selectPharmacyViewController didSelectPharmacy:(Pharmacy *)pharmacy
+{
+    self.selectedPharmacy = pharmacy;
+    self.nameLabel.text = self.selectedPharmacy.name;
+    self.networkLabel.text = self.selectedPharmacy.network;
+    self.cityLabel.text = self.selectedPharmacy.city;
+    self.streetLabel.text = self.selectedPharmacy.street;
+    self.houseLabel.text = self.selectedPharmacy.house;
+    [self setMapLocationForPharmacy:self.selectedPharmacy];
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (void)setMapLocationForPharmacy:(Pharmacy*)pharmacy
+{
+    self.mapView.showTraffic = NO;
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    manager.responseSerializer = [RaptureXMLResponseSerializer serializer];
+    manager.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/xml"];
+    NSString* address = [NSString stringWithFormat:@"г. %@ %@ %@", pharmacy.city, pharmacy.street, pharmacy.house];
+    NSString* urlString = [[NSString stringWithFormat:@"http://geocode-maps.yandex.ru/1.x/?geocode=%@", address]stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    [manager GET:urlString parameters:nil success:^(AFHTTPRequestOperation *operation, NSArray* positionArray)
+     {
+         NSLog(@"JSON: %@", positionArray);
+         if (positionArray.count == 0)
+         {
+             NSLog(@"Not found");
+             return;
+         }
+         CLLocation* location = positionArray[0];
+         
+         [self.mapView setCenterCoordinate:location.coordinate atZoomLevel:15 animated:YES];
+         MapAnnotation* annotation = [MapAnnotation new];
+         annotation.coordinate = location.coordinate;
+         annotation.title = address;
+         annotation.subtitle = @"";
+         [self.mapView removeAnnotations:self.mapView.annotations];
+         [self.mapView addAnnotation:annotation];
+     }
+         failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+             NSLog(@"Error: %@", error);
+         }];
+}
+
 @end

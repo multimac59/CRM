@@ -15,10 +15,10 @@
 
 @interface SalesViewController ()
 @property (nonatomic, strong) NSArray* drugs;
+@property (nonatomic) BOOL isMyVisit;
 @end
 
 @implementation SalesViewController
-
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -31,10 +31,54 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+//    if ([self respondsToSelector:@selector(extendedLayoutIncludesOpaqueBars)])
+//    {
+//       [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"NavBarBg"] forBarMetrics:UIBarMetricsDefault];
+//    }
+//    else
+//    {
+//        [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"NavBarBg"] forBarMetrics:UIBarMetricsDefault];
+//        self.navigationController.navigationBar.translucent = NO;
+//        self.wantsFullScreenLayout = YES;
+//    }
+    //self.navigationController.navigationBar.translucent = NO;
+    //[self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"NavBarBg"] forBarMetrics:UIBarMetricsDefault];
+    //self.navigationController.navigationBar.clipsToBounds = YES;
+    self.navigationController.navigationBar.shadowImage =[[UIImage alloc] init];
+    UIView *overlayView = [[UIView alloc] initWithFrame:CGRectMake(0, 43, 1024, 1)];
+    [overlayView setBackgroundColor:[UIColor colorWithRed:75/255.0 green:48/255.0 blue:106/255.0 alpha:1.0]];
+    [self.navigationController.navigationBar addSubview:overlayView]; // navBar is your UINavigationBar instance
+    self.title = @"Аптека";
+//    [self.navigationController.navigationBar setTitleTextAttributes:@{
+//                                                           UITextAttributeTextColor: [UIColor colorWithRed:255.0/255.0 green:255.0/255.0 blue:255.0/255.0 alpha:1.0],
+//                                                           UITextAttributeTextShadowColor: [UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.8],
+//                                                           UITextAttributeTextShadowOffset: [NSValue valueWithUIOffset:UIOffsetMake(0, -1)],
+//                                                           UITextAttributeFont: [UIFont fontWithName:@"Arial-BoldMT" size:17.0],
+//                                                           }];
+    self.navigationController.navigationBar.translucent = NO;
+    UIButton* leftButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 63, 20)];
+    [leftButton setBackgroundImage:[UIImage imageNamed:@"backButton"] forState:UIControlStateNormal];
+    [leftButton setBackgroundImage:[UIImage imageNamed:@"backButtonPressed"] forState:UIControlStateHighlighted];
+    [leftButton addTarget:self action:@selector(back) forControlEvents:UIControlEventTouchDown];
+    
+    UIButton* rightButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 82, 20)];
+    [rightButton setBackgroundImage:[UIImage imageNamed:@"saveButton"] forState:UIControlStateNormal];
+    [rightButton setBackgroundImage:[UIImage imageNamed:@"saveButtonPressed"] forState:UIControlStateHighlighted];
+    [rightButton addTarget:self action:@selector(saveVisit:) forControlEvents:UIControlEventTouchDown];
+
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:leftButton];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:rightButton];
+    
+    self.isMyVisit = YES;
     // Do any additional setup after loading the view from its nib.
     User* currentUser = [AppDelegate sharedDelegate].currentUser;
     NSSortDescriptor* sortByNameDescriptor = [[NSSortDescriptor alloc]initWithKey:@"name" ascending:YES];
     _drugs = [currentUser.drugs.allObjects sortedArrayUsingDescriptors:@[sortByNameDescriptor]];
+    UIImageView *tempImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tableBg"]];
+    [tempImageView setFrame:self.table.frame];
+    //self.table.backgroundView = tempImageView;
+    //self.table.tableHeaderView = [[[NSBundle mainBundle]loadNibNamed:@"SaleHeader" owner:self options:nil]firstObject];
+    self.table.alwaysBounceVertical = NO;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -50,10 +94,15 @@
     {
         cell = [[NSBundle mainBundle]loadNibNamed:@"SaleCell" owner:self options:nil][0];
     }
+    if (indexPath.row % 2 == 0)
+    {
+        cell.cellBg.image = [UIImage imageNamed:@"evenCell"];
+    }
+    return cell;
     Drug* drug = self.drugs[indexPath.row];
     //NSLog(@"drug name = %@", drug.name);
     Sale* lastSale;
-    if (self.segmentedControl.selectedSegmentIndex == 1)
+    if (self.isMyVisit)
     {
         lastSale = [self getLastSaleFor:drug mySale:YES];
     }
@@ -102,6 +151,9 @@
         cell.remainderField.text = @"0";
     }
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    
+    
+    
     return cell;
 }
 
@@ -113,7 +165,31 @@
 
 - (void)back
 {
-    [self dismissViewControllerAnimated:YES completion:nil];
+//    CATransition *transition = [CATransition animation];
+//    transition.duration = 0.35;
+//    transition.timingFunction =
+//    [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+//    transition.type = kCATransitionReveal;
+//    transition.subtype = kCATransitionFromTop;
+//    UIView *containerView = self.view.window;
+//    [containerView.layer addAnimation:transition forKey:nil];
+//    
+//    [self dismissViewControllerAnimated:NO completion:nil];
+    
+    int y;
+    if (SYSTEM_VERSION_LESS_THAN(@"7.0"))
+    {
+        y = - 20;
+    }
+    else
+    {
+        y = 0;
+    }
+    [UIView animateWithDuration:0.3 animations:^{
+        self.navigationController.view.frame = CGRectMake(1024, y, 1024, 768);
+    }completion:^(BOOL finished) {
+        [self.navigationController.view removeFromSuperview];
+    }];
 }
 
 - (Sale*)getCurrentSaleFor:(Drug*)drug
@@ -177,13 +253,53 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+
+//- (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+//{
+//    return [[[NSBundle mainBundle]loadNibNamed:@"SaleHeader" owner:self options:nil]firstObject];
+//}
+
+- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
 {
-    return 110;
+    UIView *view = [[UIView alloc] init];
+    
+    return view;
 }
 
-- (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-    return [[[NSBundle mainBundle]loadNibNamed:@"SaleHeader" owner:self options:nil]firstObject];
+    if (scrollView.contentOffset.y < 0) {
+        scrollView.contentOffset = CGPointMake(scrollView.contentOffset.x, 0);
+        NSLog(@"Little");
+           }
+}
+
+- (IBAction)lastVisitButtonPressed:(id)sender
+{
+    if (self.isMyVisit)
+    {
+        [self.lastVisitButton setBackgroundImage:[UIImage imageNamed:@"leftSegmentPressed"] forState:UIControlStateNormal];
+        [self.myLastVisitButton setBackgroundImage:[UIImage imageNamed:@"rightSegment"] forState:UIControlStateNormal];
+        [self.lastVisitButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [self.myLastVisitButton setTitleColor:[UIColor orangeColor] forState:UIControlStateNormal];
+        self.isMyVisit = NO;
+    }
+}
+
+- (IBAction)myLastVisitButtonPressed:(id)sender
+{
+    if (!self.isMyVisit)
+    {
+        [self.myLastVisitButton setBackgroundImage:[UIImage imageNamed:@"rightSegmentPressed"] forState:UIControlStateNormal];
+        [self.lastVisitButton setBackgroundImage:[UIImage imageNamed:@"leftSegment"] forState:UIControlStateNormal];
+        [self.myLastVisitButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [self.lastVisitButton setTitleColor:[UIColor orangeColor] forState:UIControlStateNormal];
+        self.isMyVisit = YES;
+    }
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 58;
 }
 @end

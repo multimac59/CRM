@@ -10,6 +10,7 @@
 #import "PharmacyViewController.h"
 #import "AppDelegate.h"
 #import "Pharmacy.h"
+#import "PharmaciesCell.h"
 
 
 @interface PharmaciesViewController ()
@@ -33,7 +34,11 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     self.navigationItem.title = @"Аптеки";
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Add" style:UIBarButtonSystemItemAdd target:self action:@selector(addPharmacy)];
+    UIButton* addButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 15, 15)];
+    [addButton setBackgroundImage:[UIImage imageNamed:@"addButton"] forState:UIControlStateNormal];
+    [addButton setBackgroundImage:[UIImage imageNamed:@"addButtonPressed"] forState:UIControlStateHighlighted];
+    [addButton addTarget:self action:@selector(addPharmacy) forControlEvents:UIControlEventTouchDown];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:addButton];
     
     NSManagedObjectContext* context = [AppDelegate sharedDelegate].managedObjectContext;
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
@@ -41,6 +46,12 @@
     NSError *error = nil;
     _pharmacies = [[context executeFetchRequest:request error:&error]mutableCopy];
     [self sortPharmacies];
+    
+    Pharmacy* pharmacy = self.sortedPharmacies[0];
+    UINavigationController* hostController = [AppDelegate sharedDelegate].clientsSplitController.viewControllers[1];
+    PharmacyViewController* pharmacyViewController = (PharmacyViewController*)hostController.topViewController;
+    [pharmacyViewController showPharmacy:pharmacy];
+    [self.table selectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] animated:NO scrollPosition:UITableViewScrollPositionNone];
 }
 
 - (void)sortPharmacies
@@ -62,13 +73,13 @@
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
+    PharmaciesCell* cell = [tableView dequeueReusableCellWithIdentifier:@"PharmaciesCell"];
     if (cell == nil)
     {
-        cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell"];
+        cell = [[[NSBundle mainBundle]loadNibNamed:@"PharmaciesCell" owner:self options:nil]objectAtIndex:0];
     }
     Pharmacy* pharmacy = self.sortedPharmacies[indexPath.row];
-    cell.textLabel.text = pharmacy.name;
+    cell.pharmacyLabel.text = pharmacy.name;
     return cell;
 }
 
@@ -85,8 +96,10 @@
 {
     NewPharmacyViewController* pharmacyViewController = [NewPharmacyViewController new];
     pharmacyViewController.delegate = self;
-    UINavigationController* hostingController = [[UINavigationController alloc]initWithRootViewController:pharmacyViewController];
+    ModalNavigationController* hostingController = [[ModalNavigationController alloc]initWithRootViewController:pharmacyViewController];
     hostingController.modalPresentationStyle = UIModalPresentationFormSheet;
+    hostingController.modalWidth = 590;
+    hostingController.modalHeight = 330;
     [self presentViewController:hostingController animated:YES completion:nil];
 }
 

@@ -8,6 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
-@interface LoginViewController : UIViewController
+@interface LoginViewController : UIViewController<UITextFieldDelegate>
 - (IBAction)goToMain:(id)sender;
+
+@property (nonatomic, weak) IBOutlet UIImageView* loginBgView;
+@property (nonatomic, weak) IBOutlet UIImageView* passwordBgView;
+@property (nonatomic, weak) IBOutlet UITextField* loginField;
+@property (nonatomic, weak) IBOutlet UITextField* passwordField;
 @end

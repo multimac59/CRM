@@ -13,12 +13,15 @@
 #import "AFNetworking.h"
 #import "RaptureXMLResponseSerializer.h"
 #import "MapAnnotation.h"
+#import "UIViewController+ShowModalFromView.h"
+#import "AppDelegate.h"
 
 @interface VisitViewController ()
 @property (nonatomic, strong) Conference* conference;
 @property (nonatomic, strong) Visit* visit;
 @property (nonatomic) BOOL isConference;
 @property (nonatomic, weak) IBOutlet YMKMapView* mapView;
+@property (nonatomic, strong) UINavigationController* salesNavigationController;
 @end
 
 @implementation VisitViewController
@@ -36,6 +39,7 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
+    self.navigationController.navigationBar.translucent = NO;
 }
 
 - (void)didReceiveMemoryWarning
@@ -128,7 +132,34 @@
 {
     SalesViewController* salesViewController = [SalesViewController new];
     salesViewController.visit = self.visit;
-    [self presentViewController:salesViewController animated:YES completion:^{
+    self.salesNavigationController = [[UINavigationController alloc]initWithRootViewController:salesViewController];
+    //CATransition *transition = [CATransition animation];
+    //transition.duration = 0.35;
+    //transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    //transition.type = kCATransitionMoveIn;
+    //transition.subtype = kCATransitionFromBottom;
+    //[self.view.window.layer addAnimation:transition forKey:nil];
+    //[delegate.visitsSplitController presentViewController:navController animated:NO completion:^{
+    //}];
+    //[self.navigationController pushViewController:salesViewController animated:YES];
+    
+    
+    
+    //DIRTY, DIRTY HACK
+    int y;
+    if (SYSTEM_VERSION_LESS_THAN(@"7.0"))
+    {
+        y = - 20;
+    }
+    else
+    {
+        y = 0;
+    }
+    self.salesNavigationController.view.frame = CGRectMake(1024, y, 1024, 768);
+    AppDelegate* delegate = [AppDelegate sharedDelegate];
+    [delegate.container.view addSubview:self.salesNavigationController.view];
+    [UIView animateWithDuration:0.3 animations:^{
+        self.salesNavigationController.view.frame = CGRectMake(0, y, 1024, 768);
     }];
 }
 

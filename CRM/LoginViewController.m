@@ -40,4 +40,28 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
+- (void)textFieldDidBeginEditing:(UITextField *)textField
+{
+    if (textField == self.loginField)
+    {
+        [self.loginBgView setImage:[UIImage imageNamed:@"loginField"]];
+    }
+    else
+    {
+        [self.passwordBgView setImage:[UIImage imageNamed:@"passwordField"]];
+    }
+}
+
+- (void)textFieldDidEndEditing:(UITextField *)textField
+{
+    if (textField == self.loginField)
+    {
+        [self.loginBgView setImage:[UIImage imageNamed:@"loginFieldActive"]];
+    }
+    else
+    {
+        [self.passwordBgView setImage:[UIImage imageNamed:@"passwordFieldActive"]];
+    }
+}
+
 @end
