@@ -78,6 +78,8 @@
     {
         cell = [[[NSBundle mainBundle]loadNibNamed:@"PharmaciesCell" owner:self options:nil]objectAtIndex:0];
     }
+    cell.backgroundColor = [UIColor clearColor];
+    cell.contentView.backgroundColor = [UIColor clearColor];
     Pharmacy* pharmacy = self.sortedPharmacies[indexPath.row];
     cell.pharmacyLabel.text = pharmacy.name;
     return cell;

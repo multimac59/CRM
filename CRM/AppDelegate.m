@@ -131,6 +131,7 @@ static AppDelegate* sharedDelegate = nil;
             break;
     }
     //Seems that container removes panel after change in centerviewcontroller, so we reuse it here
+    [self.container.view addSubview:self.overlay];
     [self.container.view addSubview:self.sidePanelController.view];
     [UIView animateWithDuration:0.3 animations:^{
         self.sidePanelController.view.frame = CGRectMake(-275, 0, 290, 768);

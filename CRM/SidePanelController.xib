@@ -26,7 +26,7 @@
                         <outlet property="delegate" destination="-1" id="cIe-gK-XHo"/>
                     </connections>
                 </tableView>
-                <view contentMode="scaleToFill" id="36K-kq-VVr">
+                <view hidden="YES" contentMode="scaleToFill" id="36K-kq-VVr">
                     <rect key="frame" x="270" y="0.0" width="6" height="768"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                     <color key="backgroundColor" cocoaTouchSystemColor="darkTextColor"/>

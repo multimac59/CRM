@@ -201,6 +201,8 @@
         {
             cell = [[[NSBundle mainBundle]loadNibNamed:@"VisitsCell" owner:self options:Nil]objectAtIndex:0];
         }
+        cell.backgroundColor = [UIColor clearColor];
+        cell.contentView.backgroundColor = [UIColor clearColor];
         NSObject* object = self.visitsAndConferences[indexPath.row];
         if ([object isKindOfClass:[Visit class]])
         {

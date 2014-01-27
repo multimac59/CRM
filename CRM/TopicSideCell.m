@@ -49,4 +49,34 @@
     }
 }
 
+- (void)setHighlighted:(BOOL)highlighted animated:(BOOL)animated
+{
+    [super setHighlighted:highlighted animated:animated];
+    
+    // Configure the view for the selected state
+    if (!highlighted)
+    {
+        if (self.tag == 0)
+        {
+            self.sideImage.backgroundColor = [UIColor colorWithRed:230/255.0 green:204/255.0 blue:220/255.0 alpha:1.0];
+        }
+        else
+        {
+            self.sideImage.backgroundColor = [UIColor colorWithRed:241/255.0 green:227/255.0 blue:192/255.0 alpha:1.0];
+        }
+    }
+    else
+    {
+        if (self.tag == 0)
+        {
+            self.sideImage.backgroundColor = [UIColor colorWithRed:156/255.0 green:51/255.0 blue:116/255.0 alpha:1.0];
+        }
+        else
+        {
+            self.sideImage.backgroundColor = [UIColor colorWithRed:239/255.0 green:171/255.0 blue:0/255.0 alpha:1.0];
+        }
+        
+    }
+}
+
 @end

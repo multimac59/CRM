@@ -19,6 +19,13 @@
     return self;
 }
 
+- (void)awakeFromNib
+{
+    CGRect myRect = self.contentView.frame;
+    myRect.size.height+=2;
+    self.contentView.frame=myRect;
+}
+
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
 {
     [super setSelected:selected animated:animated];
