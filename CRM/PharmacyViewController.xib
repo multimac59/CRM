@@ -9,10 +9,10 @@
             <connections>
                 <outlet property="addressLabel" destination="KwM-Yh-uw2" id="zw5-ZA-fDG"/>
                 <outlet property="doctorLabel" destination="k0s-uJ-SoP" id="UZj-OI-dtc"/>
-                <outlet property="mapView" destination="zwo-RQ-VPv" id="Be4-aQ-AVv"/>
                 <outlet property="nameLabel" destination="dyX-Wz-GFK" id="VRq-6h-LcU"/>
                 <outlet property="networkLabel" destination="fam-MP-8CJ" id="yjb-W1-vng"/>
                 <outlet property="phoneLabel" destination="Kz9-v9-Sii" id="LsA-Vq-4Kv"/>
+                <outlet property="table" destination="ppB-RZ-Fz1" id="l98-64-6sZ"/>
                 <outlet property="view" destination="2" id="3"/>
             </connections>
         </placeholder>
@@ -99,11 +99,15 @@
                     <color key="textColor" red="0.29411764709999999" green="0.18823529410000001" blue="0.41568627450000001" alpha="1" colorSpace="calibratedRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <view contentMode="scaleToFill" id="zwo-RQ-VPv" customClass="YMKMapView">
-                    <rect key="frame" x="44" y="345" width="617" height="376"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                </view>
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="ppB-RZ-Fz1">
+                    <rect key="frame" x="0.0" y="0.0" width="716" height="768"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <connections>
+                        <outlet property="dataSource" destination="-1" id="6ej-fT-ZcG"/>
+                        <outlet property="delegate" destination="-1" id="sS3-Za-rSM"/>
+                    </connections>
+                </tableView>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>

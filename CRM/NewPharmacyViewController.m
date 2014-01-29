@@ -34,14 +34,14 @@
     self.navigationController.navigationBar.translucent = NO;
     
     UIButton* cancelButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 63, 20)];
-    [cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton"] forState:UIControlStateNormal];
-    [cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButtonPressed"] forState:UIControlStateHighlighted];
+    [cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButtonPressed"] forState:UIControlStateNormal];
+    [cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton"] forState:UIControlStateHighlighted];
     [cancelButton addTarget:self action:@selector(cancel) forControlEvents:UIControlEventTouchDown];
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:cancelButton];
     
     UIButton* saveButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 82, 20)];
-    [saveButton setBackgroundImage:[UIImage imageNamed:@"saveButton"] forState:UIControlStateNormal];
-    [saveButton setBackgroundImage:[UIImage imageNamed:@"saveButtonPressed"] forState:UIControlStateHighlighted];
+    [saveButton setBackgroundImage:[UIImage imageNamed:@"saveButtonPressed"] forState:UIControlStateNormal];
+    [saveButton setBackgroundImage:[UIImage imageNamed:@"saveButton"] forState:UIControlStateHighlighted];
     [saveButton addTarget:self action:@selector(save) forControlEvents:UIControlEventTouchDown];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:saveButton];
 }

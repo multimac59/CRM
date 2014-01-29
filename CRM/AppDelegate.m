@@ -123,8 +123,12 @@ static AppDelegate* sharedDelegate = nil;
     {
         case 0:
             self.container.centerViewController = self.visitsSplitController;
+            //FAST FIX
+            self.container.centerViewController = self.visitsSplitController;
             break;
         case 1:
+            self.container.centerViewController = self.clientsSplitController;
+            //FAST FIX
             self.container.centerViewController = self.clientsSplitController;
             break;
         default:
@@ -142,11 +146,9 @@ static AppDelegate* sharedDelegate = nil;
 - (void)movePanel:(UIPanGestureRecognizer*)recognizer
 {
     CGPoint point = [recognizer locationInView:self.container.view];
-    NSLog(@" %f", point.x);
-    if (point.x > 290 ||  point.x < 15)
-        return;
-    self.sidePanelController.view.frame = CGRectMake(point.x - 290, 0, 290, 768);
-    self.overlay.alpha = 0.8 / (290.0 / point.x);
+    NSLog(@"State = %d", recognizer.state);
+    NSLog(@"%f", point.x);
+    
     
     if (recognizer.state == UIGestureRecognizerStateEnded)
     {
@@ -166,6 +168,14 @@ static AppDelegate* sharedDelegate = nil;
                 self.overlay.alpha = 0.8;
             }];
         }
+    }
+    else
+    {
+        if (point.x > 290 ||  point.x < 15)
+            return;
+
+        self.sidePanelController.view.frame = CGRectMake(point.x - 290, 0, 290, 768);
+        self.overlay.alpha = 0.8 / (290.0 / point.x);
     }
 }
 

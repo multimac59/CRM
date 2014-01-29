@@ -17,14 +17,6 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "-[SidePanelController tableView:didSelectRowAtIndexPath:]:SidePanelController.m">
-         <PersistentStrings>
-            <PersistentString
-               value = "[AppDelegate sharedDelegate]">
-            </PersistentString>
-         </PersistentStrings>
-      </ContextState>
-      <ContextState
          contextName = "-[ParticipantsViewController addParticipant:]:ParticipantsViewController.m">
          <PersistentStrings>
             <PersistentString
@@ -33,10 +25,26 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
+         contextName = "-[SidePanelController tableView:didSelectRowAtIndexPath:]:SidePanelController.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "[AppDelegate sharedDelegate]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "-[MFSideMenuContainerViewController setCenterViewController:]:MFSideMenuContainerViewController.m">
          <PersistentStrings>
             <PersistentString
                value = "_centerViewController.view.frame">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "-[MGSplitViewController layoutSubviews]:MGSplitViewController.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "self.interfaceOrientation">
             </PersistentString>
          </PersistentStrings>
       </ContextState>

@@ -21,20 +21,26 @@
                         <color key="textColor" red="0.29411764705882354" green="0.18823529411764706" blue="0.41568627450980389" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="cellTriangle" translatesAutoresizingMaskIntoConstraints="NO" id="JlS-d0-X40">
-                        <rect key="frame" x="310" y="18" width="10" height="22"/>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="checkmark3" translatesAutoresizingMaskIntoConstraints="NO" id="OXb-tt-uCI">
+                        <rect key="frame" x="276" y="16" width="21" height="27"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    </imageView>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="cellTriangle" translatesAutoresizingMaskIntoConstraints="NO" id="fzh-YT-frf">
+                        <rect key="frame" x="305" y="15" width="15" height="30"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     </imageView>
                 </subviews>
                 <color key="backgroundColor" red="0.92156862750000001" green="0.92156862750000001" blue="0.92156862750000001" alpha="1" colorSpace="calibratedRGB"/>
             </tableViewCellContentView>
             <connections>
+                <outlet property="checkmark" destination="OXb-tt-uCI" id="7AB-U6-N6i"/>
                 <outlet property="pharmacyLabel" destination="Zwj-yh-RZz" id="W5W-eb-kgG"/>
-                <outlet property="triangleImage" destination="JlS-d0-X40" id="gkB-qi-nmf"/>
+                <outlet property="triangleImage" destination="fzh-YT-frf" id="SaY-Zc-shI"/>
             </connections>
         </tableViewCell>
     </objects>
     <resources>
         <image name="cellTriangle" width="10" height="20"/>
+        <image name="checkmark3" width="60" height="60"/>
     </resources>
 </document>

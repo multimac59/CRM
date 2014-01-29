@@ -57,13 +57,13 @@
 //                                                           }];
     self.navigationController.navigationBar.translucent = NO;
     UIButton* leftButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 63, 20)];
-    [leftButton setBackgroundImage:[UIImage imageNamed:@"backButton"] forState:UIControlStateNormal];
-    [leftButton setBackgroundImage:[UIImage imageNamed:@"backButtonPressed"] forState:UIControlStateHighlighted];
+    [leftButton setBackgroundImage:[UIImage imageNamed:@"backButtonPressed"] forState:UIControlStateNormal];
+    [leftButton setBackgroundImage:[UIImage imageNamed:@"backButton"] forState:UIControlStateHighlighted];
     [leftButton addTarget:self action:@selector(back) forControlEvents:UIControlEventTouchDown];
     
     UIButton* rightButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 82, 20)];
-    [rightButton setBackgroundImage:[UIImage imageNamed:@"saveButton"] forState:UIControlStateNormal];
-    [rightButton setBackgroundImage:[UIImage imageNamed:@"saveButtonPressed"] forState:UIControlStateHighlighted];
+    [rightButton setBackgroundImage:[UIImage imageNamed:@"saveButtonPressed"] forState:UIControlStateNormal];
+    [rightButton setBackgroundImage:[UIImage imageNamed:@"saveButton"] forState:UIControlStateHighlighted];
     [rightButton addTarget:self action:@selector(saveVisit:) forControlEvents:UIControlEventTouchDown];
 
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:leftButton];

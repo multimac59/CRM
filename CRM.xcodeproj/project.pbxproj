@@ -20,6 +20,18 @@
 		70043FA21855A70A006138CC /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70043F841855A70A006138CC /* UIKit.framework */; };
 		70043FAA1855A70A006138CC /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 70043FA81855A70A006138CC /* InfoPlist.strings */; };
 		70043FAC1855A70A006138CC /* CRMTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 70043FAB1855A70A006138CC /* CRMTests.m */; };
+		70282232189667AE00ED033B /* VisitInfoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 70282231189667AE00ED033B /* VisitInfoCell.m */; };
+		70282234189667C100ED033B /* VisitInfoCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70282233189667C100ED033B /* VisitInfoCell.xib */; };
+		70282236189667F200ED033B /* VisitButtonsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70282235189667F200ED033B /* VisitButtonsCell.xib */; };
+		702822391896680600ED033B /* VisitButtonsCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 702822381896680600ED033B /* VisitButtonsCell.m */; };
+		7028223C1896682500ED033B /* VisitMapCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 7028223B1896682500ED033B /* VisitMapCell.m */; };
+		7028223E1896683400ED033B /* VisitMapCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7028223D1896683400ED033B /* VisitMapCell.xib */; };
+		702822401896685400ED033B /* VisitHistoryCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7028223F1896685400ED033B /* VisitHistoryCell.xib */; };
+		702822431896686000ED033B /* VisitHistoryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 702822421896686000ED033B /* VisitHistoryCell.m */; };
+		702822461896688A00ED033B /* VisitHistoryHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = 702822451896688A00ED033B /* VisitHistoryHeader.m */; };
+		702822481896689900ED033B /* VisitHistoryHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = 702822471896689900ED033B /* VisitHistoryHeader.xib */; };
+		7028224B1896C6DA00ED033B /* Pharmacy.m in Sources */ = {isa = PBXBuildFile; fileRef = 7028224A1896C6DA00ED033B /* Pharmacy.m */; };
+		7028224D1897ABA900ED033B /* PharmacyInfo.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7028224C1897ABA900ED033B /* PharmacyInfo.xib */; };
 		702FEBB018573FC6009A95BA /* ParticipantsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 702FEBAE18573FC6009A95BA /* ParticipantsViewController.m */; };
 		702FEBB418574392009A95BA /* BrandsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 702FEBB318574392009A95BA /* BrandsViewController.m */; };
 		702FEBB818574442009A95BA /* NewParticipantViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 702FEBB618574442009A95BA /* NewParticipantViewController.m */; };
@@ -36,7 +48,6 @@
 		702FEBD81858A6B7009A95BA /* MainDatabase.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 702FEBD61858A6B7009A95BA /* MainDatabase.xcdatamodeld */; };
 		702FEBE91858AA2D009A95BA /* Conference.m in Sources */ = {isa = PBXBuildFile; fileRef = 702FEBDA1858AA2D009A95BA /* Conference.m */; };
 		702FEBEA1858AA2D009A95BA /* Visit.m in Sources */ = {isa = PBXBuildFile; fileRef = 702FEBDC1858AA2D009A95BA /* Visit.m */; };
-		702FEBEC1858AA2D009A95BA /* Pharmacy.m in Sources */ = {isa = PBXBuildFile; fileRef = 702FEBE01858AA2D009A95BA /* Pharmacy.m */; };
 		702FEBED1858AA2D009A95BA /* Drug.m in Sources */ = {isa = PBXBuildFile; fileRef = 702FEBE21858AA2D009A95BA /* Drug.m */; };
 		702FEBEE1858AA2D009A95BA /* Sale.m in Sources */ = {isa = PBXBuildFile; fileRef = 702FEBE41858AA2D009A95BA /* Sale.m */; };
 		702FEBEF1858AA2D009A95BA /* Participant.m in Sources */ = {isa = PBXBuildFile; fileRef = 702FEBE61858AA2D009A95BA /* Participant.m */; };
@@ -121,6 +132,24 @@
 		70043FA71855A70A006138CC /* CRMTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "CRMTests-Info.plist"; sourceTree = "<group>"; };
 		70043FA91855A70A006138CC /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		70043FAB1855A70A006138CC /* CRMTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CRMTests.m; sourceTree = "<group>"; };
+		70282230189667AE00ED033B /* VisitInfoCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VisitInfoCell.h; sourceTree = "<group>"; };
+		70282231189667AE00ED033B /* VisitInfoCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VisitInfoCell.m; sourceTree = "<group>"; };
+		70282233189667C100ED033B /* VisitInfoCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = VisitInfoCell.xib; sourceTree = "<group>"; };
+		70282235189667F200ED033B /* VisitButtonsCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = VisitButtonsCell.xib; sourceTree = "<group>"; };
+		702822371896680600ED033B /* VisitButtonsCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VisitButtonsCell.h; sourceTree = "<group>"; };
+		702822381896680600ED033B /* VisitButtonsCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VisitButtonsCell.m; sourceTree = "<group>"; };
+		7028223A1896682500ED033B /* VisitMapCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VisitMapCell.h; sourceTree = "<group>"; };
+		7028223B1896682500ED033B /* VisitMapCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VisitMapCell.m; sourceTree = "<group>"; };
+		7028223D1896683400ED033B /* VisitMapCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = VisitMapCell.xib; sourceTree = "<group>"; };
+		7028223F1896685400ED033B /* VisitHistoryCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = VisitHistoryCell.xib; sourceTree = "<group>"; };
+		702822411896686000ED033B /* VisitHistoryCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VisitHistoryCell.h; sourceTree = "<group>"; };
+		702822421896686000ED033B /* VisitHistoryCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VisitHistoryCell.m; sourceTree = "<group>"; };
+		702822441896688A00ED033B /* VisitHistoryHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VisitHistoryHeader.h; sourceTree = "<group>"; };
+		702822451896688A00ED033B /* VisitHistoryHeader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VisitHistoryHeader.m; sourceTree = "<group>"; };
+		702822471896689900ED033B /* VisitHistoryHeader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = VisitHistoryHeader.xib; sourceTree = "<group>"; };
+		702822491896C6DA00ED033B /* Pharmacy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Pharmacy.h; path = CRM/Model/Pharmacy.h; sourceTree = "<group>"; };
+		7028224A1896C6DA00ED033B /* Pharmacy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Pharmacy.m; path = CRM/Model/Pharmacy.m; sourceTree = "<group>"; };
+		7028224C1897ABA900ED033B /* PharmacyInfo.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PharmacyInfo.xib; sourceTree = "<group>"; };
 		702FEBAD18573FC6009A95BA /* ParticipantsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticipantsViewController.h; sourceTree = "<group>"; };
 		702FEBAE18573FC6009A95BA /* ParticipantsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ParticipantsViewController.m; sourceTree = "<group>"; };
 		702FEBB218574392009A95BA /* BrandsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BrandsViewController.h; sourceTree = "<group>"; };
@@ -146,8 +175,6 @@
 		702FEBDA1858AA2D009A95BA /* Conference.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Conference.m; path = CRM/Model/Conference.m; sourceTree = "<group>"; };
 		702FEBDB1858AA2D009A95BA /* Visit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Visit.h; path = CRM/Model/Visit.h; sourceTree = "<group>"; };
 		702FEBDC1858AA2D009A95BA /* Visit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Visit.m; path = CRM/Model/Visit.m; sourceTree = "<group>"; };
-		702FEBDF1858AA2D009A95BA /* Pharmacy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Pharmacy.h; path = CRM/Model/Pharmacy.h; sourceTree = "<group>"; };
-		702FEBE01858AA2D009A95BA /* Pharmacy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Pharmacy.m; path = CRM/Model/Pharmacy.m; sourceTree = "<group>"; };
 		702FEBE11858AA2D009A95BA /* Drug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Drug.h; path = CRM/Model/Drug.h; sourceTree = "<group>"; };
 		702FEBE21858AA2D009A95BA /* Drug.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Drug.m; path = CRM/Model/Drug.m; sourceTree = "<group>"; };
 		702FEBE31858AA2D009A95BA /* Sale.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Sale.h; path = CRM/Model/Sale.h; sourceTree = "<group>"; };
@@ -297,6 +324,10 @@
 		70043F861855A70A006138CC /* CRM */ = {
 			isa = PBXGroup;
 			children = (
+				702822511897DE2800ED033B /* Pharmacy */,
+				702822501897DE2000ED033B /* Pharmacies */,
+				7028224F1897DE1C00ED033B /* Visit */,
+				7028224E1897DE1400ED033B /* Visits */,
 				70043F981855A70A006138CC /* Images.xcassets */,
 				706745B51887EFDD00022D6B /* PopoverController.xib */,
 				705B7A3A188419E7004F015F /* UIViewController+ShowModalFromView.h */,
@@ -360,6 +391,22 @@
 				70C4ADF81855ABD300BD0E8B /* VisitViewController.m */,
 				70C4ADF91855ABD300BD0E8B /* VisitViewController.xib */,
 				7071FFCE185612C700EF352D /* PharmacyViewController.xib */,
+				7028224C1897ABA900ED033B /* PharmacyInfo.xib */,
+				70282230189667AE00ED033B /* VisitInfoCell.h */,
+				70282231189667AE00ED033B /* VisitInfoCell.m */,
+				70282233189667C100ED033B /* VisitInfoCell.xib */,
+				702822441896688A00ED033B /* VisitHistoryHeader.h */,
+				702822451896688A00ED033B /* VisitHistoryHeader.m */,
+				702822471896689900ED033B /* VisitHistoryHeader.xib */,
+				702822411896686000ED033B /* VisitHistoryCell.h */,
+				702822421896686000ED033B /* VisitHistoryCell.m */,
+				7028223F1896685400ED033B /* VisitHistoryCell.xib */,
+				702822371896680600ED033B /* VisitButtonsCell.h */,
+				702822381896680600ED033B /* VisitButtonsCell.m */,
+				70282235189667F200ED033B /* VisitButtonsCell.xib */,
+				7028223A1896682500ED033B /* VisitMapCell.h */,
+				7028223B1896682500ED033B /* VisitMapCell.m */,
+				7028223D1896683400ED033B /* VisitMapCell.xib */,
 				7071FFC718560D4500EF352D /* SalesViewController.h */,
 				7071FFC818560D4500EF352D /* SalesViewController.m */,
 				7071FFC918560D4500EF352D /* SalesViewController.xib */,
@@ -410,6 +457,34 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		7028224E1897DE1400ED033B /* Visits */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Visits;
+			sourceTree = "<group>";
+		};
+		7028224F1897DE1C00ED033B /* Visit */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Visit;
+			sourceTree = "<group>";
+		};
+		702822501897DE2000ED033B /* Pharmacies */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Pharmacies;
+			sourceTree = "<group>";
+		};
+		702822511897DE2800ED033B /* Pharmacy */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Pharmacy;
+			sourceTree = "<group>";
+		};
 		70C4AE051855C24300BD0E8B /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -417,8 +492,6 @@
 				702FEBDA1858AA2D009A95BA /* Conference.m */,
 				702FEBDB1858AA2D009A95BA /* Visit.h */,
 				702FEBDC1858AA2D009A95BA /* Visit.m */,
-				702FEBDF1858AA2D009A95BA /* Pharmacy.h */,
-				702FEBE01858AA2D009A95BA /* Pharmacy.m */,
 				702FEBE11858AA2D009A95BA /* Drug.h */,
 				702FEBE21858AA2D009A95BA /* Drug.m */,
 				702FEBE31858AA2D009A95BA /* Sale.h */,
@@ -431,6 +504,8 @@
 				702FEBF51858ADCC009A95BA /* User.m */,
 				70C4AE181855E8FB00BD0E8B /* JSON */,
 				702FEBD61858A6B7009A95BA /* MainDatabase.xcdatamodeld */,
+				702822491896C6DA00ED033B /* Pharmacy.h */,
+				7028224A1896C6DA00ED033B /* Pharmacy.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -529,6 +604,7 @@
 			files = (
 				706745B61887EFDD00022D6B /* PopoverController.xib in Resources */,
 				70541E6E1886C36D00B9C64A /* PharmaciesCell.xib in Resources */,
+				7028223E1896683400ED033B /* VisitMapCell.xib in Resources */,
 				70043F991855A70A006138CC /* Images.xcassets in Resources */,
 				7071FFCB18560D4500EF352D /* SalesViewController.xib in Resources */,
 				702FEBD3185875B6009A95BA /* SaleCell.xib in Resources */,
@@ -539,6 +615,7 @@
 				70DE57801862F59A00123B1E /* SaleHeader.xib in Resources */,
 				70541E691886896700B9C64A /* VisitsCell.xib in Resources */,
 				702FEBBE18574CA0009A95BA /* NewBrandViewController.xib in Resources */,
+				7028224D1897ABA900ED033B /* PharmacyInfo.xib in Resources */,
 				706745D81889798900022D6B /* TopicSideCell.xib in Resources */,
 				7071FFD0185612C700EF352D /* PharmacyViewController.xib in Resources */,
 				70C4AE231855E8FB00BD0E8B /* Pharmacies.json in Resources */,
@@ -551,12 +628,16 @@
 				70541E7C1887D35D00B9C64A /* SelectPharmacyViewController.xib in Resources */,
 				70541E751886D36A00B9C64A /* ParticipantCell.xib in Resources */,
 				70C4AE041855B4BF00BD0E8B /* PharmaciesViewController.xib in Resources */,
+				70282236189667F200ED033B /* VisitButtonsCell.xib in Resources */,
 				7071FFD8185707A300EF352D /* NewVisitViewController.xib in Resources */,
 				70C4AE1F1855E8FB00BD0E8B /* Brands.json in Resources */,
 				7071FFDD185709F300EF352D /* NewPharmacyViewController.xib in Resources */,
 				702FEBC818586458009A95BA /* Users.json in Resources */,
 				70C4ADFB1855ABD300BD0E8B /* VisitViewController.xib in Resources */,
+				70282234189667C100ED033B /* VisitInfoCell.xib in Resources */,
 				70043F8B1855A70A006138CC /* InfoPlist.strings in Resources */,
+				702822481896689900ED033B /* VisitHistoryHeader.xib in Resources */,
+				702822401896685400ED033B /* VisitHistoryCell.xib in Resources */,
 				70C4AE221855E8FB00BD0E8B /* Participants.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -612,12 +693,15 @@
 				702FEBEE1858AA2D009A95BA /* Sale.m in Sources */,
 				7071FFDC185709F300EF352D /* NewPharmacyViewController.m in Sources */,
 				702FEBE91858AA2D009A95BA /* Conference.m in Sources */,
+				7028224B1896C6DA00ED033B /* Pharmacy.m in Sources */,
+				70282232189667AE00ED033B /* VisitInfoCell.m in Sources */,
 				70043F971855A70A006138CC /* ViewController.m in Sources */,
 				706745D61889796400022D6B /* TopicSideCell.m in Sources */,
 				705B7A3C18841A06004F015F /* UIViewController+ShowModalFromView.m in Sources */,
 				70541E7A1887B9C100B9C64A /* SelectPharmacyViewController.m in Sources */,
 				70C4ADF51855AB6000BD0E8B /* VisitsViewController.m in Sources */,
 				702FEBC1185752BB009A95BA /* ChoiseTableController.m in Sources */,
+				702822431896686000ED033B /* VisitHistoryCell.m in Sources */,
 				70B188881868449300C5A211 /* MapAnnotation.m in Sources */,
 				70541E6D1886C36D00B9C64A /* PharmaciesCell.m in Sources */,
 				70C4ADFA1855ABD300BD0E8B /* VisitViewController.m in Sources */,
@@ -628,21 +712,23 @@
 				706745BE18881D9E00022D6B /* ModalNavigationController.m in Sources */,
 				702FEBEA1858AA2D009A95BA /* Visit.m in Sources */,
 				702FEBED1858AA2D009A95BA /* Drug.m in Sources */,
-				702FEBEC1858AA2D009A95BA /* Pharmacy.m in Sources */,
 				702FEBB818574442009A95BA /* NewParticipantViewController.m in Sources */,
 				7071FFCA18560D4500EF352D /* SalesViewController.m in Sources */,
 				7071FFD7185707A300EF352D /* NewVisitViewController.m in Sources */,
 				70541E741886D36A00B9C64A /* ParticipantCell.m in Sources */,
 				7071FFCF185612C700EF352D /* PharmacyViewController.m in Sources */,
 				70B188811864538800C5A211 /* RaptureXMLResponseSerializer.m in Sources */,
+				702822461896688A00ED033B /* VisitHistoryHeader.m in Sources */,
 				70043F911855A70A006138CC /* AppDelegate.m in Sources */,
 				702FEBD11858759D009A95BA /* SaleCell.m in Sources */,
 				702FEBB418574392009A95BA /* BrandsViewController.m in Sources */,
 				702FEBEF1858AA2D009A95BA /* Participant.m in Sources */,
 				702FEBBD18574CA0009A95BA /* NewBrandViewController.m in Sources */,
 				70AEE9211863103800148B0A /* MapViewController.m in Sources */,
+				7028223C1896682500ED033B /* VisitMapCell.m in Sources */,
 				702FEBB018573FC6009A95BA /* ParticipantsViewController.m in Sources */,
 				7071FFD3185616FB00EF352D /* CustomSplitController.m in Sources */,
+				702822391896680600ED033B /* VisitButtonsCell.m in Sources */,
 				70541E671886895600B9C64A /* VisitsCell.m in Sources */,
 				702FEBF01858AA2D009A95BA /* Brand.m in Sources */,
 				70043F8D1855A70A006138CC /* main.m in Sources */,
@@ -779,6 +865,7 @@
 				MOMC_NO_INVERSE_RELATIONSHIP_WARNINGS = NO;
 				MOMC_NO_WARNINGS = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "E8EE4A0F-B8C1-4991-9EC6-0A0DACC303A6";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -798,6 +885,7 @@
 				MOMC_NO_INVERSE_RELATIONSHIP_WARNINGS = NO;
 				MOMC_NO_WARNINGS = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "E8EE4A0F-B8C1-4991-9EC6-0A0DACC303A6";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

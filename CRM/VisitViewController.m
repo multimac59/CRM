@@ -16,10 +16,12 @@
 #import "UIViewController+ShowModalFromView.h"
 #import "AppDelegate.h"
 
+#import "VisitInfoCell.h"
+#import "VisitHistoryCell.h"
+#import "VisitButtonsCell.h"
+#import "VisitMapCell.h"
+
 @interface VisitViewController ()
-@property (nonatomic, strong) Conference* conference;
-@property (nonatomic, strong) Visit* visit;
-@property (nonatomic) BOOL isConference;
 @property (nonatomic, weak) IBOutlet YMKMapView* mapView;
 @property (nonatomic, strong) UINavigationController* salesNavigationController;
 @end
@@ -40,6 +42,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     self.navigationController.navigationBar.translucent = NO;
+    self.oldVisits = [NSMutableArray new];
 }
 
 - (void)didReceiveMemoryWarning
@@ -48,85 +51,13 @@
     // Dispose of any resources that can be recreated.
 }
 
-//Better to use inheritance
-- (void)showVisit:(Visit *)visit
-{
-    self.navigationItem.title = visit.pharmacy.name;
-    self.nameLabel.text = visit.pharmacy.name;
-    self.networkLabel.text = visit.pharmacy.network;
-    self.phoneLabel.text = visit.pharmacy.phone;
-    self.doctorLabel.text = visit.pharmacy.doctorName;
-    self.addressLabel.text = [NSString stringWithFormat:@"%@, %@, %@", visit.pharmacy.city, visit.pharmacy.street, visit.pharmacy.house];
-    NSDateFormatter *timeFormatter = [[NSDateFormatter alloc] init];
-    [timeFormatter setDateFormat:@"HH:mm"];
-    self.timeLabel.text = [timeFormatter stringFromDate:visit.date];
-    [timeFormatter setDateFormat:@"dd.MM.yyyy"];
-    self.dateLabel.text = [timeFormatter stringFromDate:visit.date];
-    
-    self.brandsButton.hidden = YES;
-    self.participantsButton.hidden = YES;
-    self.salesButton.hidden = NO;
-    
-    self.visit = visit;
-    self.isConference = NO;
-    
-    [self setMapLocationForPharmacy:visit.pharmacy];
-}
 
-- (void)showConference:(Conference *)conference
-{
-    self.navigationItem.title = conference.pharmacy.name;
-    self.nameLabel.text = conference.pharmacy.name;
-    self.networkLabel.text = conference.pharmacy.network;
-    self.phoneLabel.text = conference.pharmacy.phone;
-    self.doctorLabel.text = conference.pharmacy.doctorName;
-    self.addressLabel.text = [NSString stringWithFormat:@"%@, %@, %@", conference.pharmacy.city, conference.pharmacy.street, conference.pharmacy.house];
-    NSDateFormatter *timeFormatter = [[NSDateFormatter alloc] init];
-    [timeFormatter setDateFormat:@"HH:mm"];
-    self.timeLabel.text = [timeFormatter stringFromDate:conference.date];
-    [timeFormatter setDateFormat:@"dd.MM.yyyy"];
-    self.dateLabel.text = [timeFormatter stringFromDate:conference.date];
-    
-    self.brandsButton.hidden = NO;
-    self.participantsButton.hidden = NO;
-    self.salesButton.hidden = YES;
-    
-    self.conference = conference;
-    self.isConference = YES;
-    
-    [self setMapLocationForPharmacy:conference.pharmacy];
-}
 
-- (void)setMapLocationForPharmacy:(Pharmacy*)pharmacy
-{
-    self.mapView.showTraffic = NO;
-    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-    manager.responseSerializer = [RaptureXMLResponseSerializer serializer];
-    manager.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/xml"];
-    NSString* address = [NSString stringWithFormat:@"г. %@ %@ %@", pharmacy.city, pharmacy.street, pharmacy.house];
-    NSString* urlString = [[NSString stringWithFormat:@"http://geocode-maps.yandex.ru/1.x/?geocode=%@", address]stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    [manager GET:urlString parameters:nil success:^(AFHTTPRequestOperation *operation, NSArray* positionArray)
-     {
-         NSLog(@"JSON: %@", positionArray);
-         if (positionArray.count == 0)
-         {
-             NSLog(@"Not found");
-             return;
-         }
-         CLLocation* location = positionArray[0];
-         
-         [self.mapView setCenterCoordinate:location.coordinate atZoomLevel:15 animated:YES];
-         MapAnnotation* annotation = [MapAnnotation new];
-         annotation.coordinate = location.coordinate;
-         annotation.title = address;
-         annotation.subtitle = @"";
-         [self.mapView removeAnnotations:self.mapView.annotations];
-         [self.mapView addAnnotation:annotation];
-     }
-         failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-             NSLog(@"Error: %@", error);
-         }];
-}
+
+
+/*
+
+ */
 
 - (IBAction)goToSalesList:(id)sender
 {
@@ -180,5 +111,127 @@
     BrandsViewController* brandsViewController = [BrandsViewController new];
     brandsViewController.conference = self.conference;
     [self.navigationController pushViewController:brandsViewController animated:YES];
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 4;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    if (section == 1)
+    {
+        return self.oldVisits.count + 1;
+    }
+    else
+        return 1;
+}
+
+- (void)reloadContent
+{
+    if (self.isConference)
+    {
+        self.title = self.conference.pharmacy.name;
+    }
+    else
+    {
+        self.title = self.visit.pharmacy.name;
+    }
+    [self.oldVisits removeAllObjects];
+    NSManagedObjectContext* context = [AppDelegate sharedDelegate].managedObjectContext;
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:[NSEntityDescription entityForName:@"Visit" inManagedObjectContext:context]];
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"pharmacy.pharmacyId=%@", self.visit.pharmacy.pharmacyId];
+    [request setPredicate:predicate];
+    NSError *error = nil;
+    NSArray* visits = [context executeFetchRequest:request error:&error];
+    [self.oldVisits addObjectsFromArray:visits];
+    [request setEntity:[NSEntityDescription entityForName:@"Conference" inManagedObjectContext:context]];
+    NSArray* conferences = [context executeFetchRequest:request error:&error];
+    [self.oldVisits addObjectsFromArray:conferences];
+    [self.table reloadData];
+}
+
+- (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.section == 0)
+    {
+        VisitInfoCell* cell = [tableView dequeueReusableCellWithIdentifier:@"VisitInfoCell"];
+        if (cell == nil)
+        {
+            cell =[[NSBundle mainBundle]loadNibNamed:@"VisitInfoCell" owner:self options:nil][0];
+        }
+        if (self.isConference)
+        {
+            [cell showConference:self.conference];
+        }
+        else
+        {
+            [cell showVisit: self.visit];
+        }
+        return cell;
+    }
+    else if (indexPath.section == 2)
+    {
+        return [[NSBundle mainBundle]loadNibNamed:@"VisitButtonsCell" owner:self options:nil][0];
+    }
+    else if (indexPath.section == 3)
+    {
+        VisitMapCell* cell = [tableView dequeueReusableCellWithIdentifier:@"VisitMapCell"];
+        if (cell == nil)
+        {
+            cell = [[NSBundle mainBundle]loadNibNamed:@"VisitMapCell" owner:self options:nil][0];
+        }
+        if (self.isConference)
+        {
+            [cell setMapLocationForPharmacy:self.conference.pharmacy];
+        }
+        else
+        {
+            [cell setMapLocationForPharmacy:self.visit.pharmacy];
+        }
+        return cell;
+    }
+    else
+    {
+        if (indexPath.row == 0)
+        {
+            return [[NSBundle mainBundle]loadNibNamed:@"VisitHistoryHeader" owner:self options:nil][0];
+        }
+        else
+        {
+            VisitHistoryCell* cell = [tableView dequeueReusableCellWithIdentifier:@"VisitHistoryCell"];
+            if (cell == nil)
+            {
+                cell =[[NSBundle mainBundle]loadNibNamed:@"VisitHistoryCell" owner:self options:nil][0];
+            }
+            NSManagedObject* object = self.oldVisits[indexPath.row - 1];
+            if ([object isKindOfClass:[Visit class]])
+            {
+                [cell showVisit:(Visit*)object];
+            }
+            else
+            {
+                [cell showConference:(Conference*)object];
+            }
+            return cell;
+        }
+    }
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.section == 0)
+        return 269;
+    else if (indexPath.section == 2)
+        return 90;
+    else if (indexPath.section == 3)
+        return 408;
+    else
+        if (indexPath.row == 0)
+            return 79;
+        else
+            return 28;
 }
 @end

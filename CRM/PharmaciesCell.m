@@ -26,18 +26,17 @@
     self.contentView.frame=myRect;
 }
 
-- (void)setSelected:(BOOL)selected animated:(BOOL)animated
-{
-    [super setSelected:selected animated:animated];
-    if (selected)
-    {
-        self.triangleImage.hidden = NO;
-    }
-    else
-    {
-        self.triangleImage.hidden = YES;
-    }
-    // Configure the view for the selected state
-}
+//- (void)setSelected:(BOOL)selected animated:(BOOL)animated
+//{
+//    [super setSelected:selected animated:animated];
+//    if (selected)
+//    {
+//        self.triangleImage.hidden = NO;
+//    }
+//    else
+//    {
+//        self.triangleImage.hidden = YES;
+//    }
+//}
 
 @end

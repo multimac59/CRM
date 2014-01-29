@@ -72,8 +72,8 @@
     //self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Clear Filter" style:UIBarButtonSystemItemAdd target:self action:@selector(clearFilter)];
     //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Add" style:UIBarButtonSystemItemAdd target:self action:@selector(showPopover)];
     UIButton* addButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 15, 15)];
-    [addButton setBackgroundImage:[UIImage imageNamed:@"addButton"] forState:UIControlStateNormal];
-    [addButton setBackgroundImage:[UIImage imageNamed:@"addButtonPressed"] forState:UIControlStateHighlighted];
+    [addButton setBackgroundImage:[UIImage imageNamed:@"addButtonPressed"] forState:UIControlStateNormal];
+    [addButton setBackgroundImage:[UIImage imageNamed:@"addButton"] forState:UIControlStateHighlighted];
     [addButton addTarget:self action:@selector(showPopover) forControlEvents:UIControlEventTouchDown];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:addButton];
     self.navigationItem.title = @"Визиты";
@@ -258,15 +258,17 @@
     if ([object isKindOfClass:[Visit class]])
     {
         Visit* visit = (Visit*)object;
-        [visitViewController showVisit:visit];
+        visitViewController.visit = visit;
+        visitViewController.isConference = NO;
         
     }
     else
     {
         Conference* conference = (Conference*)object;
-        [visitViewController showConference:conference];
-        
+        visitViewController.conference = conference;
+        visitViewController.isConference = YES;
     }
+    [visitViewController reloadContent];
 }
 
 

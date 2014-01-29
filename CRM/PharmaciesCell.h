@@ -11,4 +11,5 @@
 @interface PharmaciesCell : UITableViewCell
 @property (nonatomic, weak) IBOutlet UILabel* pharmacyLabel;
 @property (nonatomic, weak) IBOutlet UIImageView* triangleImage;
+@property (nonatomic, weak) IBOutlet UIImageView* checkmark;
 @end
