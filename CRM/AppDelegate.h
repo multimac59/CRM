@@ -8,9 +8,9 @@
 
 #import <UIKit/UIKit.h>
 #import "User.h"
-#import "MGSplitViewController.h"
+#import "MGCustomSplitViewController.h"
 #import "SidePanelController.h"
-#import "MFSideMenuContainerViewController.h"
+#import "MFSideMenuCustomContainer.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, SidePanelDelegate>
 
@@ -19,9 +19,9 @@
 @property (readonly, strong, nonatomic) NSPersistentStoreCoordinator *persistentStoreCoordinator;
 
 @property (strong, nonatomic) UIWindow *window;
-@property (strong, nonatomic) MGSplitViewController* visitsSplitController;
-@property (strong, nonatomic) MGSplitViewController* clientsSplitController;
-@property (strong, nonatomic) MFSideMenuContainerViewController* container; //MGSplitViewController works incorrectly as root controller, so we pack it in this
+@property (strong, nonatomic) MGCustomSplitViewController* visitsSplitController;
+@property (strong, nonatomic) MGCustomSplitViewController* clientsSplitController;
+@property (strong, nonatomic) MFSideMenuCustomContainer* container; //MGSplitViewController works incorrectly as root controller, so we pack it in this
 @property (nonatomic, strong) SidePanelController* sidePanelController;
 @property (nonatomic, strong) UIView* overlay;
 

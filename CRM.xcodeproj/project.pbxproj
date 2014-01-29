@@ -77,6 +77,14 @@
 		7071FFD8185707A300EF352D /* NewVisitViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7071FFD6185707A300EF352D /* NewVisitViewController.xib */; };
 		7071FFDC185709F300EF352D /* NewPharmacyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7071FFDA185709F300EF352D /* NewPharmacyViewController.m */; };
 		7071FFDD185709F300EF352D /* NewPharmacyViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7071FFDB185709F300EF352D /* NewPharmacyViewController.xib */; };
+		70744B8B189958B3005E3536 /* MFSideMenuCustomContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 70744B88189958B3005E3536 /* MFSideMenuCustomContainer.m */; };
+		70744B8C189958B3005E3536 /* MGCustomSplitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 70744B89189958B3005E3536 /* MGCustomSplitViewController.m */; };
+		70744B9718995948005E3536 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 70744B8E18995948005E3536 /* README.md */; };
+		70744B9818995948005E3536 /* CKCalendarView.m in Sources */ = {isa = PBXBuildFile; fileRef = 70744B9118995948005E3536 /* CKCalendarView.m */; };
+		70744B9918995948005E3536 /* left_arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 70744B9318995948005E3536 /* left_arrow.png */; };
+		70744B9A18995948005E3536 /* left_arrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 70744B9418995948005E3536 /* left_arrow@2x.png */; };
+		70744B9B18995948005E3536 /* right_arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 70744B9518995948005E3536 /* right_arrow.png */; };
+		70744B9C18995948005E3536 /* right_arrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 70744B9618995948005E3536 /* right_arrow@2x.png */; };
 		70A2BA4918630C960028E1E6 /* libstdc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 70A2BA4718630C960028E1E6 /* libstdc++.dylib */; };
 		70A2BA4B18630D100028E1E6 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 70A2BA4A18630D100028E1E6 /* libz.dylib */; };
 		70AEE91D18630D4D00148B0A /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 70AEE91C18630D4D00148B0A /* libxml2.dylib */; };
@@ -221,6 +229,17 @@
 		7071FFD9185709F300EF352D /* NewPharmacyViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewPharmacyViewController.h; sourceTree = "<group>"; };
 		7071FFDA185709F300EF352D /* NewPharmacyViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewPharmacyViewController.m; sourceTree = "<group>"; };
 		7071FFDB185709F300EF352D /* NewPharmacyViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NewPharmacyViewController.xib; sourceTree = "<group>"; };
+		70744B87189958B3005E3536 /* MFSideMenuCustomContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MFSideMenuCustomContainer.h; sourceTree = "<group>"; };
+		70744B88189958B3005E3536 /* MFSideMenuCustomContainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MFSideMenuCustomContainer.m; sourceTree = "<group>"; };
+		70744B89189958B3005E3536 /* MGCustomSplitViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGCustomSplitViewController.m; sourceTree = "<group>"; };
+		70744B8A189958B3005E3536 /* MGCustomSplitViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGCustomSplitViewController.h; sourceTree = "<group>"; };
+		70744B8E18995948005E3536 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
+		70744B9018995948005E3536 /* CKCalendarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CKCalendarView.h; sourceTree = "<group>"; };
+		70744B9118995948005E3536 /* CKCalendarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CKCalendarView.m; sourceTree = "<group>"; };
+		70744B9318995948005E3536 /* left_arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = left_arrow.png; sourceTree = "<group>"; };
+		70744B9418995948005E3536 /* left_arrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "left_arrow@2x.png"; sourceTree = "<group>"; };
+		70744B9518995948005E3536 /* right_arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = right_arrow.png; sourceTree = "<group>"; };
+		70744B9618995948005E3536 /* right_arrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "right_arrow@2x.png"; sourceTree = "<group>"; };
 		70A2BA4618630C960028E1E6 /* libstdc++.6.0.9.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.6.0.9.dylib"; path = "usr/lib/libstdc++.6.0.9.dylib"; sourceTree = SDKROOT; };
 		70A2BA4718630C960028E1E6 /* libstdc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.dylib"; path = "usr/lib/libstdc++.dylib"; sourceTree = SDKROOT; };
 		70A2BA4A18630D100028E1E6 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
@@ -286,6 +305,7 @@
 		70043F741855A70A006138CC = {
 			isa = PBXGroup;
 			children = (
+				70744B8D18995948005E3536 /* CKCalendar */,
 				70C4AE051855C24300BD0E8B /* Model */,
 				70043F861855A70A006138CC /* CRM */,
 				70043FA51855A70A006138CC /* CRMTests */,
@@ -324,6 +344,10 @@
 		70043F861855A70A006138CC /* CRM */ = {
 			isa = PBXGroup;
 			children = (
+				70744B87189958B3005E3536 /* MFSideMenuCustomContainer.h */,
+				70744B88189958B3005E3536 /* MFSideMenuCustomContainer.m */,
+				70744B89189958B3005E3536 /* MGCustomSplitViewController.m */,
+				70744B8A189958B3005E3536 /* MGCustomSplitViewController.h */,
 				702822511897DE2800ED033B /* Pharmacy */,
 				702822501897DE2000ED033B /* Pharmacies */,
 				7028224F1897DE1C00ED033B /* Visit */,
@@ -485,6 +509,37 @@
 			name = Pharmacy;
 			sourceTree = "<group>";
 		};
+		70744B8D18995948005E3536 /* CKCalendar */ = {
+			isa = PBXGroup;
+			children = (
+				70744B8E18995948005E3536 /* README.md */,
+				70744B8F18995948005E3536 /* Source */,
+			);
+			name = CKCalendar;
+			path = CRM/CKCalendar;
+			sourceTree = "<group>";
+		};
+		70744B8F18995948005E3536 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				70744B9018995948005E3536 /* CKCalendarView.h */,
+				70744B9118995948005E3536 /* CKCalendarView.m */,
+				70744B9218995948005E3536 /* resources */,
+			);
+			path = Source;
+			sourceTree = "<group>";
+		};
+		70744B9218995948005E3536 /* resources */ = {
+			isa = PBXGroup;
+			children = (
+				70744B9318995948005E3536 /* left_arrow.png */,
+				70744B9418995948005E3536 /* left_arrow@2x.png */,
+				70744B9518995948005E3536 /* right_arrow.png */,
+				70744B9618995948005E3536 /* right_arrow@2x.png */,
+			);
+			path = resources;
+			sourceTree = "<group>";
+		};
 		70C4AE051855C24300BD0E8B /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -608,9 +663,11 @@
 				70043F991855A70A006138CC /* Images.xcassets in Resources */,
 				7071FFCB18560D4500EF352D /* SalesViewController.xib in Resources */,
 				702FEBD3185875B6009A95BA /* SaleCell.xib in Resources */,
+				70744B9918995948005E3536 /* left_arrow.png in Resources */,
 				70541E771886D86000B9C64A /* BrandsViewController.xib in Resources */,
 				70C4ADF11855AB3800BD0E8B /* SidePanelController.xib in Resources */,
 				70541E701886CEFE00B9C64A /* ParticipantsViewController.xib in Resources */,
+				70744B9B18995948005E3536 /* right_arrow.png in Resources */,
 				702FEBC618585656009A95BA /* LoginViewController.xib in Resources */,
 				70DE57801862F59A00123B1E /* SaleHeader.xib in Resources */,
 				70541E691886896700B9C64A /* VisitsCell.xib in Resources */,
@@ -623,6 +680,7 @@
 				70C4AE211855E8FB00BD0E8B /* Drugs.json in Resources */,
 				70C4AE241855E8FB00BD0E8B /* Visits.json in Resources */,
 				70C4AE201855E8FB00BD0E8B /* Conferences.json in Resources */,
+				70744B9C18995948005E3536 /* right_arrow@2x.png in Resources */,
 				702FEBB918574442009A95BA /* NewParticipantViewController.xib in Resources */,
 				70AEE9221863103800148B0A /* MapViewController.xib in Resources */,
 				70541E7C1887D35D00B9C64A /* SelectPharmacyViewController.xib in Resources */,
@@ -634,7 +692,9 @@
 				7071FFDD185709F300EF352D /* NewPharmacyViewController.xib in Resources */,
 				702FEBC818586458009A95BA /* Users.json in Resources */,
 				70C4ADFB1855ABD300BD0E8B /* VisitViewController.xib in Resources */,
+				70744B9718995948005E3536 /* README.md in Resources */,
 				70282234189667C100ED033B /* VisitInfoCell.xib in Resources */,
+				70744B9A18995948005E3536 /* left_arrow@2x.png in Resources */,
 				70043F8B1855A70A006138CC /* InfoPlist.strings in Resources */,
 				702822481896689900ED033B /* VisitHistoryHeader.xib in Resources */,
 				702822401896685400ED033B /* VisitHistoryCell.xib in Resources */,
@@ -698,11 +758,13 @@
 				70043F971855A70A006138CC /* ViewController.m in Sources */,
 				706745D61889796400022D6B /* TopicSideCell.m in Sources */,
 				705B7A3C18841A06004F015F /* UIViewController+ShowModalFromView.m in Sources */,
+				70744B9818995948005E3536 /* CKCalendarView.m in Sources */,
 				70541E7A1887B9C100B9C64A /* SelectPharmacyViewController.m in Sources */,
 				70C4ADF51855AB6000BD0E8B /* VisitsViewController.m in Sources */,
 				702FEBC1185752BB009A95BA /* ChoiseTableController.m in Sources */,
 				702822431896686000ED033B /* VisitHistoryCell.m in Sources */,
 				70B188881868449300C5A211 /* MapAnnotation.m in Sources */,
+				70744B8B189958B3005E3536 /* MFSideMenuCustomContainer.m in Sources */,
 				70541E6D1886C36D00B9C64A /* PharmaciesCell.m in Sources */,
 				70C4ADFA1855ABD300BD0E8B /* VisitViewController.m in Sources */,
 				702FEBC518585656009A95BA /* LoginViewController.m in Sources */,
@@ -731,6 +793,7 @@
 				702822391896680600ED033B /* VisitButtonsCell.m in Sources */,
 				70541E671886895600B9C64A /* VisitsCell.m in Sources */,
 				702FEBF01858AA2D009A95BA /* Brand.m in Sources */,
+				70744B8C189958B3005E3536 /* MGCustomSplitViewController.m in Sources */,
 				70043F8D1855A70A006138CC /* main.m in Sources */,
 				70C4AE031855B4BF00BD0E8B /* PharmaciesViewController.m in Sources */,
 			);

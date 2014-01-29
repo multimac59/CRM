@@ -74,14 +74,14 @@ static AppDelegate* sharedDelegate = nil;
     // Override point for customization after application launch.
     self.window.backgroundColor = [UIColor whiteColor];
     
-    _visitsSplitController = [[MGSplitViewController alloc]init];
+    _visitsSplitController = [[MGCustomSplitViewController alloc]init];
     //_visitsSplitController.dividerStyle = MGSplitViewDividerStylePaneSplitter;
     //_visitsSplitController.dividerView.hidden = YES;
     self.visitsSplitController.viewControllers = @[[[UINavigationController alloc]initWithRootViewController:[VisitsViewController new]],[[UINavigationController alloc]initWithRootViewController:[VisitViewController new]]];
-    _clientsSplitController = [[MGSplitViewController alloc]init];
+    _clientsSplitController = [[MGCustomSplitViewController alloc]init];
     self.clientsSplitController.viewControllers = @[[[UINavigationController alloc]initWithRootViewController:[PharmaciesViewController new]],[[UINavigationController alloc]initWithRootViewController:[PharmacyViewController new]]];
 
-    _container = [MFSideMenuContainerViewController
+    _container = [MFSideMenuCustomContainer
                   containerWithCenterViewController:self.visitsSplitController
                                                     leftMenuViewController:nil
                                                     rightMenuViewController:nil];

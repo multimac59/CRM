@@ -1,6 +1,5 @@
 platform :ios, '6.0'
 pod 'MFSideMenu', '~> 0.5.4'
-pod 'CKCalendar', '~> 1.0.0'
 pod 'YandexMapKit', '~> 1.0.5'
 pod 'AFNetworking', '~> 2.0.3'
 pod 'RaptureXML', '~> 1.0.1'
