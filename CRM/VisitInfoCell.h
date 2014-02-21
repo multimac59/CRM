@@ -8,7 +8,6 @@
 
 #import <UIKit/UIKit.h>
 #import "Visit.h"
-#import "Conference.h"
 #import "Pharmacy.h"
 
 @interface VisitInfoCell : UITableViewCell
@@ -21,8 +20,8 @@
 @property (nonatomic, weak) IBOutlet UILabel* doctorLabel;
 
 @property (nonatomic, weak) IBOutlet UIButton* favouriteButton;
+@property (nonatomic, weak) IBOutlet UIButton* closeVisitButton;
 
 - (void)showPharmacy:(Pharmacy *)pharmacy;
 - (void)showVisit:(Visit *)visit;
-- (void)showConference:(Conference *)conference;
 @end

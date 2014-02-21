@@ -26,4 +26,9 @@
     // Configure the view for the selected state
 }
 
+- (void)awakeFromNib{
+    self.soldField.inputView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 1, 1)];
+    self.orderField.inputView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 1, 1)];
+    self.remainderField.inputView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 1, 1)];
+}
 @end

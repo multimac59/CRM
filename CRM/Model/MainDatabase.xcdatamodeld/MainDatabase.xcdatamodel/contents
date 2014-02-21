@@ -1,74 +1,88 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="3401" systemVersion="13A603" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
-    <entity name="Brand" representedClassName="Brand" syncable="YES">
-        <attribute name="brandId" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
-        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="conferences" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Conference" inverseName="brands" inverseEntity="Conference" syncable="YES"/>
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="3401" systemVersion="13B42" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
+    <entity name="CommerceVisit" representedClassName="CommerceVisit" syncable="YES">
+        <relationship name="sales" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Sale" inverseName="commerceVisit" inverseEntity="Sale" syncable="YES"/>
+        <relationship name="visit" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Visit" inverseName="commerceVisit" inverseEntity="Visit" syncable="YES"/>
     </entity>
-    <entity name="Conference" representedClassName="Conference" syncable="YES">
-        <attribute name="conferenceId" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
-        <attribute name="date" optional="YES" attributeType="Date" syncable="YES"/>
+    <entity name="Dose" representedClassName="Dose" syncable="YES">
+        <attribute name="doseId" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="brands" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Brand" inverseName="conferences" inverseEntity="Brand" syncable="YES"/>
-        <relationship name="participants" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Participant" inverseName="conferences" inverseEntity="Participant" syncable="YES"/>
-        <relationship name="pharmacy" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Pharmacy" inverseName="conferences" inverseEntity="Pharmacy" syncable="YES"/>
-        <relationship name="user" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="User" inverseName="conferences" inverseEntity="User" syncable="YES"/>
+        <attribute name="priority" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <relationship name="drug" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Drug" inverseName="doses" inverseEntity="Drug" syncable="YES"/>
+        <relationship name="sales" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Sale" inverseName="dose" inverseEntity="Sale" syncable="YES"/>
     </entity>
     <entity name="Drug" representedClassName="Drug" syncable="YES">
         <attribute name="drugId" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="sales" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Sale" inverseName="drug" inverseEntity="Sale" syncable="YES"/>
-        <relationship name="users" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="User" inverseName="drugs" inverseEntity="User" syncable="YES"/>
+        <relationship name="doses" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Dose" inverseName="drug" inverseEntity="Dose" syncable="YES"/>
     </entity>
     <entity name="Participant" representedClassName="Participant" syncable="YES">
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="participantId" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
-        <relationship name="conferences" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Conference" inverseName="participants" inverseEntity="Conference" syncable="YES"/>
     </entity>
     <entity name="Pharmacy" representedClassName="Pharmacy" syncable="YES">
         <attribute name="city" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="doctorName" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="house" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="network" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="network" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="pharmacyId" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="phone" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="psp" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="status" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="street" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="conferences" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Conference" inverseName="pharmacy" inverseEntity="Conference" syncable="YES"/>
+        <relationship name="region" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Region" inverseName="pharmacies" inverseEntity="Region" syncable="YES"/>
+        <relationship name="users" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="User" inverseName="targetablePharmacies" inverseEntity="User" syncable="YES"/>
         <relationship name="visits" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Visit" inverseName="pharmacy" inverseEntity="Visit" syncable="YES"/>
     </entity>
+    <entity name="PharmacyCircle" representedClassName="PharmacyCircle" parentEntity="PromoVisit" syncable="YES"/>
+    <entity name="PromoVisit" representedClassName="PromoVisit" syncable="YES">
+        <relationship name="brands" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Drug" syncable="YES"/>
+        <relationship name="participants" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Participant" syncable="YES"/>
+        <relationship name="visit" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Visit" inverseName="promoVisit" inverseEntity="Visit" syncable="YES"/>
+    </entity>
+    <entity name="Region" representedClassName="Region" syncable="YES">
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="regionId" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <relationship name="pharmacies" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Pharmacy" inverseName="region" inverseEntity="Pharmacy" syncable="YES"/>
+        <relationship name="users" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="User" inverseName="regions" inverseEntity="User" syncable="YES"/>
+    </entity>
     <entity name="Sale" representedClassName="Sale" syncable="YES">
+        <attribute name="comment" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="order" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="remainder" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="saleId" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="sold" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
-        <relationship name="drug" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Drug" inverseName="sales" inverseEntity="Drug" syncable="YES"/>
-        <relationship name="user" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="User" inverseName="sales" inverseEntity="User" syncable="YES"/>
-        <relationship name="visit" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Visit" inverseName="sales" inverseEntity="Visit" syncable="YES"/>
+        <relationship name="commerceVisit" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CommerceVisit" inverseName="sales" inverseEntity="CommerceVisit" syncable="YES"/>
+        <relationship name="dose" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Dose" inverseName="sales" inverseEntity="Dose" syncable="YES"/>
     </entity>
     <entity name="User" representedClassName="User" syncable="YES">
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="userId" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
-        <relationship name="conferences" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Conference" inverseName="user" inverseEntity="Conference" syncable="YES"/>
-        <relationship name="drugs" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Drug" inverseName="users" inverseEntity="Drug" syncable="YES"/>
-        <relationship name="sales" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Sale" inverseName="user" inverseEntity="Sale" syncable="YES"/>
+        <relationship name="regions" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Region" inverseName="users" inverseEntity="Region" syncable="YES"/>
+        <relationship name="targetablePharmacies" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Pharmacy" inverseName="users" inverseEntity="Pharmacy" syncable="YES"/>
         <relationship name="visits" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Visit" inverseName="user" inverseEntity="Visit" syncable="YES"/>
     </entity>
     <entity name="Visit" representedClassName="Visit" syncable="YES">
+        <attribute name="closed" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="date" optional="YES" attributeType="Date" syncable="YES"/>
-        <attribute name="visitId" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="visitId" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="commerceVisit" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CommerceVisit" inverseName="visit" inverseEntity="CommerceVisit" syncable="YES"/>
         <relationship name="pharmacy" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Pharmacy" inverseName="visits" inverseEntity="Pharmacy" syncable="YES"/>
-        <relationship name="sales" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Sale" inverseName="visit" inverseEntity="Sale" syncable="YES"/>
+        <relationship name="pharmacyCircle" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="PharmacyCircle" syncable="YES"/>
+        <relationship name="promoVisit" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="PromoVisit" inverseName="visit" inverseEntity="PromoVisit" syncable="YES"/>
         <relationship name="user" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="User" inverseName="visits" inverseEntity="User" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Brand" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="Conference" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="Drug" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="Participant" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="Pharmacy" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="Sale" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="User" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="Visit" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="CommerceVisit" positionX="72" positionY="72" width="128" height="88"/>
+        <element name="Dose" positionX="250" positionY="-300" width="128" height="120"/>
+        <element name="Drug" positionX="225" positionY="-54" width="128" height="88"/>
+        <element name="Participant" positionX="-18" positionY="-423" width="128" height="58"/>
+        <element name="Pharmacy" positionX="-495" positionY="-540" width="128" height="253"/>
+        <element name="PharmacyCircle" positionX="-459" positionY="-171" width="128" height="43"/>
+        <element name="PromoVisit" positionX="-459" positionY="-61" width="128" height="43"/>
+        <element name="Region" positionX="-153" positionY="-141" width="128" height="105"/>
+        <element name="Sale" positionX="34" positionY="-252" width="128" height="165"/>
+        <element name="User" positionX="-261" positionY="27" width="128" height="120"/>
+        <element name="Visit" positionX="-225" positionY="-486" width="128" height="163"/>
     </elements>
 </model>

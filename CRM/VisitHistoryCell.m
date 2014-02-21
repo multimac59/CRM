@@ -38,17 +38,7 @@
     NSDateFormatter *timeFormatter = [[NSDateFormatter alloc] init];
     [timeFormatter setDateFormat:@"dd.MM.yyyy"];
     self.dateLabel.text = [timeFormatter stringFromDate:visit.date];
-    self.participantLabel.text = @"1";
-}
-
-- (void)showConference:(Conference *)conference
-{
-    self.typeLabel.text = @"Конференция";
-    self.nameLabel.text = conference.user.name;
-    NSDateFormatter *timeFormatter = [[NSDateFormatter alloc] init];
-    [timeFormatter setDateFormat:@"dd.MM.yyyy"];
-    self.dateLabel.text = [timeFormatter stringFromDate:conference.date];
-    self.participantLabel.text = [NSString stringWithFormat:@"%d", conference.participants.count];
+    //self.participantLabel.text = [NSString stringWithFormat:@"%d", visit.participants.count];
 }
 
 @end

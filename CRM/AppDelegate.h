@@ -26,6 +26,7 @@
 @property (nonatomic, strong) UIView* overlay;
 
 @property (strong, nonatomic) User* currentUser;
+@property (strong, nonatomic) NSArray* drugs;
 
 + (AppDelegate*)sharedDelegate;
 - (void)saveContext;

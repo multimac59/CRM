@@ -7,14 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "NewVisitViewController.h"
 #import "ChoiseTableController.h"
 #import "CKCalendarView.h"
 
-@interface VisitsViewController : UIViewController<NewVisitViewDelegate, ChoiseTableDelegate, CKCalendarDelegate>
+@interface VisitsViewController : UIViewController<CKCalendarDelegate>
 @property (nonatomic, weak) IBOutlet UITableView* table;
 @property (nonatomic, weak) IBOutlet UITableView* popoverTable;
-@property (nonatomic, strong) UIView* popoverView;
 
 - (IBAction)hidePopover:(id)sender;
 @end

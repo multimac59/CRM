@@ -12,12 +12,13 @@
 #import "Pharmacy.h"
 #import "PharmaciesCell.h"
 #import "Visit.h"
-#import "Conference.h"
+#import "Pharmacy+QuarterVisits.h"
 
 
 @interface PharmaciesViewController ()
 {
     BOOL onlySelected;
+    BOOL onlyTargetable;
     UIButton* searchButton;
     UIButton* calendarButton;
     BOOL selectFirst;
@@ -28,14 +29,8 @@
 @property (nonatomic, strong) NSArray* filteredPharmacies;
 
 @property (nonatomic, strong) NSString* nameFilterString;
-@property (nonatomic, strong) NSString* cityFilterString;
-@property (nonatomic, strong) NSString* streetFilterString;
-@property (nonatomic, strong) NSString* houseFilterString;
 
 @property (nonatomic, strong) IBOutlet UITextField* nameFilter;
-@property (nonatomic, strong) IBOutlet UITextField* cityFilter;
-@property (nonatomic, strong) IBOutlet UITextField* streetFilter;
-@property (nonatomic, strong) IBOutlet UITextField* houseFilter;
 
 @property (nonatomic) BOOL filterOn;
 @property (nonatomic) BOOL calendarOn;
@@ -52,7 +47,9 @@
     if (self) {
         // Custom initialization
         onlySelected = NO;
+        onlyTargetable = YES;
         self.selectedDate = [NSDate date];
+        
     }
     return self;
 }
@@ -112,19 +109,18 @@
     [calendarButton addTarget:self action:@selector(toggleCalendar) forControlEvents:UIControlEventTouchDown];
     UIBarButtonItem* calendarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:calendarButton];
     
-    self.navigationItem.rightBarButtonItems = @[searchButtonItem, calendarButtonItem];
+    self.navigationItem.rightBarButtonItems = @[calendarButtonItem];
     
     NSManagedObjectContext* context = [AppDelegate sharedDelegate].managedObjectContext;
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     [request setEntity:[NSEntityDescription entityForName:@"Pharmacy" inManagedObjectContext:context]];
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"region IN %@", [AppDelegate sharedDelegate].currentUser.regions];
+    //request.predicate = predicate;
     NSError *error = nil;
     _pharmacies = [[context executeFetchRequest:request error:&error]mutableCopy];
     [self sortPharmacies];
     
     self.nameFilterString = @"";
-    self.cityFilterString = @"";
-    self.streetFilterString = @"";
-    self.houseFilterString = @"";
     [self filterPharmacies];
     
     [self selectFirstFromList];
@@ -141,10 +137,14 @@
     self.filterOn = YES;
     self.calendarOn = NO;
     
+    UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
+    [self.table addSubview:refreshControl];
+    
 }
 
 - (void)toggleFilter
 {
+    return;
     if (self.filterOn)
     {
         [UIView animateWithDuration:0.3 animations:^{
@@ -193,41 +193,21 @@
     {
         [UIView animateWithDuration:0.3 animations:^{
             self.calendarWidget.frame = CGRectMake(0, -300, 320, 300);
-            self.segmentedControl.frame = CGRectMake(69, 10, 183, 29);
-            self.table.frame = CGRectMake(0, 44, 320, 540);
+            self.filterView.frame = CGRectMake(0, 0, 320, 150);
+            self.table.frame = CGRectMake(0, 150, 320, 618);
         } completion:^(BOOL finished) {
             self.calendarOn = NO;
         }];
     }
     else
     {
-        if (self.filterOn)
-        {
-            [UIView animateWithDuration:0.3 animations:^{
-                self.filterView.frame = CGRectMake(0, -184, 320, 184);
-                self.segmentedControl.frame = CGRectMake(69, 10, 183, 29);
-                self.table.frame = CGRectMake(0, 44, 320, 540);
-            } completion:^(BOOL finished) {
-                self.filterOn = NO;
-                [UIView animateWithDuration:0.3 animations:^{
-                    self.calendarWidget.frame = CGRectMake(0, 0, 320, 300);
-                    self.segmentedControl.frame = CGRectMake(69, 10 + 300, 183, 29);
-                    self.table.frame = CGRectMake(0, 44 + 300, 320, 540);
-                } completion:^(BOOL finished) {
-                    self.calendarOn = YES;
-                }];
-            }];
-        }
-        else
-        {
         [UIView animateWithDuration:0.3 animations:^{
             self.calendarWidget.frame = CGRectMake(0, 0, 320, 300);
-            self.segmentedControl.frame = CGRectMake(69, 10 + 300, 183, 29);
-            self.table.frame = CGRectMake(0, 44 + 300, 320, 540);
+            self.filterView.frame = CGRectMake(0, 300, 320, 150);
+            self.table.frame = CGRectMake(0, 150 + 300, 320, 618);
         } completion:^(BOOL finished) {
             self.calendarOn = YES;
         }];
-        }
     }
 }
 
@@ -244,8 +224,10 @@
 
 - (void)sortPharmacies
 {
-    NSSortDescriptor* sortDescriptor = [[NSSortDescriptor alloc]initWithKey:@"name" ascending:YES];
-    _sortedPharmacies = [[self.pharmacies sortedArrayUsingDescriptors:@[sortDescriptor]]mutableCopy];
+    NSSortDescriptor* statusDescriptor = [[NSSortDescriptor alloc]initWithKey:@"status" ascending:NO];
+    //TODO:only old visits
+    NSSortDescriptor* visitsDescriptor = [[NSSortDescriptor alloc]initWithKey:@"visitsInCurrentQuarter.@count" ascending:YES];
+    _sortedPharmacies = [[self.pharmacies sortedArrayUsingDescriptors:@[statusDescriptor, visitsDescriptor]]mutableCopy];
 }
 
 - (void)didReceiveMemoryWarning
@@ -278,6 +260,9 @@
     cell.contentView.backgroundColor = [UIColor clearColor];
     Pharmacy* pharmacy = self.filteredPharmacies[indexPath.row];
     cell.pharmacyLabel.text = pharmacy.name;
+    cell.addressLabel.text = [NSString stringWithFormat:@"%@, %@, %@", pharmacy.city, pharmacy.street, pharmacy.house];
+    cell.visitsLabel.text = [NSString stringWithFormat:@"%d", pharmacy.visitsInCurrentQuarter.count];
+    
     
     if (onlySelected)
     {
@@ -305,25 +290,21 @@
             cell.checkmark.hidden = NO;
         }
     }
-    for (Conference* conference in pharmacy.conferences)
-    {
-        //get date without time component. We don't need it in fact, because we already have it without time from calendar control
-        NSDate* startDate;
-        [[NSCalendar currentCalendar] rangeOfUnit:NSDayCalendarUnit startDate:&startDate interval:NULL forDate:self.selectedDate];
-        //Add one day
-        NSDateComponents *oneDay = [NSDateComponents new];
-        oneDay.day = 1;
-        NSDate *endDate = [[NSCalendar currentCalendar] dateByAddingComponents:oneDay
-                                                                        toDate:startDate
-                                                                       options:0];
-       if ([conference.date compare:startDate] != NSOrderedAscending && [conference.date compare:endDate] == NSOrderedAscending && conference.user.userId == [AppDelegate sharedDelegate].currentUser.userId)
-        {
-            //cell.accessoryType = UITableViewCellAccessoryCheckmark;
-            cell.checkmark.hidden = NO;
-        }
-    }
-
     
+    switch (pharmacy.status)
+    {
+        case SilverStatus:
+            cell.statusView.hidden = NO;
+            cell.statusView.backgroundColor = [UIColor whiteColor];
+            break;
+        case GoldStatus:
+            cell.statusView.hidden = NO;
+            cell.statusView.backgroundColor = [UIColor yellowColor];
+            break;
+        default:
+            cell.statusView.hidden = YES;
+            break;
+    }
     return cell;
 }
 
@@ -334,7 +315,6 @@
     Pharmacy* pharmacy = self.filteredPharmacies[indexPath.row];
     UINavigationController* hostController = [AppDelegate sharedDelegate].clientsSplitController.viewControllers[1];
     PharmacyViewController* pharmacyViewController = (PharmacyViewController*)hostController.topViewController;
-    
     
     NSDate* startDate;
     [[NSCalendar currentCalendar] rangeOfUnit:NSDayCalendarUnit startDate:&startDate interval:NULL forDate:self.selectedDate];
@@ -357,16 +337,6 @@
             found = YES;
         }
     }
-    for (Conference* conference in pharmacy.conferences)
-    {
-        
-        if ([conference.date compare:startDate] != NSOrderedAscending && [conference.date compare:endDate] == NSOrderedAscending && conference.user.userId == [AppDelegate sharedDelegate].currentUser.userId)
-        {
-            NSManagedObjectContext* context = [AppDelegate sharedDelegate].managedObjectContext;
-            [context deleteObject:conference];
-            found = YES;
-        }
-    }
     
     if (!found)
     {
@@ -380,6 +350,7 @@
         visit.user = [AppDelegate sharedDelegate].currentUser;
         //TODO: add fucking id
         visit.visitId = 0;
+        visit.closed = @NO;
         [[AppDelegate sharedDelegate]saveContext];
         }
         
@@ -390,25 +361,6 @@
     
     [pharmacyViewController showPharmacy:pharmacy];
     [self reloadData];
-}
-
-- (void)addPharmacy
-{
-    NewPharmacyViewController* pharmacyViewController = [NewPharmacyViewController new];
-    pharmacyViewController.delegate = self;
-    ModalNavigationController* hostingController = [[ModalNavigationController alloc]initWithRootViewController:pharmacyViewController];
-    hostingController.modalPresentationStyle = UIModalPresentationFormSheet;
-    hostingController.modalWidth = 590;
-    hostingController.modalHeight = 330;
-    [self presentViewController:hostingController animated:YES completion:nil];
-}
-
-- (void)newPharmacyViewController:(NewPharmacyViewController *)newPharmacyViewcontroller didAddPharmacy:(Pharmacy *)pharmacy
-{
-    [self.pharmacies addObject:pharmacy];
-    [self sortPharmacies];
-    [self.table reloadData];
-    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (IBAction)didSelectDate:(id)sender
@@ -439,13 +391,11 @@
         
         
         
-        NSPredicate* datePredicate = [NSPredicate predicateWithFormat:@"((ANY visits.date>=%@) AND (ANY visits.date<%@) AND (ANY visits.user.userId==%@)) OR ((ANY conferences.date>=%@) AND (ANY conferences.date<%@) AND (ANY conferences.user.userId==%@))", startDate, endDate, [AppDelegate sharedDelegate].currentUser.userId, startDate, endDate, [AppDelegate sharedDelegate].currentUser.userId];
-        NSPredicate* predicate1 = [NSPredicate predicateWithFormat:@"SUBQUERY(visits, $e, $e.date>=%@ && $e.date<%@ && $e.user.userId==%@).@count > 0", startDate, endDate, [AppDelegate sharedDelegate].currentUser.userId];
-        NSPredicate* predicate2 = [NSPredicate predicateWithFormat:@"SUBQUERY(conferences, $e, $e.date>=%@ && $e.date<%@ && $e.user.userId==%@).@count > 0", startDate, endDate, [AppDelegate sharedDelegate].currentUser.userId];
-        NSCompoundPredicate* compoundPredicate = [[NSCompoundPredicate alloc]initWithType:NSOrPredicateType subpredicates:@[predicate1, predicate2]];
+//        NSPredicate* datePredicate = [NSPredicate predicateWithFormat:@"((ANY visits.date>=%@) AND (ANY visits.date<%@) AND (ANY visits.user.userId==%@)) OR ((ANY conferences.date>=%@) AND (ANY conferences.date<%@) AND (ANY conferences.user.userId==%@))", startDate, endDate, [AppDelegate sharedDelegate].currentUser.userId, startDate, endDate, [AppDelegate sharedDelegate].currentUser.userId];
+        NSPredicate* predicate = [NSPredicate predicateWithFormat:@"SUBQUERY(visits, $e, $e.date>=%@ && $e.date<%@ && $e.user.userId==%@).@count > 0", startDate, endDate, [AppDelegate sharedDelegate].currentUser.userId];
         
 //        NSPredicate* compoundPredicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[filterByUserPredicate, datePredicate]];
-        [request setPredicate:compoundPredicate];
+        [request setPredicate:predicate];
     }
     NSError *error = nil;
     self.pharmacies = [[context executeFetchRequest:request error:&error]mutableCopy];
@@ -463,43 +413,27 @@
 
 - (void)filterPharmacies
 {
-    NSPredicate* namePredicate;
-    if ([self.nameFilterString isEqualToString:@""])
+    NSMutableArray* predicates = [NSMutableArray new];
+    NSArray* words = [self.nameFilterString componentsSeparatedByString:@" "];
+    for (NSString* word in words)
     {
-        namePredicate = [NSPredicate predicateWithValue:YES];
+        if (word.length > 0)
+        {
+            NSPredicate* predicateTemplate = [NSPredicate predicateWithFormat:@"name contains[cd] $WORD OR city contains[cd] $WORD OR street contains[cd] $WORD OR house contains[cd] $WORD OR region.name contains[cd] $WORD"];
+            NSPredicate *predicate = [predicateTemplate predicateWithSubstitutionVariables:@{@"WORD" : word}];
+            [predicates addObject:predicate];
+        }
     }
+    
+    NSPredicate* targetablePredicate;
+    if (onlyTargetable)
+        targetablePredicate = [NSPredicate predicateWithFormat:@"ANY users==%@", [AppDelegate sharedDelegate].currentUser];
     else
-    {
-        namePredicate = [NSPredicate predicateWithFormat:@"(name contains[cd] %@)", self.nameFilterString];
-    }
-    NSPredicate* cityPredicate;
-    if ([self.cityFilterString isEqualToString:@""])
-    {
-        cityPredicate = [NSPredicate predicateWithValue:YES];
-    }
-    else
-    {
-        cityPredicate = [NSPredicate predicateWithFormat:@"(city contains[cd] %@)", self.cityFilterString];
-    }
-    NSPredicate* streetPredicate;
-    if ([self.streetFilterString isEqualToString:@""])
-    {
-        streetPredicate = [NSPredicate predicateWithValue:YES];
-    }
-    else
-    {
-        streetPredicate = [NSPredicate predicateWithFormat:@"(street contains[cd] %@)", self.streetFilterString];
-    }
-    NSPredicate* housePredicate;
-    if ([self.houseFilterString isEqualToString:@""])
-    {
-        housePredicate = [NSPredicate predicateWithValue:YES];
-    }
-    else
-    {
-        housePredicate = [NSPredicate predicateWithFormat:@"(house contains[cd] %@)", self.houseFilterString];
-    }
-    NSCompoundPredicate* predicate = [[NSCompoundPredicate alloc]initWithType:NSAndPredicateType subpredicates:@[namePredicate, cityPredicate, streetPredicate, housePredicate]];
+        targetablePredicate = [NSPredicate predicateWithValue:YES];
+    
+    [predicates addObject:targetablePredicate];
+    
+    NSCompoundPredicate* predicate = [[NSCompoundPredicate alloc]initWithType:NSAndPredicateType subpredicates:predicates];
     self.filteredPharmacies = [self.sortedPharmacies filteredArrayUsingPredicate:predicate];
 }
 
@@ -509,18 +443,6 @@
     if (textField == self.nameFilter)
     {
         self.nameFilterString = finalString;
-    }
-    else if (textField == self.cityFilter)
-    {
-        self.cityFilterString = finalString;
-    }
-    else if (textField == self.streetFilter)
-    {
-        self.streetFilterString = finalString;
-    }
-    else if (textField == self.houseFilter)
-    {
-        self.houseFilterString = finalString;
     }
     NSLog(@"Replacement string is %@", finalString);
     [self filterPharmacies];
@@ -594,16 +516,14 @@
             [context deleteObject:visit];
         }
     }
-    for (Conference* conference in pharmacy.conferences)
-    {
-        
-        if ([conference.date compare:startDate] != NSOrderedAscending && [conference.date compare:endDate] == NSOrderedAscending && conference.user.userId == [AppDelegate sharedDelegate].currentUser.userId)
-        {
-            [context deleteObject:conference];
-        }
-    }
     self.selectedIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
     [self reloadData];
     [self selectFirstFromList];
+}
+
+- (IBAction)targetSwitched:(id)sender
+{
+    onlyTargetable = !onlyTargetable;
+    [self reloadData];
 }
 @end

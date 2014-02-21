@@ -1,23 +1,28 @@
 //
 //  Visit.m
-//  
+//  CRM
 //
-//  Created by FirstMac on 11.12.13.
-//
+//  Created by FirstMac on 21.02.14.
+//  Copyright (c) 2014 Nestline. All rights reserved.
 //
 
 #import "Visit.h"
+#import "CommerceVisit.h"
 #import "Pharmacy.h"
-#import "Sale.h"
+#import "PharmacyCircle.h"
+#import "PromoVisit.h"
 #import "User.h"
 
 
 @implementation Visit
 
-@dynamic visitId;
+@dynamic closed;
 @dynamic date;
-@dynamic user;
+@dynamic visitId;
+@dynamic commerceVisit;
 @dynamic pharmacy;
-@dynamic sales;
+@dynamic pharmacyCircle;
+@dynamic promoVisit;
+@dynamic user;
 
 @end

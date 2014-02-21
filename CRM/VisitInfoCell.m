@@ -27,11 +27,11 @@
 }
 
 
-//TODO: use inheritance
 - (void)showVisit:(Visit *)visit
 {
     self.nameLabel.text = visit.pharmacy.name;
-    self.networkLabel.text = visit.pharmacy.network;
+    //TODO:set text
+    //self.networkLabel.text = visit.pharmacy.network;
     self.phoneLabel.text = visit.pharmacy.phone;
     self.doctorLabel.text = visit.pharmacy.doctorName;
     self.addressLabel.text = [NSString stringWithFormat:@"%@, %@, %@", visit.pharmacy.city, visit.pharmacy.street, visit.pharmacy.house];
@@ -40,26 +40,25 @@
     self.timeLabel.text = [timeFormatter stringFromDate:visit.date];
     [timeFormatter setDateFormat:@"dd.MM.yyyy"];
     self.dateLabel.text = [timeFormatter stringFromDate:visit.date];
-}
-
-- (void)showConference:(Conference *)conference
-{
-    self.nameLabel.text = conference.pharmacy.name;
-    self.networkLabel.text = conference.pharmacy.network;
-    self.phoneLabel.text = conference.pharmacy.phone;
-    self.doctorLabel.text = conference.pharmacy.doctorName;
-    self.addressLabel.text = [NSString stringWithFormat:@"%@, %@, %@", conference.pharmacy.city, conference.pharmacy.street, conference.pharmacy.house];
-    NSDateFormatter *timeFormatter = [[NSDateFormatter alloc] init];
-    [timeFormatter setDateFormat:@"HH:mm"];
-    self.timeLabel.text = [timeFormatter stringFromDate:conference.date];
-    [timeFormatter setDateFormat:@"dd.MM.yyyy"];
-    self.dateLabel.text = [timeFormatter stringFromDate:conference.date];
+    
+    NSDateComponents* dateComponents =[[NSCalendar currentCalendar]components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:visit.date];
+    NSDateComponents* dateComponents2 =[[NSCalendar currentCalendar]components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:[NSDate date]];
+    
+    if (!visit.closed.boolValue && dateComponents.year == dateComponents2.year && dateComponents.month == dateComponents2.month && dateComponents.day == dateComponents2.day)
+    {
+        self.closeVisitButton.hidden = NO;
+    }
+    else
+    {
+        self.closeVisitButton.hidden = YES;
+    }
 }
 
 - (void)showPharmacy:(Pharmacy *)pharmacy
 {
     self.nameLabel.text = pharmacy.name;
-    self.networkLabel.text = pharmacy.network;
+    //TODO: set text
+    //self.networkLabel.text = pharmacy.network;
     self.phoneLabel.text = pharmacy.phone;
     self.doctorLabel.text = pharmacy.doctorName;
     self.addressLabel.text = [NSString stringWithFormat:@"%@, %@, %@", pharmacy.city, pharmacy.street, pharmacy.house];

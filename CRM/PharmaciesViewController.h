@@ -7,10 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "NewPharmacyViewController.h"
 #import "CKCalendarView.h"
 
-@interface PharmaciesViewController : UIViewController<NewPharmacyViewDelegate, UITextFieldDelegate, CKCalendarDelegate>
+@interface PharmaciesViewController : UIViewController<UITextFieldDelegate, CKCalendarDelegate>
 @property (nonatomic, weak) IBOutlet UITableView* table;
 @property (nonatomic, weak) IBOutlet UIView* filterView;
 @property (nonatomic, strong) CKCalendarView* calendarWidget;
@@ -21,4 +20,5 @@
 
 - (IBAction)leftSegmentPressed:(id)sender;
 - (IBAction)rightSegmentPressed:(id)sender;
+- (IBAction)targetSwitched:(id)sender;
 @end

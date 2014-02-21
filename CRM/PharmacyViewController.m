@@ -84,7 +84,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 3;
+    return 2;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -96,6 +96,7 @@
         {
             cell =[[NSBundle mainBundle]loadNibNamed:@"VisitInfoCell" owner:self options:nil][0];
         }
+        cell.closeVisitButton.hidden = YES;
         
         [cell showPharmacy:self.pharmacy];
         if (self.favourite)
@@ -106,11 +107,8 @@
         {
             cell.favouriteButton.hidden = YES;
         }
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
         return cell;
-    }
-    else if (indexPath.row == 1)
-    {
-        return [[NSBundle mainBundle]loadNibNamed:@"PharmacyInfo" owner:self options:nil][0];
     }
     else //if (indexPath.row == 2)
     {
@@ -120,6 +118,7 @@
             cell = [[NSBundle mainBundle]loadNibNamed:@"VisitMapCell" owner:self options:nil][0];
         }
         [cell setMapLocationForPharmacy:self.pharmacy];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
         return cell;
     }
 }
@@ -128,9 +127,7 @@
 {
     if (indexPath.row == 0)
         return 283;
-    else if (indexPath.row == 1)
-        return 147;
-    else //if (indexPath.row == 2)
+    else
         return 408;
 }
 

@@ -21,4 +21,5 @@
 
 - (IBAction)showPharmacy:(Pharmacy*)pharmacy;
 - (IBAction)removeFromFavourites:(id)sender;
+- (IBAction)closeVisit:(id)sender; //Need it here for builder
 @end

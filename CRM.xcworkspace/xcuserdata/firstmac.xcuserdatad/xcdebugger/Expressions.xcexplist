@@ -3,24 +3,30 @@
    version = "1.0">
    <ContextStates>
       <ContextState
+         contextName = "-[MGSplitViewController layoutSubviews]:MGSplitViewController.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "self.interfaceOrientation">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "-[AppDelegate parseBrands]:AppDelegate.m">
       </ContextState>
       <ContextState
-         contextName = "__26-[AppDelegate parseVisits]_block_invoke_2:AppDelegate.m">
+         contextName = "-[SalesViewController getLastSaleFor:mySale:]:SalesViewController.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[CommentViewController back]:CommentViewController.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[PharmacyCircleViewController tableView:numberOfRowsInSection:]:PharmacyCircleViewController.m">
       </ContextState>
       <ContextState
          contextName = "-[VisitsViewController tableView:numberOfRowsInSection:]:VisitsViewController.m">
          <PersistentStrings>
             <PersistentString
                value = "[AppDelegate sharedDelegate].visits.count">
-            </PersistentString>
-         </PersistentStrings>
-      </ContextState>
-      <ContextState
-         contextName = "-[ParticipantsViewController addParticipant:]:ParticipantsViewController.m">
-         <PersistentStrings>
-            <PersistentString
-               value = "self.conference.participants">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
@@ -33,6 +39,18 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
+         contextName = "__26-[AppDelegate parseVisits]_block_invoke:AppDelegate.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[SalesViewController showComment:]:SalesViewController.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[SalesViewController viewDidLoad]:SalesViewController.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[VisitViewController goToSalesList:]:VisitViewController.m">
+      </ContextState>
+      <ContextState
          contextName = "-[MFSideMenuContainerViewController setCenterViewController:]:MFSideMenuContainerViewController.m">
          <PersistentStrings>
             <PersistentString
@@ -41,10 +59,18 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "-[MGSplitViewController layoutSubviews]:MGSplitViewController.m">
+         contextName = "-[ParticipantsViewController addParticipant:]:ParticipantsViewController.m">
          <PersistentStrings>
             <PersistentString
-               value = "self.interfaceOrientation">
+               value = "self.conference.participants">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "-[SalesViewController textFieldDidBeginEditing:]:SalesViewController.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "self.view">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
@@ -57,10 +83,37 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "-[VisitsViewController tableView:cellForRowAtIndexPath:]:VisitsViewController.m">
+         contextName = "-[PharmaciesViewController viewDidLoad]:PharmaciesViewController.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "_pharmacies">
+            </PersistentString>
+         </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "__26-[AppDelegate parseVisits]_block_invoke:AppDelegate.m">
+         contextName = "-[PharmacyCircleViewController addParticipant:]:PharmacyCircleViewController.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "_pharmacyCircle">
+            </PersistentString>
+            <PersistentString
+               value = "self.pharmacyCircle">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "__26-[AppDelegate parseVisits]_block_invoke_2:AppDelegate.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[PharmacyCircleViewController modeSwitched:]:PharmacyCircleViewController.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "brandsMode">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "-[VisitsViewController tableView:cellForRowAtIndexPath:]:VisitsViewController.m">
       </ContextState>
    </ContextStates>
 </VariablesViewState>

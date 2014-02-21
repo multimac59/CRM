@@ -12,21 +12,19 @@
 #import "SidePanelController.h"
 #import "PharmaciesViewController.h"
 #import "PharmacyViewController.h"
-#import "CustomSplitController.h"
 #import "MGSplitViewController.h"
 #import "LoginViewController.h"
 
-#import "Brand.h"
 #import "Drug.h"
+#import "Dose.h"
 #import "Pharmacy.h"
 #import "Visit.h"
-#import "Conference.h"
 #import "Sale.h"
-#import "Participant.h"
+#import "Region.h"
 
 #import "YandexMapKit.h"
-#import "MapViewController.h"
 #import "MGSplitDividerView.h"
+#import "CommerceVisit.h"
 
 @implementation AppDelegate
 
@@ -49,24 +47,21 @@ static AppDelegate* sharedDelegate = nil;
         [[UINavigationBar appearance]setBackgroundImage:[UIImage imageNamed:@"navBarBg2"] forBarMetrics:UIBarMetricsDefault];
     }
     
-    
-    
-    [self deleteAllObjects:@"Conference"];
+    [self deleteAllObjects:@"Region"];
     [self deleteAllObjects:@"Visit"];
     [self deleteAllObjects:@"Pharmacy"];
     [self deleteAllObjects:@"Drug"];
     [self deleteAllObjects:@"Sale"];
     [self deleteAllObjects:@"Participant"];
-    [self deleteAllObjects:@"Brand"];
     [self deleteAllObjects:@"User"];
     sharedDelegate = self;
     
-    [self parseBrands];
-    [self parseDrugs];
+    [self parseRegions];
+    self.drugs = [self parseDrugs];
     [self parseUsers];
     [self parsePharmacies];
     [self parseVisits];
-    [self parseConferences];
+    //[self parseConferences];
     
     self.currentUser = [self findUserById:1];
     
@@ -113,6 +108,8 @@ static AppDelegate* sharedDelegate = nil;
                                                [NSValue valueWithUIOffset:UIOffsetMake(-1, 0)], UITextAttributeTextShadowOffset, nil];
     
     [[UINavigationBar appearance] setTitleTextAttributes:navbarTitleTextAttributes];
+    
+    [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(checkNewDay) userInfo:Nil repeats:YES];
     
     return YES;
 }
@@ -179,27 +176,21 @@ static AppDelegate* sharedDelegate = nil;
     }
 }
 
-- (NSMutableArray*)parseBrands
+- (NSMutableArray*)parseRegions
 {
-    NSString* brandsFile = [[NSBundle mainBundle]pathForResource:@"Brands" ofType:@"json"];
-    NSData* brandsData = [NSData dataWithContentsOfFile:brandsFile];
-    NSArray* brandsJSON = [NSJSONSerialization JSONObjectWithData:brandsData options:kNilOptions error:nil];
-    NSMutableArray* brands = [NSMutableArray new];
-    [brandsJSON enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop)
-     {
-         Brand* brand = [NSEntityDescription
-                                   insertNewObjectForEntityForName:@"Brand"
-                                   inManagedObjectContext:self.managedObjectContext];
-         brand.brandId = (NSNumber*)[obj objectForKey:@"id"];
-         brand.name = [obj objectForKey:@"name"];
-         [brands addObject:brand];
-     }];
-    NSError *error;
-    if (![self.managedObjectContext save:&error])
-    {
-        NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
-    }
-    return brands;
+    NSString* regionsFile = [[NSBundle mainBundle]pathForResource:@"Regions" ofType:@"json"];
+    NSData* regionsData = [NSData dataWithContentsOfFile:regionsFile];
+    NSArray* regionsJSON = [NSJSONSerialization JSONObjectWithData:regionsData options:kNilOptions error:nil];
+    NSMutableArray* regions = [NSMutableArray new];
+    [regionsJSON enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        Region* region = [NSEntityDescription
+                      insertNewObjectForEntityForName:@"Region"
+                      inManagedObjectContext:self.managedObjectContext];
+        region.regionId = (NSNumber*)[obj objectForKey:@"id"];
+        region.name = [obj objectForKey:@"name"];
+        [regions addObject:region];
+    }];
+    return regions;
 }
 
 - (NSMutableArray*)parseDrugs
@@ -215,6 +206,18 @@ static AppDelegate* sharedDelegate = nil;
                          inManagedObjectContext:self.managedObjectContext];
          drug.drugId = (NSNumber*)[obj objectForKey:@"id"];
          drug.name = [obj objectForKey:@"name"];
+         drug.doses = [NSSet new];
+         NSMutableArray* doses = [obj objectForKey:@"doses"];
+         [doses enumerateObjectsUsingBlock:^(id doseObj, NSUInteger idx, BOOL *stop)
+         {
+             Dose* dose = [NSEntityDescription
+                           insertNewObjectForEntityForName:@"Dose"
+                           inManagedObjectContext:self.managedObjectContext];
+             dose.doseId = (NSNumber*)[doseObj objectForKey:@"id"];
+             dose.name = [doseObj objectForKey:@"name"];
+             dose.priority = [doseObj objectForKey:@"priority"];
+             [drug addDosesObject:dose];
+         }];
          [drugs addObject:drug];
      }];
     NSError *error;
@@ -244,7 +247,19 @@ static AppDelegate* sharedDelegate = nil;
          pharmacy.house = [obj objectForKey:@"house"];
          pharmacy.phone = [obj objectForKey:@"phone"];
          pharmacy.doctorName = [obj objectForKey:@"doctorName"];
+         //pharmacy.region = [obj objectForKey:@"region"];
          pharmacy.visits = [NSSet new];
+         pharmacy.status =  [[[obj objectForKey:@"status"]stringValue]integerValue];
+         pharmacy.users = [NSSet new];
+         NSMutableArray* users = [obj objectForKey:@"users"];
+         [users enumerateObjectsUsingBlock:^(id userObj, NSUInteger idx, BOOL *stop) {
+             NSInteger userId = [[userObj stringValue]integerValue];
+             User* user = [self findUserById:userId];
+             [pharmacy addUsersObject:user];
+         }];
+         NSInteger regionId = [[[obj objectForKey:@"region"]stringValue]integerValue];
+         Region* region = [self findRegionById:regionId];
+         pharmacy.region = region;
          [pharmacies addObject:pharmacy];
      }];
     NSError *error;
@@ -270,11 +285,14 @@ static AppDelegate* sharedDelegate = nil;
          NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
          dateFormatter.dateFormat = @"dd.MM.yyyy HH:mm";
          visit.date = [dateFormatter dateFromString:visitDateString];
-         visit.visitId = (NSNumber*)[obj objectForKey:@"id"];
+         visit.visitId = [[obj objectForKey:@"id"]stringValue];
          //TODO: fix it
          NSInteger userId = ((NSNumber*)[obj objectForKey:@"userId"]).integerValue;
          visit.user = [self findUserById:userId];
-         visit.sales = [NSSet new];
+         CommerceVisit* commerceVisit = [NSEntityDescription
+                         insertNewObjectForEntityForName:@"CommerceVisit"
+                         inManagedObjectContext:self.managedObjectContext];
+         commerceVisit.sales = [NSSet new];
          NSMutableArray* sales = [obj objectForKey:@"sales"];
          [sales enumerateObjectsUsingBlock:^(id saleObj, NSUInteger idx, BOOL *stop) {
              Sale* sale = [NSEntityDescription
@@ -282,15 +300,15 @@ static AppDelegate* sharedDelegate = nil;
                              inManagedObjectContext:self.managedObjectContext];
              sale.saleId = (NSNumber*)[saleObj objectForKey:@"id"];
              //TODO: fix it
-             NSInteger drugId = ((NSNumber*)[saleObj objectForKey:@"drug"]).integerValue;
-             Drug* drug = [self findDrugById:drugId];
-             sale.user = visit.user;
-             sale.drug = drug;
+             NSInteger doseId = ((NSNumber*)[saleObj objectForKey:@"dose"]).integerValue;
+             Dose* dose = [self findDoseById:doseId];
+             sale.commerceVisit.visit.user = visit.user;
+             sale.dose = dose;
              sale.order = (NSNumber*)[saleObj objectForKey:@"order"];
              sale.sold = (NSNumber*)[saleObj objectForKey:@"sold"];
              sale.remainder = (NSNumber*)[saleObj objectForKey:@"remainder"];
-             sale.visit = visit;
-             [visit addSalesObject:sale];
+             sale.commerceVisit = commerceVisit;
+             [commerceVisit addSalesObject:sale];
          }];
          
          //TODO: fix it
@@ -298,6 +316,7 @@ static AppDelegate* sharedDelegate = nil;
          Pharmacy* pharmacy = [self findPharmacyById:pharmacyId];
          visit.pharmacy = pharmacy;
          [pharmacy addVisitsObject:visit];
+         visit.closed = @YES;
          [visits addObject:visit];
      }];
     NSError *error;
@@ -308,6 +327,7 @@ static AppDelegate* sharedDelegate = nil;
     return visits;
 }
 
+/*
 - (NSMutableArray*)parseConferences
 {
     NSString* conferencesFile = [[NSBundle mainBundle]pathForResource:@"Conferences" ofType:@"json"];
@@ -357,7 +377,7 @@ static AppDelegate* sharedDelegate = nil;
         NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
     }
     return conferences;
-}
+}*/
 
 - (NSMutableArray*)parseUsers
 {
@@ -371,13 +391,11 @@ static AppDelegate* sharedDelegate = nil;
                                   inManagedObjectContext:self.managedObjectContext];
         user.userId = (NSNumber*)[obj objectForKey:@"id"];
         user.name = [obj objectForKey:@"name"];
-        user.drugs = [NSSet new];
-        NSMutableArray* drugIds = [obj objectForKey:@"drugs"];
-        [drugIds enumerateObjectsUsingBlock:^(NSNumber* drugObj, NSUInteger idx, BOOL *stop) {
-            //TODO: fix it
-            NSInteger drugId = drugObj.integerValue;
-            Drug* drug = [self findDrugById:drugId];
-            [user addDrugsObject:drug];
+        NSArray* regions = [obj objectForKey:@"regions"];
+        [regions enumerateObjectsUsingBlock:^(id regionObj, NSUInteger idx, BOOL *stop) {
+            NSInteger regionId = [[regionObj stringValue]integerValue];
+            Region* region = [self findRegionById:regionId];
+            [user addRegionsObject:region];
         }];
         [users addObject:user];
     }];
@@ -387,6 +405,21 @@ static AppDelegate* sharedDelegate = nil;
         NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
     }
     return users;
+}
+
+- (Region*)findRegionById:(NSInteger)regionId
+{
+    NSManagedObjectContext* context = self.managedObjectContext;
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:[NSEntityDescription entityForName:@"Region" inManagedObjectContext:context]];
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"regionId=%@", [NSNumber numberWithFloat:regionId]];
+    [request setPredicate:predicate];
+    NSError *error = nil;
+    NSArray *results = [context executeFetchRequest:request error:&error];
+    if (results.count > 0)
+        return results[0];
+    else
+        return nil;
 }
 
 - (Drug*)findDrugById:(NSInteger)drugId
@@ -404,12 +437,12 @@ static AppDelegate* sharedDelegate = nil;
         return nil;
 }
 
-- (Brand*)findBrandById:(NSInteger)brandId
+- (Dose*)findDoseById:(NSInteger)drugId
 {
     NSManagedObjectContext* context = self.managedObjectContext;
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
-    [request setEntity:[NSEntityDescription entityForName:@"Brand" inManagedObjectContext:context]];
-    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"brandId=%@", [NSNumber numberWithFloat:brandId]];
+    [request setEntity:[NSEntityDescription entityForName:@"Dose" inManagedObjectContext:context]];
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"doseId=%@", [NSNumber numberWithFloat:drugId]];
     [request setPredicate:predicate];
     NSError *error = nil;
     NSArray *results = [context executeFetchRequest:request error:&error];
@@ -595,5 +628,22 @@ static AppDelegate* sharedDelegate = nil;
     	NSLog(@"Error deleting %@ - error:%@",entityDescription,error);
     }
     
+}
+
+- (void)checkNewDay
+{
+    NSLog(@"Checking new day....");
+    NSManagedObjectContext* context = self.managedObjectContext;
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:[NSEntityDescription entityForName:@"Visit" inManagedObjectContext:context]];
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"date<%@", [NSDate date]];
+    [request setPredicate:predicate];
+    NSError *error = nil;
+    NSArray *visits = [context executeFetchRequest:request error:&error];
+    for (Visit* visit in visits)
+    {
+        visit.closed = @YES;
+    }
+    [self saveContext];
 }
 @end

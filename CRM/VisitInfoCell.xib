@@ -130,10 +130,25 @@
                             <action selector="removeFromFavourites:" destination="-1" eventType="touchUpInside" id="vDB-sh-KXF"/>
                         </connections>
                     </button>
+                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aXd-Ub-IQH">
+                        <rect key="frame" x="9" y="7" width="132" height="29"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="15"/>
+                        <state key="normal" title="Закрыть визит" backgroundImage="buttonBorder">
+                            <color key="titleColor" red="0.51372549020000002" green="0.0" blue="0.31764705879999999" alpha="1" colorSpace="calibratedRGB"/>
+                        </state>
+                        <state key="highlighted" backgroundImage="buttonFilled">
+                            <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                        </state>
+                        <connections>
+                            <action selector="closeVisit:" destination="-1" eventType="touchUpInside" id="OPh-zh-h9j"/>
+                        </connections>
+                    </button>
                 </subviews>
             </tableViewCellContentView>
             <connections>
                 <outlet property="addressLabel" destination="MGl-G7-yhT" id="Ud4-T1-7w5"/>
+                <outlet property="closeVisitButton" destination="aXd-Ub-IQH" id="0Mi-Eh-sAb"/>
                 <outlet property="dateLabel" destination="h5l-rp-2wd" id="NZk-7A-s7u"/>
                 <outlet property="doctorLabel" destination="t8s-2o-hen" id="VWS-dJ-uuU"/>
                 <outlet property="favouriteButton" destination="hwO-6S-fFG" id="Wfz-Qd-C3B"/>

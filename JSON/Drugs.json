@@ -1,16 +1,92 @@
-[{
-	"id" : 1,
-	"name" : "Aспирин 10 мг"
-},
-{
-	"id" : 2,
-	"name" : "Парацетамол 50 мг"
-},
-{
-	"id" : 3,
-	"name" : "Нурофен уколы"
-},
-{
-	"id" : 4,
-	"name" : "Aспирин таблетки"
-}]
+[
+  {
+  "id":1,
+  "name":"Нексиум",
+  "doses":[
+           {
+           "id":1,
+           "main":true,
+           "name":"Нексиум 10 мг",
+           "priority":1
+           },
+           {
+           "id":2,
+           "main":false,
+           "name":"Нексиум 20 мг",
+           "priority":2
+           },
+           {
+           "id":3,
+           "main":false,
+           "name":"Нексиум 30 мг",
+           "priority":3
+           }
+           ]
+  },
+  {
+  "id":2,
+  "name":"Брилинта",
+  "doses":[
+           {
+           "id":4,
+           "main":false,
+           "name":"Брилинта 10 мг",
+           "priority":1
+           },
+           {
+           "id":5,
+           "main":true,
+           "name":"Брилинта 20 мг",
+           "priority":2
+           },
+           {
+           "id":6,
+           "main":false,
+           "name":"Брилинта 30 мг",
+           "priority":3
+           }
+           ]
+  },
+  {
+  "id":3,
+  "name":"Омез",
+  "doses":[
+           {
+           "id":7,
+           "main":false,
+           "name":"Омез 10 мг",
+           "priority":1
+           },
+           {
+           "id":8,
+           "main":false,
+           "name":"Омез 20 мг",
+           "priority":3
+           },
+           {
+           "id":9,
+           "main":true,
+           "name":"Омез 30 мг",
+           "priority":2
+           }
+           ]
+  },
+  {
+  "id":4,
+  "name":"Квамател",
+  "doses":[
+           {
+           "id":10,
+           "main":false,
+           "name":"Квамател 10 мг",
+           "priority":2
+           },
+           {
+           "id":11,
+           "main":true,
+           "name":"Квамател 20 мг",
+           "priority":1
+           }
+           ]
+  }
+  ]

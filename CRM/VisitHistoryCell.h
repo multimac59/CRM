@@ -8,7 +8,6 @@
 
 #import <UIKit/UIKit.h>
 #import "Visit.h"
-#import "Conference.h"
 #import "User.h"
 
 @interface VisitHistoryCell : UITableViewCell
@@ -18,5 +17,4 @@
 @property (nonatomic, weak) IBOutlet UILabel* typeLabel;
 
 - (void)showVisit:(Visit *)visit;
-- (void)showConference:(Conference *)conference;
 @end

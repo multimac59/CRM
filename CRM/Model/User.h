@@ -1,28 +1,40 @@
 //
 //  User.h
-//  
+//  CRM
 //
-//  Created by FirstMac on 11.12.13.
-//
+//  Created by FirstMac on 21.02.14.
+//  Copyright (c) 2014 Nestline. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 
-@class Drug;
+@class Pharmacy, Region, Visit;
 
 @interface User : NSManagedObject
 
-@property (nonatomic, retain) NSNumber * userId;
 @property (nonatomic, retain) NSString * name;
-@property (nonatomic, retain) NSSet *drugs;
+@property (nonatomic, retain) NSNumber * userId;
+@property (nonatomic, retain) NSSet *regions;
+@property (nonatomic, retain) NSSet *targetablePharmacies;
+@property (nonatomic, retain) NSSet *visits;
 @end
 
 @interface User (CoreDataGeneratedAccessors)
 
-- (void)addDrugsObject:(Drug *)value;
-- (void)removeDrugsObject:(Drug *)value;
-- (void)addDrugs:(NSSet *)values;
-- (void)removeDrugs:(NSSet *)values;
+- (void)addRegionsObject:(Region *)value;
+- (void)removeRegionsObject:(Region *)value;
+- (void)addRegions:(NSSet *)values;
+- (void)removeRegions:(NSSet *)values;
+
+- (void)addTargetablePharmaciesObject:(Pharmacy *)value;
+- (void)removeTargetablePharmaciesObject:(Pharmacy *)value;
+- (void)addTargetablePharmacies:(NSSet *)values;
+- (void)removeTargetablePharmacies:(NSSet *)values;
+
+- (void)addVisitsObject:(Visit *)value;
+- (void)removeVisitsObject:(Visit *)value;
+- (void)addVisits:(NSSet *)values;
+- (void)removeVisits:(NSSet *)values;
 
 @end

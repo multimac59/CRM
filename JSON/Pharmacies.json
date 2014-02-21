@@ -1,67 +1,91 @@
 [{
 	"id" : 1,
 	"name" : "Центральная аптека",
-	"network" : "Главная сеть медицинских учреждений",
+    "status" : 0,
+	"network" : true,
+    "psp"   : true,
+    "region" : 1,
 	"city" : "Москва",
 	"street" : "Пришвина",
 	"house" : "23",
 	"phone" : "+7 916 576 06 11",
 	"doctorName" : "Васильев Игорь Ильич",
-	"visits" : [1,2]
+	"visits" : [1,2],
+    "users" : [1,2]
 },
 {
 	"id" : 2,
 	"name" : "Аптека №7",
-	"network" : "Главная сеть медицинских учреждений",
+    "status" : 1,
+	"network" : true,
+    "psp"   : false,
+    "region" : 1,
 	"city" : "Москва",
 	"street" : "Ленинградский проспект",
 	"house" : "12",
 	"phone" : "+7 906 333 06 11",
 	"doctorName" : "Баранкин Виктор Петрович",
-	"visits" : [3]
+	"visits" : [3],
+    "users" : [1,3]
 },
 {
 	"id" : 3,
 	"name" : "Аптека №6",
-	"network" : "Частная сеть In Vitro",
+    "status" : 2,
+    "region" : 2,
+	"network" : false,
+    "psp"   : true,
 	"city" : "Москва",
 	"street" : "Варшавское шоссе",
 	"house" : "3",
 	"phone" : "+7 905 222 12 10",
 	"doctorName" : "Козлов Анатолий Евгеньевич",
-	"visits" : []
+	"visits" : [],
+    "users" : [1,2,3]
 },
  {
  "id" : 4,
  "name" : "Еще одна аптека",
- "network" : "Новая сеть",
+ "status" : 0,
+ "network" : true,
+ "psp"   : true,
+ "region" : 1,
  "city" : "Москва",
  "street" : "Тверская",
  "house" : "7",
  "phone" : "+7 905 576 06 11",
  "doctorName" : "Геннадьев Юрий Петрович",
- "visits" : []
+ "visits" : [],
+ "users" : [1,3]
  },
  {
  "id" : 5,
  "name" : "Центр №13",
- "network" : "Новая сеть",
+ "status" : 1,
+ "network" : true,
+ "psp"   : true,
+ "region" : 1,
  "city" : "Москва",
  "street" : "Шокальского",
  "house" : "9",
  "phone" : "+7 905 111 06 11",
  "doctorName" : "Олег Владимирович",
- "visits" : []
+ "visits" : [],
+ "users" : [2,3]
  },
  {
  "id" : 6,
  "name" : "Аптека №60",
- "network" : "Частная сеть In Vitro",
- "city" : "Москва",
+ "status" : 2,
+ "network" : true,
+ "psp"   : false,
+ "region" : 3,
+ "city" : "Санкт-Петербург",
  "street" : "Волгоградский проспект",
  "house" : "10",
  "phone" : "+7 905 222 12 10",
  "doctorName" : "Олег Анатольевич",
- "visits" : []
+ "visits" : [],
+ "users" : [1,3]
  }
 ]

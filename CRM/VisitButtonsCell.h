@@ -9,5 +9,5 @@
 #import <UIKit/UIKit.h>
 
 @interface VisitButtonsCell : UITableViewCell
-
+@property (nonatomic, weak) IBOutlet UIButton* salesButton;
 @end

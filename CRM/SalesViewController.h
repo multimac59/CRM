@@ -11,8 +11,8 @@
 #import "Pharmacy.h"
 #import "Sale.h"
 
-@interface SalesViewController : UIViewController<UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate>
-@property (nonatomic, strong) Visit* visit;
+@interface SalesViewController : UIViewController<UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, UITextFieldDelegate>
+@property (nonatomic, strong) CommerceVisit* commerceVisit;
 @property (nonatomic, strong) NSMutableArray* sales;
 @property (nonatomic, weak) IBOutlet UITableView* table;
 @property (nonatomic, weak) IBOutlet UISegmentedControl* segmentedControl;
@@ -24,7 +24,8 @@
 - (IBAction)switchFilter:(id)sender;
 - (IBAction)saveVisit:(id)sender;
 
-- (IBAction)lastVisitButtonPressed:(id)sender;
-- (IBAction)myLastVisitButtonPressed:(id)sender;
+//- (IBAction)lastVisitButtonPressed:(id)sender;
+//- (IBAction)myLastVisitButtonPressed:(id)sender;
 
+- (IBAction)showComment:(id)sender;
 @end

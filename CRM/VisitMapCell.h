@@ -12,7 +12,6 @@
 #import "AFNetworking.h"
 #import "RaptureXMLResponseSerializer.h"
 #import "MapAnnotation.h"
-#import "UIViewController+ShowModalFromView.h"
 #import "AppDelegate.h"
 
 @interface VisitMapCell : UITableViewCell

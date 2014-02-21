@@ -1,30 +1,25 @@
 //
 //  Visit.h
-//  
+//  CRM
 //
-//  Created by FirstMac on 11.12.13.
-//
+//  Created by FirstMac on 21.02.14.
+//  Copyright (c) 2014 Nestline. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 
-@class Pharmacy, Sale, User;
+@class CommerceVisit, Pharmacy, PharmacyCircle, PromoVisit, User;
 
 @interface Visit : NSManagedObject
 
-@property (nonatomic, retain) NSNumber * visitId;
+@property (nonatomic, retain) NSNumber * closed;
 @property (nonatomic, retain) NSDate * date;
-@property (nonatomic, retain) User *user;
+@property (nonatomic, retain) NSString * visitId;
+@property (nonatomic, retain) CommerceVisit *commerceVisit;
 @property (nonatomic, retain) Pharmacy *pharmacy;
-@property (nonatomic, retain) NSSet *sales;
-@end
-
-@interface Visit (CoreDataGeneratedAccessors)
-
-- (void)addSalesObject:(Sale *)value;
-- (void)removeSalesObject:(Sale *)value;
-- (void)addSales:(NSSet *)values;
-- (void)removeSales:(NSSet *)values;
+@property (nonatomic, retain) PharmacyCircle *pharmacyCircle;
+@property (nonatomic, retain) PromoVisit *promoVisit;
+@property (nonatomic, retain) User *user;
 
 @end

@@ -1,22 +1,24 @@
 //
 //  Sale.m
-//  
+//  CRM
 //
-//  Created by FirstMac on 11.12.13.
-//
+//  Created by FirstMac on 21.02.14.
+//  Copyright (c) 2014 Nestline. All rights reserved.
 //
 
 #import "Sale.h"
+#import "CommerceVisit.h"
+#import "Dose.h"
 
 
 @implementation Sale
 
-@dynamic saleId;
+@dynamic comment;
 @dynamic order;
 @dynamic remainder;
+@dynamic saleId;
 @dynamic sold;
-@dynamic drug;
-@dynamic visit;
-@dynamic user;
+@dynamic commerceVisit;
+@dynamic dose;
 
 @end
