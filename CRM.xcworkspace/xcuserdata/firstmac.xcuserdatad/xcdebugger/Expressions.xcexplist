@@ -3,6 +3,12 @@
    version = "1.0">
    <ContextStates>
       <ContextState
+         contextName = "-[VisitsViewController viewWillAppear:]:VisitsViewController.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[VisitsViewController tableView:cellForRowAtIndexPath:]:VisitsViewController.m">
+      </ContextState>
+      <ContextState
          contextName = "-[MGSplitViewController layoutSubviews]:MGSplitViewController.m">
          <PersistentStrings>
             <PersistentString
@@ -20,7 +26,13 @@
          contextName = "-[CommentViewController back]:CommentViewController.m">
       </ContextState>
       <ContextState
+         contextName = "-[VisitViewController tableView:cellForRowAtIndexPath:]:VisitViewController.m">
+      </ContextState>
+      <ContextState
          contextName = "-[PharmacyCircleViewController tableView:numberOfRowsInSection:]:PharmacyCircleViewController.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[PharmaciesViewController tableView:numberOfRowsInSection:]:PharmaciesViewController.m">
       </ContextState>
       <ContextState
          contextName = "-[VisitsViewController tableView:numberOfRowsInSection:]:VisitsViewController.m">
@@ -39,13 +51,34 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
+         contextName = "-[VisitsCell setupCellWithPharmacy:andVisit:]:VisitsCell.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "pharmacy.status">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "-[VisitHistoryCell showVisit:]:VisitHistoryCell.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "visit.user.name">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "__26-[AppDelegate parseVisits]_block_invoke:AppDelegate.m">
       </ContextState>
       <ContextState
          contextName = "-[SalesViewController showComment:]:SalesViewController.m">
       </ContextState>
       <ContextState
-         contextName = "-[SalesViewController viewDidLoad]:SalesViewController.m">
+         contextName = "-[VisitsViewController filterVisits]:VisitsViewController.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "self.visits">
+            </PersistentString>
+         </PersistentStrings>
       </ContextState>
       <ContextState
          contextName = "-[VisitViewController goToSalesList:]:VisitViewController.m">
@@ -91,6 +124,9 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
+         contextName = "-[SalesViewController viewDidLoad]:SalesViewController.m">
+      </ContextState>
+      <ContextState
          contextName = "-[PharmacyCircleViewController addParticipant:]:PharmacyCircleViewController.m">
          <PersistentStrings>
             <PersistentString
@@ -113,7 +149,13 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "-[VisitsViewController tableView:cellForRowAtIndexPath:]:VisitsViewController.m">
+         contextName = "-[VisitsViewController loadAll]:VisitsViewController.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[PharmaciesViewController tableView:cellForRowAtIndexPath:]:PharmaciesViewController.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[PharmaciesViewController commerceVisitClicked:]:PharmaciesViewController.m">
       </ContextState>
    </ContextStates>
 </VariablesViewState>

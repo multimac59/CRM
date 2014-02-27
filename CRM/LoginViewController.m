@@ -7,6 +7,9 @@
 //
 
 #import "LoginViewController.h"
+#import <AFNetworking/AFNetworking.h>
+#import "NSString+MD5Extension.h"
+#import "AppDelegate.h"
 
 @interface LoginViewController ()
 
@@ -37,7 +40,73 @@
 
 - (IBAction)goToMain:(id)sender
 {
-    [self dismissViewControllerAnimated:YES completion:nil];
+ [self dismissViewControllerAnimated:YES completion:nil];
+    return;
+    
+    NSString* login = self.loginField.text;
+    NSString* password = self.passwordField.text;
+    
+    //TODO: delete in production
+    login = @"roma@nestline.ru";
+    password = @"123";
+    
+    
+    NSString* hashedPassword = [password md5];
+    
+    User* user = [[AppDelegate sharedDelegate]findUserByLogin:login andPassword:hashedPassword];
+    if (user != nil)
+    {
+        [AppDelegate sharedDelegate].currentUser = user;
+        [self dismissViewControllerAnimated:YES completion:nil];
+    }
+    else
+    {
+    
+        AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+        [manager GET:[NSString stringWithFormat:@"http://crm.mydigital.guru/server/auth?email=%@&passwd=%@", login, hashedPassword] parameters:nil success:^(AFHTTPRequestOperation *operation, NSDictionary* jsonDic)
+        {
+            //if success
+            NSDictionary* okDict = [jsonDic objectForKey:@"ok"];
+            if (okDict)
+            {
+                User* user = [NSEntityDescription
+                 insertNewObjectForEntityForName:@"User"
+                 inManagedObjectContext:[AppDelegate sharedDelegate].managedObjectContext];
+                user.userId = [okDict objectForKey:@"id"];
+                user.login = login;
+                user.password = hashedPassword;
+                
+                NSArray* regions = @[@1, @2];
+                [regions enumerateObjectsUsingBlock:^(NSNumber* regionObj, NSUInteger idx, BOOL *stop) {
+                    NSInteger regionId = [regionObj integerValue];
+                    Region* region = [[AppDelegate sharedDelegate]findRegionById:regionId];
+                    [user addRegionsObject:region];
+                }];
+                
+                [AppDelegate sharedDelegate].currentUser = user;
+                [self dismissViewControllerAnimated:YES completion:nil];
+            }
+            else
+            {
+                UIAlertView* alert;
+                NSDictionary* errorDict = [jsonDic objectForKey:@"error"];
+                if (errorDict)
+                {
+                    alert = [[UIAlertView alloc]initWithTitle:@"" message:@"Неверный логин / пароль." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+                }
+                else
+                {
+                    alert = [[UIAlertView alloc]initWithTitle:@"" message:@"Произошла неизвестная ошибка." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+                }
+                [alert show];
+            }
+        }
+        failure:^(AFHTTPRequestOperation *operation, NSError *error)
+        {
+            UIAlertView* alert = [[UIAlertView alloc]initWithTitle:@"" message:@"Сервер недоступен." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+            [alert show];
+        }];
+    }
 }
 
 - (void)textFieldDidBeginEditing:(UITextField *)textField

@@ -10,191 +10,154 @@
 #import "PharmacyViewController.h"
 #import "AppDelegate.h"
 #import "Pharmacy.h"
-#import "PharmaciesCell.h"
+#import "VisitsCell.h"
 #import "Visit.h"
 #import "Pharmacy+QuarterVisits.h"
+#import "PromoVisit.h"
+#import "CommerceVisit.h"
+#import "PharmacyCircle.h"
+#import "NSDate+Additions.h"
 
 
 @interface PharmaciesViewController ()
 {
-    BOOL onlySelected;
-    BOOL onlyTargetable;
-    UIButton* searchButton;
-    UIButton* calendarButton;
-    BOOL selectFirst;
+    BOOL planned;
+    BOOL targetable;
+    
+    int delta;
 }
 @property (nonatomic, strong) NSDate* selectedDate;
 @property (nonatomic, strong) NSMutableArray* pharmacies;
-@property (nonatomic, strong) NSMutableArray* sortedPharmacies;
-@property (nonatomic, strong) NSArray* filteredPharmacies;
 
-@property (nonatomic, strong) NSString* nameFilterString;
+@property (nonatomic, strong) NSString* filterString;
 
-@property (nonatomic, strong) IBOutlet UITextField* nameFilter;
+@property (nonatomic, strong) IBOutlet UITextField* filterField;
 
-@property (nonatomic) BOOL filterOn;
 @property (nonatomic) BOOL calendarOn;
 
 @property (nonatomic, strong) NSIndexPath* selectedIndexPath;
 
+@property (nonatomic, weak) IBOutlet UILabel* targetLabel;
+
 @end
 
 @implementation PharmaciesViewController
+static const int panelWidth = 320;
+static const int calendarHeight = 226;
+static const int headerHeight = 46;
+static const int filterHeight = 110;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
+    if (self)
+    {
         // Custom initialization
-        onlySelected = NO;
-        onlyTargetable = YES;
-        self.selectedDate = [NSDate date];
-        
+        planned = NO; //Выбранные
+        targetable = NO; //Таргетные
+        self.selectedDate = [NSDate currentDate]; //На текущую дату
     }
     return self;
-}
-
-- (void)setFilterOn:(BOOL)filterOn
-{
-    _filterOn = filterOn;
-    if (!filterOn)
-    {
-        [searchButton setBackgroundImage:[UIImage imageNamed:@"searchButtonPressedBg"] forState:UIControlStateNormal];
-        //[searchButton setBackgroundImage:[UIImage imageNamed:@"searchButtonPressedBg"] forState:UIControlStateHighlighted];
-    }
-    else
-    {
-        [searchButton setBackgroundImage:[UIImage imageNamed:@"searchButtonBg"] forState:UIControlStateNormal];
-        //[searchButton setBackgroundImage:[UIImage imageNamed:@"searchButtonBg"] forState:UIControlStateHighlighted];
-    }
-}
-
-- (void)setCalendarOn:(BOOL)calendarOn
-{
-    _calendarOn = calendarOn;
-    if (!calendarOn)
-    {
-        [calendarButton setBackgroundImage:[UIImage imageNamed:@"calendarButtonPressedBg"] forState:UIControlStateNormal];
-        //[calendarButton setBackgroundImage:[UIImage imageNamed:@"calendarButtonPressedBg"] forState:UIControlStateHighlighted];
-    }
-    else
-    {
-        [calendarButton setBackgroundImage:[UIImage imageNamed:@"calendarButtonBg"] forState:UIControlStateNormal];
-        //[calendarButton setBackgroundImage:[UIImage imageNamed:@"calendarButtonBg"] forState:UIControlStateHighlighted];
-    }
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
-    NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
-    dateFormatter.dateFormat = @"dd.MM.yy";
-    self.title = [dateFormatter stringFromDate:self.selectedDate];
-    
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(removeFromFavourites:) name:@"RemoveFromFavourites" object:nil];
-    // Do any additional setup after loading the view from its nib.
     
     self.navigationController.navigationBar.translucent = NO;
-    
-    searchButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 40, 25)];
-    //[searchButton setBackgroundImage:[UIImage imageNamed:@"searchButtonPressedBg"] forState:UIControlStateNormal];
-    //[searchButton setBackgroundImage:[UIImage imageNamed:@"searchButtonBg"] forState:UIControlStateHighlighted];
-    [searchButton addTarget:self action:@selector(toggleFilter) forControlEvents:UIControlEventTouchDown];
-    UIBarButtonItem* searchButtonItem = [[UIBarButtonItem alloc]initWithCustomView:searchButton];
-    
-    calendarButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 40, 25)];
-    //[calendarButton setBackgroundImage:[UIImage imageNamed:@"calendarButtonBg"] forState:UIControlStateNormal];
-    //[calendarButton setBackgroundImage:[UIImage imageNamed:@"calendarButtonPressedBg"] forState:UIControlStateHighlighted];
-    [calendarButton addTarget:self action:@selector(toggleCalendar) forControlEvents:UIControlEventTouchDown];
-    UIBarButtonItem* calendarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:calendarButton];
-    
-    self.navigationItem.rightBarButtonItems = @[calendarButtonItem];
-    
-    NSManagedObjectContext* context = [AppDelegate sharedDelegate].managedObjectContext;
-    NSFetchRequest *request = [[NSFetchRequest alloc] init];
-    [request setEntity:[NSEntityDescription entityForName:@"Pharmacy" inManagedObjectContext:context]];
-    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"region IN %@", [AppDelegate sharedDelegate].currentUser.regions];
-    //request.predicate = predicate;
-    NSError *error = nil;
-    _pharmacies = [[context executeFetchRequest:request error:&error]mutableCopy];
-    [self sortPharmacies];
-    
-    self.nameFilterString = @"";
-    [self filterPharmacies];
-    
-    [self selectFirstFromList];
     
     self.calendarWidget = [[CKCalendarView alloc]init];
     self.calendarWidget.dayOfWeekTextColor = [UIColor whiteColor];
     self.calendarWidget.dateOfWeekFont = [UIFont systemFontOfSize:10];
     self.calendarWidget.dateFont = [UIFont systemFontOfSize:15];
-    self.calendarWidget.frame = CGRectMake(0, -300, 320, 300);
     [self.view addSubview:self.calendarWidget];
     self.calendarWidget.delegate = self;
-    [self.calendarWidget selectDate:[NSDate date] makeVisible:YES];
+    [self.calendarWidget selectDate:[NSDate currentDate] makeVisible:YES];
     
-    self.filterOn = YES;
-    self.calendarOn = NO;
+    UIPanGestureRecognizer* panRecognizer1 = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(moveCalendar:)];
+    [self.calendarHeader addGestureRecognizer:panRecognizer1];
+    UIPanGestureRecognizer* panRecognizer2 = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(moveCalendar:)];
+    [self.calendarWidget addGestureRecognizer:panRecognizer2];
+    UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(toggleCalendar)];
+    [self.calendarHeader addGestureRecognizer:tapRecognizer];
     
-    UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
-    [self.table addSubview:refreshControl];
+    NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
+    dateFormatter.dateFormat = @"dd.MM.yyyy";
+    self.dateLabel.text = [dateFormatter stringFromDate:self.selectedDate];
     
-}
-
-- (void)toggleFilter
-{
-    return;
-    if (self.filterOn)
+    self.filterString = @"";
+    
+    [self reloadData];
+    [self selectFirstFromList];
+    
+    if (SYSTEM_VERSION_LESS_THAN(@"7.0"))
     {
-        [UIView animateWithDuration:0.3 animations:^{
-            self.filterView.frame = CGRectMake(0, -184, 320, 184);
-            self.segmentedControl.frame = CGRectMake(69, 10, 183, 29);
-            self.table.frame = CGRectMake(0, 44, 320, 540);
-        } completion:^(BOOL finished) {
-            self.filterOn = NO;
-        }];
+        delta = 20;
     }
     else
     {
-        if (self.calendarOn)
+        delta = 0;
+    }
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    self.calendarWidget.frame = CGRectMake(0, self.view.frame.size.height - delta, panelWidth, calendarHeight);
+    self.calendarHeader.frame = CGRectMake(0, self.view.frame.size.height - headerHeight - delta, panelWidth, headerHeight);
+    self.table.frame = CGRectMake(0, filterHeight, panelWidth, self.view.frame.size.height - filterHeight - headerHeight - delta);
+    self.calendarOn = NO;
+}
+
+- (void)moveCalendar:(UIPanGestureRecognizer*)recognizer
+{
+    CGPoint point = [recognizer locationInView:self.view];
+    
+    if (recognizer.state == UIGestureRecognizerStateEnded)
+    {
+        CGPoint velocity = [recognizer velocityInView:self.view];
+        if (velocity.y < 0)
         {
             [UIView animateWithDuration:0.3 animations:^{
-                self.calendarWidget.frame = CGRectMake(0, -300, 320, 300);
-                self.segmentedControl.frame = CGRectMake(69, 10, 183, 29);
-                self.table.frame = CGRectMake(0, 44, 320, 540);
+                self.calendarWidget.frame = CGRectMake(0, self.view.frame.size.height - calendarHeight - delta, panelWidth, calendarHeight);
+                self.calendarHeader.frame = CGRectMake(0, self.view.frame.size.height - calendarHeight - headerHeight - delta, panelWidth, headerHeight);
+                self.table.frame = CGRectMake(0, filterHeight, panelWidth, self.view.frame.size.height - calendarHeight - headerHeight - filterHeight - delta);
             } completion:^(BOOL finished) {
-                self.calendarOn = NO;
-                [UIView animateWithDuration:0.3 animations:^{
-                    self.filterView.frame = CGRectMake(0, 0, 320, 184);
-                    self.segmentedControl.frame = CGRectMake(69, 10 + 184, 183, 29);
-                    self.table.frame = CGRectMake(0, 44 + 184, 320, 540);
-                } completion:^(BOOL finished) {
-                    self.filterOn = YES;
-                }];
+                self.calendarOn = YES;
             }];
         }
         else
         {
-        [UIView animateWithDuration:0.3 animations:^{
-            self.filterView.frame = CGRectMake(0, 0, 320, 184);
-            self.segmentedControl.frame = CGRectMake(69, 10 + 184, 183, 29);
-            self.table.frame = CGRectMake(0, 44 + 184, 320, 540);
-        } completion:^(BOOL finished) {
-            self.filterOn = YES;
-        }];
+            [UIView animateWithDuration:0.3 animations:^{
+                self.calendarWidget.frame = CGRectMake(0, self.view.frame.size.height - delta, panelWidth, calendarHeight);
+                self.calendarHeader.frame = CGRectMake(0, self.view.frame.size.height - headerHeight - delta, panelWidth, headerHeight);
+                self.table.frame = CGRectMake(0, filterHeight, panelWidth, self.view.frame.size.height - filterHeight - headerHeight - delta);
+            } completion:^(BOOL finished) {
+                self.calendarOn = NO;
+            }];
         }
+    }
+    else
+    {
+        int offset = self.view.frame.size.height - point.y;
+        if (offset < 0 || offset > calendarHeight)
+            return;
+        self.calendarWidget.frame = CGRectMake(0, self.view.frame.size.height - offset - delta, panelWidth, calendarHeight);
+        self.calendarHeader.frame = CGRectMake(0, self.view.frame.size.height - offset - headerHeight - delta, panelWidth, headerHeight);
+        self.table.frame = CGRectMake(0, filterHeight, panelWidth, self.view.frame.size.height - offset - headerHeight - filterHeight - delta);
     }
 }
 
 - (void)toggleCalendar
 {
+    NSLog(@"%f", self.view.frame.size.height);
     if (self.calendarOn)
     {
         [UIView animateWithDuration:0.3 animations:^{
-            self.calendarWidget.frame = CGRectMake(0, -300, 320, 300);
-            self.filterView.frame = CGRectMake(0, 0, 320, 150);
-            self.table.frame = CGRectMake(0, 150, 320, 618);
+            self.calendarWidget.frame = CGRectMake(0, self.view.frame.size.height - delta, panelWidth, calendarHeight);
+            self.calendarHeader.frame = CGRectMake(0, self.view.frame.size.height - headerHeight - delta, panelWidth, headerHeight);
+            self.table.frame = CGRectMake(0, filterHeight, panelWidth, self.view.frame.size.height - filterHeight - headerHeight - delta);
         } completion:^(BOOL finished) {
             self.calendarOn = NO;
         }];
@@ -202,9 +165,9 @@
     else
     {
         [UIView animateWithDuration:0.3 animations:^{
-            self.calendarWidget.frame = CGRectMake(0, 0, 320, 300);
-            self.filterView.frame = CGRectMake(0, 300, 320, 150);
-            self.table.frame = CGRectMake(0, 150 + 300, 320, 618);
+            self.calendarWidget.frame = CGRectMake(0, self.view.frame.size.height - calendarHeight - delta, panelWidth, calendarHeight);
+            self.calendarHeader.frame = CGRectMake(0, self.view.frame.size.height - calendarHeight - headerHeight - delta, panelWidth, headerHeight);
+            self.table.frame = CGRectMake(0, filterHeight, panelWidth, self.view.frame.size.height - calendarHeight - headerHeight - filterHeight - delta);
         } completion:^(BOOL finished) {
             self.calendarOn = YES;
         }];
@@ -213,21 +176,13 @@
 
 - (void)selectFirstFromList
 {
-    if (self.filteredPharmacies.count <= 0)
+    if (self.pharmacies.count <= 0)
         return;
-    Pharmacy* pharmacy = self.filteredPharmacies[0];
+    Pharmacy* pharmacy = self.pharmacies[0];
     UINavigationController* hostController = [AppDelegate sharedDelegate].clientsSplitController.viewControllers[1];
     PharmacyViewController* pharmacyViewController = (PharmacyViewController*)hostController.topViewController;
     [pharmacyViewController showPharmacy:pharmacy];
     [self.table selectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] animated:NO scrollPosition:UITableViewScrollPositionNone];
-}
-
-- (void)sortPharmacies
-{
-    NSSortDescriptor* statusDescriptor = [[NSSortDescriptor alloc]initWithKey:@"status" ascending:NO];
-    //TODO:only old visits
-    NSSortDescriptor* visitsDescriptor = [[NSSortDescriptor alloc]initWithKey:@"visitsInCurrentQuarter.@count" ascending:YES];
-    _sortedPharmacies = [[self.pharmacies sortedArrayUsingDescriptors:@[statusDescriptor, visitsDescriptor]]mutableCopy];
 }
 
 - (void)didReceiveMemoryWarning
@@ -238,72 +193,33 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return self.filteredPharmacies.count;
+    return self.pharmacies.count;
 }
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    PharmaciesCell* cell = [tableView dequeueReusableCellWithIdentifier:@"PharmaciesCell"];
+    VisitsCell* cell = [tableView dequeueReusableCellWithIdentifier:@"VisitsCell"];
     if (cell == nil)
     {
-        cell = [[[NSBundle mainBundle]loadNibNamed:@"PharmaciesCell" owner:self options:nil]objectAtIndex:0];
+        cell = [[[NSBundle mainBundle]loadNibNamed:@"VisitsCell" owner:self options:nil]objectAtIndex:0];
     }
+    
     if (indexPath.row == self.selectedIndexPath.row)
-    {
         cell.triangleImage.hidden = NO;
+    else
+        cell.triangleImage.hidden = YES;
+    
+    Pharmacy* pharmacy = self.pharmacies[indexPath.row];
+    Visit* visit = [self visitInPharmacy:pharmacy forDate:self.selectedDate];
+    [cell setupCellWithPharmacy:pharmacy andVisit:visit];
+    if (pharmacy.status == NormalStatus)
+    {
+        //cell.pspView.hidden = YES;
+        cell.pspView.frame = CGRectMake(15, 42, 30, 16);
     }
     else
     {
-        cell.triangleImage.hidden = YES;
-    }
-    cell.backgroundColor = [UIColor clearColor];
-    cell.contentView.backgroundColor = [UIColor clearColor];
-    Pharmacy* pharmacy = self.filteredPharmacies[indexPath.row];
-    cell.pharmacyLabel.text = pharmacy.name;
-    cell.addressLabel.text = [NSString stringWithFormat:@"%@, %@, %@", pharmacy.city, pharmacy.street, pharmacy.house];
-    cell.visitsLabel.text = [NSString stringWithFormat:@"%d", pharmacy.visitsInCurrentQuarter.count];
-    
-    
-    if (onlySelected)
-    {
-        //cell.accessoryType = UITableViewCellAccessoryNone;
-        cell.checkmark.hidden = YES;
-        return cell;
-    }
-    
-    //cell.accessoryType = UITableViewCellAccessoryNone;
-    cell.checkmark.hidden = YES;
-    for (Visit* visit in pharmacy.visits)
-    {
-        //get date without time component. We don't need it in fact, because we already have it without time from calendar control
-        NSDate* startDate;
-        [[NSCalendar currentCalendar] rangeOfUnit:NSDayCalendarUnit startDate:&startDate interval:NULL forDate:self.selectedDate];
-        //Add one day
-        NSDateComponents *oneDay = [NSDateComponents new];
-        oneDay.day = 1;
-        NSDate *endDate = [[NSCalendar currentCalendar] dateByAddingComponents:oneDay
-                                                                        toDate:startDate
-                                                                       options:0];
-        if ([visit.date compare:startDate] != NSOrderedAscending && [visit.date compare:endDate] == NSOrderedAscending && visit.user.userId == [AppDelegate sharedDelegate].currentUser.userId)
-        {
-            //cell.accessoryType = UITableViewCellAccessoryCheckmark;
-            cell.checkmark.hidden = NO;
-        }
-    }
-    
-    switch (pharmacy.status)
-    {
-        case SilverStatus:
-            cell.statusView.hidden = NO;
-            cell.statusView.backgroundColor = [UIColor whiteColor];
-            break;
-        case GoldStatus:
-            cell.statusView.hidden = NO;
-            cell.statusView.backgroundColor = [UIColor yellowColor];
-            break;
-        default:
-            cell.statusView.hidden = YES;
-            break;
+        cell.pspView.frame = CGRectMake(44, 42, 30, 16);
     }
     return cell;
 }
@@ -311,75 +227,32 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     self.selectedIndexPath = indexPath;
-    NSLog(@"Clicked, row = %ld", (long)indexPath.row);
-    Pharmacy* pharmacy = self.filteredPharmacies[indexPath.row];
+    Pharmacy* pharmacy = self.pharmacies[indexPath.row];
     UINavigationController* hostController = [AppDelegate sharedDelegate].clientsSplitController.viewControllers[1];
     PharmacyViewController* pharmacyViewController = (PharmacyViewController*)hostController.topViewController;
-    
-    NSDate* startDate;
-    [[NSCalendar currentCalendar] rangeOfUnit:NSDayCalendarUnit startDate:&startDate interval:NULL forDate:self.selectedDate];
-    //Add one day
-    NSDateComponents *oneDay = [NSDateComponents new];
-    oneDay.day = 1;
-    NSDate *endDate = [[NSCalendar currentCalendar] dateByAddingComponents:oneDay
-                                                                    toDate:startDate
-                                                                   options:0];
-    NSManagedObjectContext* context = [AppDelegate sharedDelegate].managedObjectContext;
-    
-    BOOL found = NO;
-    for (Visit* visit in pharmacy.visits)
-    {
-       
-        if ([visit.date compare:startDate] != NSOrderedAscending && [visit.date compare:endDate] == NSOrderedAscending && visit.user.userId == [AppDelegate sharedDelegate].currentUser.userId)
-        {
-            if (!onlySelected)
-                [context deleteObject:visit];
-            found = YES;
-        }
-    }
-    
-    if (!found)
-    {
-        if (!onlySelected)
-        {
-        Visit* visit = [NSEntityDescription
-                        insertNewObjectForEntityForName:@"Visit"
-                        inManagedObjectContext:context];
-        visit.pharmacy = pharmacy;
-        visit.date = self.selectedDate;
-        visit.user = [AppDelegate sharedDelegate].currentUser;
-        //TODO: add fucking id
-        visit.visitId = 0;
-        visit.closed = @NO;
-        [[AppDelegate sharedDelegate]saveContext];
-        }
-        
-        pharmacyViewController.favourite = NO;
-    }
-    else if (onlySelected)
-        pharmacyViewController.favourite = YES;
-    
     [pharmacyViewController showPharmacy:pharmacy];
-    [self reloadData];
-}
-
-- (IBAction)didSelectDate:(id)sender
-{
-    UIDatePicker* datePicker = (UIDatePicker*)sender;
-    self.selectedDate = datePicker.date;
-    [self reloadData];
 }
 
 - (void)reloadData
 {
+    [self loadPharmacies];
+    [self sortPharmacies];
+    [self.table reloadData];
+}
+
+- (void)loadPharmacies
+{
     NSManagedObjectContext* context = [AppDelegate sharedDelegate].managedObjectContext;
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     [request setEntity:[NSEntityDescription entityForName:@"Pharmacy" inManagedObjectContext:context]];
-    if (onlySelected)
+    
+    NSMutableArray* filterPredicates = [NSMutableArray new];
+    
+    NSPredicate* userPredicate = [NSPredicate predicateWithFormat:@"region IN %@", [AppDelegate sharedDelegate].currentUser.regions];
+    //[filterPredicates addObject:userPredicate];
+    
+    if (planned)
     {
-//        NSPredicate* predicate = [NSPredicate predicateWithFormat:@"ANY visits.date==%@", self.selectedDate];
-        
-        //get date without time component. We don't need it in fact, because we already have it without time from calendar control
         NSDate* startDate;
         [[NSCalendar currentCalendar] rangeOfUnit:NSDayCalendarUnit startDate:&startDate interval:NULL forDate:self.selectedDate];
         //Add one day
@@ -388,65 +261,48 @@
         NSDate *endDate = [[NSCalendar currentCalendar] dateByAddingComponents:oneDay
                                                                         toDate:startDate
                                                                        options:0];
-        
-        
-        
-//        NSPredicate* datePredicate = [NSPredicate predicateWithFormat:@"((ANY visits.date>=%@) AND (ANY visits.date<%@) AND (ANY visits.user.userId==%@)) OR ((ANY conferences.date>=%@) AND (ANY conferences.date<%@) AND (ANY conferences.user.userId==%@))", startDate, endDate, [AppDelegate sharedDelegate].currentUser.userId, startDate, endDate, [AppDelegate sharedDelegate].currentUser.userId];
-        NSPredicate* predicate = [NSPredicate predicateWithFormat:@"SUBQUERY(visits, $e, $e.date>=%@ && $e.date<%@ && $e.user.userId==%@).@count > 0", startDate, endDate, [AppDelegate sharedDelegate].currentUser.userId];
-        
-//        NSPredicate* compoundPredicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[filterByUserPredicate, datePredicate]];
-        [request setPredicate:predicate];
+        NSPredicate* plannedPredicate = [NSPredicate predicateWithFormat:@"SUBQUERY(visits, $e, $e.date>=%@ && $e.date<%@ && $e.user.userId==%@).@count > 0", startDate, endDate, [AppDelegate sharedDelegate].currentUser.userId];
+        [filterPredicates addObject:plannedPredicate];
     }
-    NSError *error = nil;
-    self.pharmacies = [[context executeFetchRequest:request error:&error]mutableCopy];
-    [self sortPharmacies];
-    [self filterPharmacies];
-    [self.table reloadData];
-}
-
-- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
-{
-    if (searchBar)
-    [self filterPharmacies];
-    [self.table reloadData];
-}
-
-- (void)filterPharmacies
-{
-    NSMutableArray* predicates = [NSMutableArray new];
-    NSArray* words = [self.nameFilterString componentsSeparatedByString:@" "];
+    if (targetable)
+    {
+        NSPredicate* targetablePredicate = [NSPredicate predicateWithFormat:@"ANY users==%@", [AppDelegate sharedDelegate].currentUser];
+        [filterPredicates addObject:targetablePredicate];
+    }
+    
+    NSArray* words = [self.filterString componentsSeparatedByString:@" "];
     for (NSString* word in words)
     {
         if (word.length > 0)
         {
             NSPredicate* predicateTemplate = [NSPredicate predicateWithFormat:@"name contains[cd] $WORD OR city contains[cd] $WORD OR street contains[cd] $WORD OR house contains[cd] $WORD OR region.name contains[cd] $WORD"];
             NSPredicate *predicate = [predicateTemplate predicateWithSubstitutionVariables:@{@"WORD" : word}];
-            [predicates addObject:predicate];
+            [filterPredicates addObject:predicate];
         }
     }
     
-    NSPredicate* targetablePredicate;
-    if (onlyTargetable)
-        targetablePredicate = [NSPredicate predicateWithFormat:@"ANY users==%@", [AppDelegate sharedDelegate].currentUser];
-    else
-        targetablePredicate = [NSPredicate predicateWithValue:YES];
+    NSCompoundPredicate* predicate = [[NSCompoundPredicate alloc]initWithType:NSAndPredicateType subpredicates:filterPredicates];
+    request.predicate = predicate;
     
-    [predicates addObject:targetablePredicate];
-    
-    NSCompoundPredicate* predicate = [[NSCompoundPredicate alloc]initWithType:NSAndPredicateType subpredicates:predicates];
-    self.filteredPharmacies = [self.sortedPharmacies filteredArrayUsingPredicate:predicate];
+    NSError *error = nil;
+    self.pharmacies = [[context executeFetchRequest:request error:&error]mutableCopy];
+}
+
+- (void)sortPharmacies
+{
+    NSSortDescriptor* statusDescriptor = [[NSSortDescriptor alloc]initWithKey:@"status" ascending:NO];
+    NSSortDescriptor* visitsDescriptor = [[NSSortDescriptor alloc]initWithKey:@"visitsInCurrentQuarter.@count" ascending:YES];
+    [self.pharmacies sortUsingDescriptors:@[statusDescriptor, visitsDescriptor]];
 }
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
 {
-    NSString* finalString = [textField.text stringByReplacingCharactersInRange:range withString:string];
-    if (textField == self.nameFilter)
+    if (textField == self.filterField)
     {
-        self.nameFilterString = finalString;
+        NSString* finalString = [textField.text stringByReplacingCharactersInRange:range withString:string];
+        self.filterString = finalString;
     }
-    NSLog(@"Replacement string is %@", finalString);
-    [self filterPharmacies];
-    [self.table reloadData];
+    [self reloadData];
     return YES;
 }
 
@@ -454,22 +310,24 @@
 {
     self.selectedDate = date;
     
+    NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
+    dateFormatter.dateFormat = @"dd.MM.yyyy";
+    self.dateLabel.text = [dateFormatter stringFromDate:date];
+    
     [self reloadData];
     
-    NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
-    dateFormatter.dateFormat = @"dd.MM.yy";
-    self.title = [dateFormatter stringFromDate:date];
+    [self toggleCalendar];
 }
 
 - (IBAction)leftSegmentPressed:(id)sender
 {
-    if (onlySelected)
+    if (planned)
     {
         [self.leftSegment setBackgroundImage:[UIImage imageNamed:@"leftPinkPressed"] forState:UIControlStateNormal];
         [self.rightSegment setBackgroundImage:[UIImage imageNamed:@"rightPink"] forState:UIControlStateNormal];
         [self.leftSegment setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [self.rightSegment setTitleColor:[UIColor purpleColor] forState:UIControlStateNormal];
-        onlySelected = NO;
+        planned = NO;
         
         self.selectedIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
         [self reloadData];
@@ -479,13 +337,13 @@
 
 - (IBAction)rightSegmentPressed:(id)sender
 {
-    if (!onlySelected)
+    if (!planned)
     {
         [self.leftSegment setBackgroundImage:[UIImage imageNamed:@"leftPink"] forState:UIControlStateNormal];
         [self.rightSegment setBackgroundImage:[UIImage imageNamed:@"rightPinkPressed"] forState:UIControlStateNormal];
         [self.leftSegment setTitleColor:[UIColor purpleColor] forState:UIControlStateNormal];
         [self.rightSegment setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        onlySelected = YES;
+        planned = YES;
         
         self.selectedIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
         [self reloadData];
@@ -521,9 +379,205 @@
     [self selectFirstFromList];
 }
 
+
 - (IBAction)targetSwitched:(id)sender
 {
-    onlyTargetable = !onlyTargetable;
+    targetable = !targetable;
+    if (targetable)
+    {
+        [self.targetButton setBackgroundImage:[UIImage imageNamed:@"targetBgPressed"] forState:UIControlStateNormal];
+    }
+    else
+    {
+        [self.targetButton setBackgroundImage:[UIImage imageNamed:@"targetBg"] forState:UIControlStateNormal];
+    }
+    self.targetLabel.hidden = !targetable;
     [self reloadData];
+}
+
+
+#pragma mark helper methods
+
+- (NSIndexPath*)indexPathForSender:(id)sender
+{
+    CGPoint center= ((UIButton*)sender).center;
+    CGPoint rootViewPoint = [((UIButton*)sender).superview convertPoint:center toView:self.table];
+    NSIndexPath *indexPath = [self.table indexPathForRowAtPoint:rootViewPoint];
+    return indexPath;
+}
+
+- (Visit*)visitInPharmacy:(Pharmacy*)pharmacy forDate:(NSDate*)date
+{
+    for (Visit* visit in pharmacy.visits)
+    {
+        //get date without time component. We don't need it in fact, because we already have it without time from calendar control
+        NSDate* startDate;
+        [[NSCalendar currentCalendar] rangeOfUnit:NSDayCalendarUnit startDate:&startDate interval:NULL forDate:date];
+        //Add one day
+        NSDateComponents *oneDay = [NSDateComponents new];
+        oneDay.day = 1;
+        NSDate *endDate = [[NSCalendar currentCalendar] dateByAddingComponents:oneDay
+                                                                        toDate:startDate
+                                                                       options:0];
+        if ([visit.date compare:startDate] != NSOrderedAscending && [visit.date compare:endDate] == NSOrderedAscending && visit.user.userId == [AppDelegate sharedDelegate].currentUser.userId)
+        {
+            return visit;
+        }
+    }
+    return nil;
+}
+
+- (Visit*)createVisitInPharamacy:(Pharmacy*)pharmacy forDate:(NSDate*)date
+{
+    Visit* visit = [NSEntityDescription
+                    insertNewObjectForEntityForName:@"Visit"
+                    inManagedObjectContext:[AppDelegate sharedDelegate].managedObjectContext];
+    visit.pharmacy = pharmacy;
+    visit.date = date;
+    visit.user = [AppDelegate sharedDelegate].currentUser;
+    //TODO: add fucking id
+    visit.visitId = 0;
+    visit.closed = @NO;
+    [pharmacy addVisitsObject:visit];
+    return visit;
+}
+
+#pragma mark plan buttons
+- (IBAction)commerceVisitClicked:(id)sender
+{
+    if ([self.selectedDate compare:[NSDate currentDate]] == NSOrderedAscending)
+        return;
+    
+    NSIndexPath* indexPath = [self indexPathForSender:sender];
+    Pharmacy* pharmacy = self.pharmacies[indexPath.row];
+    Visit* visit = [self visitInPharmacy:pharmacy forDate:self.selectedDate];
+    if (visit.closed.boolValue)
+        return;
+    
+    if (!visit)
+    {
+        Visit* visit = [self createVisitInPharamacy:pharmacy forDate:self.selectedDate];
+        CommerceVisit* commerceVisit = [NSEntityDescription
+                                        insertNewObjectForEntityForName:@"CommerceVisit"
+                                        inManagedObjectContext:[AppDelegate sharedDelegate].managedObjectContext];
+        visit.commerceVisit = commerceVisit;
+    }
+    else
+    {
+        if (visit.commerceVisit)
+        {
+            [[AppDelegate sharedDelegate].managedObjectContext deleteObject:visit.commerceVisit];
+            visit.commerceVisit = nil;
+            if (!visit.promoVisit && !visit.pharmacyCircle)
+            {
+                [pharmacy removeVisitsObject:visit];
+                [[AppDelegate sharedDelegate].managedObjectContext deleteObject:visit];
+            }
+        }
+        else
+        {
+            CommerceVisit* commerceVisit = [NSEntityDescription
+                                            insertNewObjectForEntityForName:@"CommerceVisit"
+                                            inManagedObjectContext:[AppDelegate sharedDelegate].managedObjectContext];
+            visit.commerceVisit = commerceVisit;
+        }
+    }
+    [[AppDelegate sharedDelegate]saveContext];
+    if (planned)
+        [self reloadData];
+    else
+        [self.table reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+}
+
+- (IBAction)promoVisitClicked:(id)sender
+{
+    if ([self.selectedDate compare:[NSDate currentDate]] == NSOrderedAscending)
+        return;
+    
+    NSIndexPath* indexPath = [self indexPathForSender:sender];
+    Pharmacy* pharmacy = self.pharmacies[indexPath.row];
+    Visit* visit = [self visitInPharmacy:pharmacy forDate:self.selectedDate];
+    if (visit.closed.boolValue)
+        return;
+    
+    if (!visit)
+    {
+        Visit* visit = [self createVisitInPharamacy:pharmacy forDate:self.selectedDate];
+        PromoVisit* promoVisit = [NSEntityDescription
+                                  insertNewObjectForEntityForName:@"PromoVisit"
+                                  inManagedObjectContext:[AppDelegate sharedDelegate].managedObjectContext];
+        visit.promoVisit = promoVisit;
+    }
+    else
+    {
+        if (visit.promoVisit)
+        {
+            [[AppDelegate sharedDelegate].managedObjectContext deleteObject:visit.promoVisit];
+            visit.promoVisit = nil;
+            if (!visit.commerceVisit && !visit.pharmacyCircle)
+            {
+                [pharmacy removeVisitsObject:visit];
+                [[AppDelegate sharedDelegate].managedObjectContext deleteObject:visit];
+            }
+        }
+        else
+        {
+            PromoVisit* promoVisit = [NSEntityDescription
+                                      insertNewObjectForEntityForName:@"PromoVisit"
+                                      inManagedObjectContext:[AppDelegate sharedDelegate].managedObjectContext];
+            visit.promoVisit = promoVisit;
+        }
+    }
+    [[AppDelegate sharedDelegate]saveContext];
+    if (planned)
+        [self reloadData];
+    else
+        [self.table reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+}
+
+- (IBAction)pharmacyCircleClicked:(id)sender
+{
+    if ([self.selectedDate compare:[NSDate currentDate]] == NSOrderedAscending)
+        return;
+    
+    NSIndexPath* indexPath = [self indexPathForSender:sender];
+    Pharmacy* pharmacy = self.pharmacies[indexPath.row];
+    Visit* visit = [self visitInPharmacy:pharmacy forDate:self.selectedDate];
+    if (visit.closed.boolValue)
+        return;
+    
+    if (!visit)
+    {
+        Visit* visit = [self createVisitInPharamacy:pharmacy forDate:self.selectedDate];
+        PharmacyCircle* pharmacyCircle = [NSEntityDescription
+                                          insertNewObjectForEntityForName:@"PharmacyCircle"
+                                          inManagedObjectContext:[AppDelegate sharedDelegate].managedObjectContext];
+        visit.pharmacyCircle = pharmacyCircle;
+    }
+    else
+    {
+        if (visit.pharmacyCircle)
+        {
+            [[AppDelegate sharedDelegate].managedObjectContext deleteObject:visit.pharmacyCircle];
+            visit.pharmacyCircle = nil;
+            if (!visit.commerceVisit && !visit.promoVisit)
+            {
+                [pharmacy removeVisitsObject:visit];
+                [[AppDelegate sharedDelegate].managedObjectContext deleteObject:visit];
+            }
+        }
+        else
+        {
+            PharmacyCircle* pharmacyCircle = [NSEntityDescription
+                                              insertNewObjectForEntityForName:@"PharmacyCircle"
+                                              inManagedObjectContext:[AppDelegate sharedDelegate].managedObjectContext];
+            visit.pharmacyCircle = pharmacyCircle;
+        }
+    }
+    [[AppDelegate sharedDelegate]saveContext];
+    if (planned)
+        [self reloadData];
+    else
+        [self.table reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 @end

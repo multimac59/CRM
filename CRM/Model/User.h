@@ -14,6 +14,8 @@
 @interface User : NSManagedObject
 
 @property (nonatomic, retain) NSString * name;
+@property (nonatomic, retain) NSString * login;
+@property (nonatomic, retain) NSString * password;
 @property (nonatomic, retain) NSNumber * userId;
 @property (nonatomic, retain) NSSet *regions;
 @property (nonatomic, retain) NSSet *targetablePharmacies;

@@ -30,6 +30,9 @@
 
 - (void)showVisit:(Visit *)visit
 {
+    User* user = visit.user;
+    NSLog(@"User Id = %@, user name = %@", user.userId, user.name);
+    
     NSLog(@"%@", visit.user.name);
     NSLog(@"%@", visit.date);
     

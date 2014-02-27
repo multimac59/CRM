@@ -7,11 +7,20 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Pharmacy.h"
+#import "Visit.h"
 
 @interface VisitsCell : UITableViewCell
 @property (nonatomic, weak) IBOutlet UILabel* pharmacyLabel;
-@property (nonatomic, weak) IBOutlet UILabel* timeLabel;
+@property (nonatomic, weak) IBOutlet UILabel* visitsLabel;
 @property (nonatomic, weak) IBOutlet UIImageView* triangleImage;
 @property (nonatomic, weak) IBOutlet UILabel* addressLabel;
-@property (nonatomic, weak) IBOutlet UIView* statusView;
+@property (nonatomic, weak) IBOutlet UIImageView* statusView;
+@property (nonatomic, weak) IBOutlet UIImageView* pspView;
+
+@property (nonatomic, weak) IBOutlet UIButton* commerceVisitButton;
+@property (nonatomic, weak) IBOutlet UIButton* promoVisitButton;
+@property (nonatomic, weak) IBOutlet UIButton* pharmacyCircleButton;
+
+- (void)setupCellWithPharmacy:(Pharmacy*)pharmacy andVisit:(Visit*)visit;
 @end

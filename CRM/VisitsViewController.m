@@ -13,21 +13,32 @@
 #import "ChoiseTableController.h"
 #import "Pharmacy.h"
 #import "VisitsCell.h"
+#import "NSDate+Additions.h"
 
 
 @interface VisitsViewController ()
+{
+    int delta;
+}
 @property (nonatomic, strong) NSMutableArray* visits;
 @property (nonatomic, strong) UIPopoverController* popover;
 @property (nonatomic, strong) NSDate* filterDate;
+@property (nonatomic, strong) CKCalendarView* calendarWidget;
+@property (nonatomic) BOOL calendarOn;
 @end
 
 @implementation VisitsViewController
+static const int panelWidth = 320;
+static const int calendarHeight = 226;
+static const int headerHeight = 46;
+static const int filterHeight = 0;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         // Custom initialization
+        self.filterDate = [NSDate currentDate];
     }
     return self;
 }
@@ -65,33 +76,100 @@
     
     //self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Clear Filter" style:UIBarButtonSystemItemAdd target:self action:@selector(clearFilter)];
     //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Add" style:UIBarButtonSystemItemAdd target:self action:@selector(showPopover)];
-    UIButton* addButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 15, 15)];
-    [addButton setBackgroundImage:[UIImage imageNamed:@"addButtonPressed"] forState:UIControlStateNormal];
-    [addButton setBackgroundImage:[UIImage imageNamed:@"addButton"] forState:UIControlStateHighlighted];
-    [addButton addTarget:self action:@selector(showPopover) forControlEvents:UIControlEventTouchDown];
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:addButton];
     self.navigationItem.title = @"Визиты";
-    [self loadAll];
-    [self filterVisits];
+
 
     //[self performSelector:@selector(selectObjectAtIndex:) withObject:0 afterDelay:1];
     [self selectObjectAtIndex:0];
     [self.table selectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] animated:NO scrollPosition:UITableViewScrollPositionNone];
     
-    CKCalendarView* calendar = [[CKCalendarView alloc]init];
-    calendar.dayOfWeekTextColor = [UIColor whiteColor];
-    calendar.dateOfWeekFont = [UIFont systemFontOfSize:10];
-    calendar.dateFont = [UIFont systemFontOfSize:15];
-    CGRect frame = calendar.frame;
-    frame.origin = CGPointMake(0, 412);
-    calendar.frame = frame;
-    [self.view addSubview:calendar];
-    calendar.delegate = self;
+    self.calendarWidget = [[CKCalendarView alloc]init];
+    self.calendarWidget.dayOfWeekTextColor = [UIColor whiteColor];
+    self.calendarWidget.dateOfWeekFont = [UIFont systemFontOfSize:10];
+    self.calendarWidget.dateFont = [UIFont systemFontOfSize:15];
+    [self.view addSubview:self.calendarWidget];
+    self.calendarWidget.delegate = self;
+    [self.calendarWidget selectDate:[NSDate currentDate] makeVisible:YES];
+    
+    UIPanGestureRecognizer* gestureRecognizer = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(moveCalendar:)];
+    [self.calendarHeader addGestureRecognizer:gestureRecognizer];
+    UIPanGestureRecognizer* gestureRecognizer2 = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(moveCalendar:)];
+    [self.calendarWidget addGestureRecognizer:gestureRecognizer2];
+    UITapGestureRecognizer* gestureRecognizer3 = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(toggleCalendar)];
+    [self.calendarHeader addGestureRecognizer:gestureRecognizer3];
+    
+    if (SYSTEM_VERSION_LESS_THAN(@"7.0"))
+    {
+        delta = 20;
+    }
+    else
+    {
+        delta = 0;
+    }
 }
 
-- (void)viewDidAppear:(BOOL)animated
+- (void)viewWillAppear:(BOOL)animated
 {
+
+    self.calendarWidget.frame = CGRectMake(0, self.view.frame.size.height - delta, panelWidth, calendarHeight);
+    self.calendarHeader.frame = CGRectMake(0, self.view.frame.size.height - headerHeight - delta, panelWidth, headerHeight);
+    self.table.frame = CGRectMake(0, filterHeight, panelWidth, self.view.frame.size.height - filterHeight - headerHeight - delta);
+    
+    self.calendarOn = NO;
+    
+    self.filterDate = [NSDate currentDate];
+    
+    [self.calendarWidget selectDate:self.filterDate makeVisible:NO];
     [self loadAll];
+    [self filterVisits];
+    [self.table reloadData];
+    
+    NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
+    dateFormatter.dateFormat = @"dd.MM.yyyy";
+    dateFormatter.locale = [NSLocale localeWithLocaleIdentifier:@"Ru-ru"];
+    self.dateLabel.text = [dateFormatter stringFromDate:self.filterDate];
+    
+    [self selectFirstFromList];
+}
+
+- (void)moveCalendar:(UIPanGestureRecognizer*)recognizer
+{
+    CGPoint point = [recognizer locationInView:self.view];
+    if (recognizer.state == UIGestureRecognizerStateEnded)
+    {
+        CGPoint velocity = [recognizer velocityInView:self.view];
+        if (velocity.y < 0)
+        {
+            [UIView animateWithDuration:0.3 animations:^{
+                self.calendarWidget.frame = CGRectMake(0, self.view.frame.size.height - calendarHeight - delta, panelWidth, calendarHeight);
+                self.calendarHeader.frame = CGRectMake(0, self.view.frame.size.height - calendarHeight - headerHeight - delta, panelWidth, headerHeight);
+                self.table.frame = CGRectMake(0, filterHeight, panelWidth, self.view.frame.size.height - calendarHeight - headerHeight - filterHeight - delta);
+            } completion:^(BOOL finished) {
+                self.calendarOn = YES;
+            }];
+        }
+        else
+        {
+            [UIView animateWithDuration:0.3 animations:^{
+                self.calendarWidget.frame = CGRectMake(0, self.view.frame.size.height - delta, panelWidth, calendarHeight);
+                self.calendarHeader.frame = CGRectMake(0, self.view.frame.size.height - headerHeight - delta, panelWidth, headerHeight);
+                self.table.frame = CGRectMake(0, filterHeight, panelWidth, self.view.frame.size.height - filterHeight - headerHeight - delta);
+            } completion:^(BOOL finished) {
+                self.calendarOn = NO;
+            }];
+        }
+    }
+    else
+    {
+        int offset = self.view.frame.size.height - point.y;
+        if (offset < 0 || offset > calendarHeight)
+        return;
+        self.calendarWidget.frame = CGRectMake(0, self.view.frame.size.height - offset - delta, panelWidth, calendarHeight);
+        self.calendarHeader.frame = CGRectMake(0, self.view.frame.size.height - offset - headerHeight - delta, panelWidth, headerHeight);
+        self.table.frame = CGRectMake(0, filterHeight, panelWidth, self.view.frame.size.height - offset - headerHeight - filterHeight - delta);
+        
+        //self.sidePanelController.view.frame = CGRectMake(point.x - 290, 0, 290, 768);
+    }
 }
 
 - (void)clearFilter
@@ -132,8 +210,9 @@
     {
         [self.visits filterUsingPredicate:filterByUserPredicate];
     }
-    NSSortDescriptor* sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"date" ascending:YES];
-    [self.visits sortUsingDescriptors:@[sortDescriptor]];
+    NSSortDescriptor* statusDescriptor = [[NSSortDescriptor alloc]initWithKey:@"pharmacy.status" ascending:NO];
+    NSSortDescriptor* visitsDescriptor = [[NSSortDescriptor alloc]initWithKey:@"pharmacy.visitsInCurrentQuarter.@count" ascending:YES];
+    [self.visits sortUsingDescriptors:@[statusDescriptor, visitsDescriptor]];
 }
 
 - (void)didReceiveMemoryWarning
@@ -144,56 +223,30 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    if (tableView == self.popoverTable)
-        return 3;
-    else
         return self.visits.count;
 }
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (tableView == self.popoverTable)
-    {
-        UITableViewCell* cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"popoverCell"];
-        cell.textLabel.textColor = [UIColor colorWithRed:109/255.0 green:89/255.0 blue:137/255.0 alpha:1.0];
-        cell.textLabel.textAlignment = NSTextAlignmentCenter;
-        cell.textLabel.font = [UIFont systemFontOfSize:16];
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        switch (indexPath.row)
-        {
-            case 0:
-                cell.textLabel.text = @"Визит";
-                break;
-            case 1:
-                cell.textLabel.text = @"Конференция";
-                break;
-            case 2:
-                cell.textLabel.text = @"Фармкружок";
-                break;
-            default:
-                break;
-        }
-        return cell;
-    }
-    else
-    {
         VisitsCell* cell = [tableView dequeueReusableCellWithIdentifier:@"visitsCell"];
         if (cell == nil)
         {
             cell = [[[NSBundle mainBundle]loadNibNamed:@"VisitsCell" owner:self options:Nil]objectAtIndex:0];
         }
-        cell.backgroundColor = [UIColor clearColor];
-        cell.contentView.backgroundColor = [UIColor clearColor];
-        NSObject* object = self.visits[indexPath.row];
-
-            Visit* visit = (Visit*)object;
-            cell.pharmacyLabel.text = visit.pharmacy.name;
-            NSDateFormatter *timeFormatter = [[NSDateFormatter alloc] init];
-            [timeFormatter setDateFormat:@"HH:mm"];
-            cell.timeLabel.text = [timeFormatter stringFromDate:visit.date];
-            cell.addressLabel.text = [NSString stringWithFormat:@"%@, %@, %@", visit.pharmacy.city, visit.pharmacy.street, visit.pharmacy.house];
-            return cell;
+        Visit* visit = self.visits[indexPath.row];
+        [cell setupCellWithPharmacy:visit.pharmacy andVisit:visit];
+    if (visit.pharmacy.status == NormalStatus)
+    {
+        cell.pspView.frame = CGRectMake(15, 42, 30, 16);
     }
+    else
+    {
+        cell.pspView.frame = CGRectMake(44, 42, 30, 16);
+    }
+    cell.commerceVisitButton.enabled = NO;
+    cell.promoVisitButton.enabled = NO;
+    cell.pharmacyCircleButton.enabled = NO;
+        return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
@@ -206,6 +259,14 @@
     UINavigationController* hostController = [AppDelegate sharedDelegate].visitsSplitController.viewControllers[1];
     [hostController popToRootViewControllerAnimated:NO];
     VisitViewController* visitViewController = (VisitViewController*)hostController.topViewController;
+    
+    NSMutableArray* allPharmacies = [NSMutableArray new];
+    for (Visit* visit in self.visits)
+    {
+        [allPharmacies addObject:visit.pharmacy];
+    }
+    visitViewController.allPharmacies = allPharmacies;
+    
     NSLog(@"Clicked, row = %ld", (long)index);
     NSObject* object = self.visits[index];
 
@@ -217,9 +278,6 @@
 }
 
 
-
-
-
 - (void)calendar:(CKCalendarView *)calendar didSelectDate:(NSDate *)date
 {
     self.filterDate = date;
@@ -227,6 +285,42 @@
     [self loadAll];
     [self filterVisits];
     [self.table reloadData];
+    
+    NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
+    dateFormatter.dateFormat = @"dd.MM.yyyy";
+    dateFormatter.locale = [NSLocale localeWithLocaleIdentifier:@"Ru-ru"];
+    self.dateLabel.text = [dateFormatter stringFromDate:self.filterDate];
+    
+    [self toggleCalendar];
 }
 
+- (void)toggleCalendar
+{
+    if (self.calendarOn)
+    {
+        [UIView animateWithDuration:0.3 animations:^{
+            self.calendarWidget.frame = CGRectMake(0, self.view.frame.size.height - delta, panelWidth, calendarHeight);
+            self.calendarHeader.frame = CGRectMake(0, self.view.frame.size.height - headerHeight - delta, panelWidth, headerHeight);
+            self.table.frame = CGRectMake(0, filterHeight, panelWidth, self.view.frame.size.height - filterHeight - headerHeight - delta);
+        } completion:^(BOOL finished) {
+            self.calendarOn = NO;
+        }];
+    }
+    else
+    {
+        [UIView animateWithDuration:0.3 animations:^{
+            self.calendarWidget.frame = CGRectMake(0, self.view.frame.size.height - calendarHeight - delta, panelWidth, calendarHeight);
+            self.calendarHeader.frame = CGRectMake(0, self.view.frame.size.height - calendarHeight - headerHeight - delta, panelWidth, headerHeight);
+            self.table.frame = CGRectMake(0, filterHeight, panelWidth, self.view.frame.size.height - calendarHeight - headerHeight - filterHeight - delta);
+        } completion:^(BOOL finished) {
+            self.calendarOn = YES;
+        }];
+    }
+}
+
+- (void)selectFirstFromList
+{
+    if (self.visits.count > 0)
+        [self selectObjectAtIndex:0];
+}
 @end

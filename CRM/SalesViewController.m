@@ -40,7 +40,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+
     NSLog(@"TOTAL : %d sales ", self.commerceVisit.sales.count);
     for (Sale* sale in self.commerceVisit.sales)
     {
@@ -160,11 +160,32 @@
     
     if (indexPath.row == 0)
     {
-        cell.contentView.backgroundColor = [UIColor yellowColor];
+        //cell.contentView.backgroundColor = [UIColor colorWithRed:252/255.0 green:236/255.0 blue:199/255.0 alpha:1.0];
+        cell.cellBg.image = [UIImage imageNamed:@"groupCellBg"];
+        cell.arrowView.hidden = NO;
+        
+        NSNumber* state = self.bools[indexPath.section];
+        if (state.boolValue)
+        {
+            cell.arrowView.image = [UIImage imageNamed:@"arrowClosed"];
+        }
+        else
+        {
+            cell.arrowView.image = [UIImage imageNamed:@"arrowOpened"];
+        }
     }
     else
     {
-        cell.contentView.backgroundColor = [UIColor whiteColor];
+        //cell.contentView.backgroundColor = [UIColor colorWithRed:249/255.0 green:248/255.0 blue:247/255.0 alpha:1.0];
+        cell.cellBg.image = [UIImage imageNamed:@"singleCellBg"];
+        cell.arrowView.hidden = YES;
+    }
+    
+    if (self.commerceVisit.visit.closed.boolValue)
+    {
+        cell.orderField.enabled = NO;
+        cell.soldField.enabled = NO;
+        cell.remainderField.enabled = NO;
     }
     
     return cell;
@@ -176,18 +197,14 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (IBAction)saveVisit:(id)sender
+{
+    self.commerceVisit.visit.closed = @YES;
+    [self back];
+}
+
 - (void)back
 {
-//    CATransition *transition = [CATransition animation];
-//    transition.duration = 0.35;
-//    transition.timingFunction =
-//    [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
-//    transition.type = kCATransitionReveal;
-//    transition.subtype = kCATransitionFromTop;
-//    UIView *containerView = self.view.window;
-//    [containerView.layer addAnimation:transition forKey:nil];
-//    
-//    [self dismissViewControllerAnimated:NO completion:nil];
     NSLog(@"TOTAL : %d sales ", self.commerceVisit.sales.count);
     
     for (Sale* sale in self.commerceVisit.sales)
@@ -240,35 +257,6 @@
 - (IBAction)switchFilter:(id)sender
 {
     [self.table reloadData];
-}
-
-- (IBAction)saveVisit:(id)sender
-{
-    User* currentUser = [AppDelegate sharedDelegate].currentUser;
-    for (int i = 0; i < self.drugs.count; i++)
-    {
-        Drug* drug = self.drugs[i];
-        for (int j = 0; j < drug.doses.count; j++)
-        {
-            Dose* dose = drug.doses.allObjects[j];
-            SaleCell* cell = (SaleCell*)[self.table cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
-            
-            Sale* sale = [self getCurrentSaleFor:dose];
-            if (!sale)
-                sale = [NSEntityDescription
-                        insertNewObjectForEntityForName:@"Sale"
-                        inManagedObjectContext:[AppDelegate sharedDelegate].managedObjectContext];
-            
-            sale.dose = dose;
-            sale.commerceVisit.visit.user = currentUser;
-            sale.sold = @(cell.soldField.text.integerValue);
-            sale.remainder = @(cell.remainderField.text.integerValue);
-            sale.order = @(cell.orderField.text.integerValue);
-            [self.commerceVisit addSalesObject:sale];
-        }
-    }
-    [[AppDelegate sharedDelegate]saveContext];
-    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)createSales
@@ -343,7 +331,7 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 58;
+    return 59;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath

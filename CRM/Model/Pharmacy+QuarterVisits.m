@@ -7,6 +7,7 @@
 //
 
 #import "Pharmacy+QuarterVisits.h"
+#import "NSDate+Additions.h"
 
 @implementation Pharmacy (QuarterVisits)
 - (NSArray*)visitsInCurrentQuarter
@@ -27,9 +28,9 @@
     NSDate* startDate = [[NSCalendar currentCalendar]dateFromComponents:startComponents];
     NSDate* endDate = [[NSCalendar currentCalendar]dateFromComponents:endComponents];
     
-    if ([endDate compare:[NSDate date]] == NSOrderedDescending)
+    if ([endDate compare:[NSDate currentDate]] == NSOrderedDescending)
     {
-        endDate = [NSDate date];
+        endDate = [NSDate currentDate];
     }
     
     NSPredicate* predicate = [NSPredicate predicateWithFormat:@"date>=%@ && date < %@", startDate, endDate];

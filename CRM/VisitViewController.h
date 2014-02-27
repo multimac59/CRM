@@ -28,9 +28,12 @@
 @property (nonatomic, weak) IBOutlet UIButton* participantsButton;
 
 @property (nonatomic, strong) NSMutableArray* oldVisits;
+@property (nonatomic, strong) NSArray* allPharmacies;
 
 - (IBAction)goToSalesList:(id)sender;
 - (IBAction)goToPharmacyCircle:(id)sender;
 - (IBAction)closeVisit:(id)sender;
+
+
 - (void)reloadContent;
 @end

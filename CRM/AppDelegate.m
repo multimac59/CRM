@@ -25,6 +25,8 @@
 #import "YandexMapKit.h"
 #import "MGSplitDividerView.h"
 #import "CommerceVisit.h"
+#import <AFNetworking/AFNetworking.h>
+#import "NSDate+Additions.h"
 
 @implementation AppDelegate
 
@@ -250,12 +252,14 @@ static AppDelegate* sharedDelegate = nil;
          //pharmacy.region = [obj objectForKey:@"region"];
          pharmacy.visits = [NSSet new];
          pharmacy.status =  [[[obj objectForKey:@"status"]stringValue]integerValue];
+         pharmacy.sales = [obj objectForKey:@"sales"];
          pharmacy.users = [NSSet new];
          NSMutableArray* users = [obj objectForKey:@"users"];
          [users enumerateObjectsUsingBlock:^(id userObj, NSUInteger idx, BOOL *stop) {
              NSInteger userId = [[userObj stringValue]integerValue];
              User* user = [self findUserById:userId];
-             [pharmacy addUsersObject:user];
+             if (user)
+                 [pharmacy addUsersObject:user];
          }];
          NSInteger regionId = [[[obj objectForKey:@"region"]stringValue]integerValue];
          Region* region = [self findRegionById:regionId];
@@ -283,7 +287,7 @@ static AppDelegate* sharedDelegate = nil;
                                inManagedObjectContext:self.managedObjectContext];
          NSString* visitDateString = [obj objectForKey:@"date"];
          NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
-         dateFormatter.dateFormat = @"dd.MM.yyyy HH:mm";
+         dateFormatter.dateFormat = @"dd.MM.yyyy";
          visit.date = [dateFormatter dateFromString:visitDateString];
          visit.visitId = [[obj objectForKey:@"id"]stringValue];
          //TODO: fix it
@@ -481,6 +485,21 @@ static AppDelegate* sharedDelegate = nil;
     else
         return nil;
 }
+
+- (User*)findUserByLogin:(NSString*)login andPassword:(NSString*)password
+{
+    NSManagedObjectContext* context = self.managedObjectContext;
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:[NSEntityDescription entityForName:@"User" inManagedObjectContext:context]];
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"login=%@ AND password=%@", login, password];
+    [request setPredicate:predicate];
+    NSError *error = nil;
+    NSArray *results = [context executeFetchRequest:request error:&error];
+    if (results.count > 0)
+        return results[0];
+    else
+        return nil;
+}
 				
 - (void)applicationWillResignActive:(UIApplication *)application
 {
@@ -636,7 +655,7 @@ static AppDelegate* sharedDelegate = nil;
     NSManagedObjectContext* context = self.managedObjectContext;
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     [request setEntity:[NSEntityDescription entityForName:@"Visit" inManagedObjectContext:context]];
-    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"date<%@", [NSDate date]];
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"date<%@", [NSDate currentDate]];
     [request setPredicate:predicate];
     NSError *error = nil;
     NSArray *visits = [context executeFetchRequest:request error:&error];
@@ -645,5 +664,15 @@ static AppDelegate* sharedDelegate = nil;
         visit.closed = @YES;
     }
     [self saveContext];
+}
+
+- (void)loadFromServer
+{
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    [manager GET:@"http://ourserver/getAll.json" parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        NSLog(@"JSON: %@", responseObject);
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        NSLog(@"Error: %@", error);
+    }];
 }
 @end

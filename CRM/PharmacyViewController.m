@@ -46,7 +46,6 @@
 
 - (void)showPharmacy:(Pharmacy *)pharmacy
 {
-    self.navigationItem.title = pharmacy.name;
     self.pharmacy = pharmacy;
     [self.table reloadData];
 }
@@ -126,7 +125,7 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.row == 0)
-        return 283;
+        return 330;
     else
         return 408;
 }

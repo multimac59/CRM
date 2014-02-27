@@ -19,4 +19,5 @@
 @property (nonatomic, strong) IBOutlet UILabel* soldLabel;
 @property (nonatomic, strong) IBOutlet UILabel* remainderLabel;
 @property (nonatomic, strong) IBOutlet UILabel* orderLabel;
+@property (nonatomic, weak) IBOutlet UIImageView* arrowView;
 @end

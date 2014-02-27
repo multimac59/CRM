@@ -19,5 +19,7 @@
 @dynamic regions;
 @dynamic targetablePharmacies;
 @dynamic visits;
+@dynamic login;
+@dynamic password;
 
 @end

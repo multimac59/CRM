@@ -27,5 +27,6 @@
 @dynamic region;
 @dynamic users;
 @dynamic visits;
+@dynamic sales;
 
 @end

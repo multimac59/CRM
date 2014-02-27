@@ -15,6 +15,7 @@
 
 typedef enum {
     NormalStatus,
+    BronzeStatus,
     SilverStatus,
     GoldStatus
 } PharmacyStatus;
@@ -23,6 +24,7 @@ typedef enum {
 @property (nonatomic, retain) NSString * doctorName;
 @property (nonatomic, retain) NSString * house;
 @property (nonatomic, retain) NSString * name;
+@property (nonatomic, retain) NSString * sales;
 @property (nonatomic, retain) NSNumber * network;
 @property (nonatomic, retain) NSNumber * pharmacyId;
 @property (nonatomic, retain) NSString * phone;

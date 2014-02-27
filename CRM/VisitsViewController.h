@@ -13,6 +13,7 @@
 @interface VisitsViewController : UIViewController<CKCalendarDelegate>
 @property (nonatomic, weak) IBOutlet UITableView* table;
 @property (nonatomic, weak) IBOutlet UITableView* popoverTable;
-
+@property (nonatomic, weak) IBOutlet UIView* calendarHeader;
+@property (nonatomic, weak) IBOutlet UILabel* dateLabel;
 - (IBAction)hidePopover:(id)sender;
 @end

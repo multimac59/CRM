@@ -31,4 +31,7 @@
 + (AppDelegate*)sharedDelegate;
 - (void)saveContext;
 
+- (User*)findUserByLogin:(NSString*)login andPassword:(NSString*)password;
+- (Region*)findRegionById:(NSInteger)regionId;
+
 @end

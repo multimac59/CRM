@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="3.0" toolsVersion="4514" systemVersion="13B42" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES">
+    <dependencies>
+        <deployment defaultVersion="1536" identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3747"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="PharmacyCircleViewController"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="Xil-39-sMg" customClass="ParticipantCell">
+            <rect key="frame" x="0.0" y="0.0" width="768" height="30"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Xil-39-sMg" id="EkJ-by-njr">
+                <rect key="frame" x="0.0" y="0.0" width="768" height="29"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Аспирин" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="F0v-pH-JL3">
+                        <rect key="frame" x="45" y="4" width="69" height="21"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <color key="textColor" red="0.29411764709999999" green="0.18823529410000001" blue="0.41568627450000001" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Z8x-Ga-Udg">
+                        <rect key="frame" x="13" y="7" width="14" height="16"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="14" id="Ktp-d8-gHE"/>
+                            <constraint firstAttribute="height" constant="16" id="Zus-eO-GSb"/>
+                        </constraints>
+                        <state key="normal" backgroundImage="deleteButton">
+                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                        </state>
+                        <connections>
+                            <action selector="deleteParticipant:" destination="-1" eventType="touchUpInside" id="wxI-2M-XaJ"/>
+                        </connections>
+                    </button>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="Z8x-Ga-Udg" firstAttribute="leading" secondItem="EkJ-by-njr" secondAttribute="leading" constant="13" id="JZ0-58-mxF"/>
+                    <constraint firstAttribute="centerY" secondItem="Z8x-Ga-Udg" secondAttribute="centerY" id="Qc3-0Y-cvf"/>
+                    <constraint firstAttribute="centerY" secondItem="F0v-pH-JL3" secondAttribute="centerY" id="V6e-e3-FkY"/>
+                    <constraint firstItem="F0v-pH-JL3" firstAttribute="leading" secondItem="Z8x-Ga-Udg" secondAttribute="trailing" constant="18" id="XTd-Ee-hCa"/>
+                </constraints>
+            </tableViewCellContentView>
+            <connections>
+                <outlet property="deleteButton" destination="Z8x-Ga-Udg" id="hdk-cw-gAx"/>
+                <outlet property="deleteButtonWidth" destination="Ktp-d8-gHE" id="BJp-B5-8Oe"/>
+                <outlet property="nameLabel" destination="F0v-pH-JL3" id="JNv-Uf-tW4"/>
+            </connections>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="deleteButton" width="14" height="16"/>
+    </resources>
+</document>

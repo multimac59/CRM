@@ -19,6 +19,7 @@
 @property (nonatomic, weak) IBOutlet UILabel* phoneLabel;
 @property (nonatomic, weak) IBOutlet UILabel* doctorLabel;
 
+
 - (IBAction)showPharmacy:(Pharmacy*)pharmacy;
 - (IBAction)removeFromFavourites:(id)sender;
 - (IBAction)closeVisit:(id)sender; //Need it here for builder

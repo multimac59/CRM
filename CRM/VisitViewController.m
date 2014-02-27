@@ -21,6 +21,7 @@
 #import "VisitButtonsCell.h"
 #import "PromoVisit.h"
 #import "PharmacyCircle.h"
+#import "NSDate+Additions.h"
 
 @interface VisitViewController ()
 @property (nonatomic, weak) IBOutlet YMKMapView* mapView;
@@ -52,16 +53,6 @@
     // Dispose of any resources that can be recreated.
 }
 
-
-
-
-
-/*
-
- */
-
-
-
 - (void)back
 {
     NSLog(@"back");
@@ -76,7 +67,10 @@
 {
     if (section == 1)
     {
-        return self.oldVisits.count + 1;
+        if (self.oldVisits.count < 6)
+            return self.oldVisits.count + 1;
+        else
+            return 6;
     }
     else
         return 1;
@@ -84,13 +78,15 @@
 
 - (void)reloadContent
 {
-
-    self.title = self.visit.pharmacy.name;
+    if (self.visit)
+        self.table.hidden = NO;
+    else
+        self.table.hidden = YES;
     [self.oldVisits removeAllObjects];
     NSManagedObjectContext* context = [AppDelegate sharedDelegate].managedObjectContext;
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     [request setEntity:[NSEntityDescription entityForName:@"Visit" inManagedObjectContext:context]];
-    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"pharmacy.pharmacyId=%@", self.visit.pharmacy.pharmacyId];
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"pharmacy.pharmacyId=%@ AND date<%@", self.visit.pharmacy.pharmacyId, [NSDate currentDate]];
     [request setPredicate:predicate];
     NSError *error = nil;
     NSArray* visits = [context executeFetchRequest:request error:&error];
@@ -116,6 +112,20 @@
     {
         VisitButtonsCell* cell = [[NSBundle mainBundle]loadNibNamed:@"VisitButtonsCell" owner:self options:nil][0];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        if (self.visit.commerceVisit)
+            cell.salesButton.hidden = NO;
+        else
+            cell.salesButton.hidden = YES;
+        
+        if (self.visit.pharmacyCircle)
+            cell.pharmacyCircleButton.hidden = NO;
+        else
+            cell.pharmacyCircleButton.hidden = YES;
+        
+        if (self.visit.promoVisit)
+            cell.promoVisitButton.hidden = NO;
+        else
+            cell.promoVisitButton.hidden = YES;
         return cell;
     }
     else if (indexPath.section == 3)
@@ -156,16 +166,16 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.section == 0)
-        return 269;
+        return 330;
     else if (indexPath.section == 2)
-        return 90;
+        return 75;
     else if (indexPath.section == 3)
         return 408;
     else
         if (indexPath.row == 0)
-            return 79;
+            return 55;
         else
-            return 28;
+            return 40;
 }
 
 - (IBAction)closeVisit:(id)sender
@@ -229,4 +239,8 @@
         self.salesNavigationController.view.frame = CGRectMake(0, y, 1024, 768);
     }];
 }
+
+
+
+
 @end

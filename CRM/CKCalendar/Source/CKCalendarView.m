@@ -25,6 +25,7 @@
 #define TOP_HEIGHT 44
 #define DAYS_HEADER_HEIGHT 22
 #define DEFAULT_CELL_WIDTH 43
+#define DEFAULT_CELL_HEIGHT 43
 #define CELL_BORDER_WIDTH 0
 
 #define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
@@ -114,6 +115,7 @@
 @property (nonatomic, strong) NSDate *selectedDate;
 @property (nonatomic, strong) NSCalendar *calendar;
 @property(nonatomic, assign) CGFloat cellWidth;
+@property(nonatomic, assign) CGFloat cellHeight;
 
 @end
 
@@ -135,6 +137,7 @@
 @synthesize delegate = _delegate;
 
 @synthesize cellWidth = _cellWidth;
+@synthesize cellHeight = _cellHeight;
 
 @synthesize calendarStartDay = _calendarStartDay;
 @synthesize onlyShowCurrentMonth = _onlyShowCurrentMonth;
@@ -266,12 +269,13 @@
 
     CGFloat containerWidth = self.bounds.size.width - (CALENDAR_MARGIN * 2);
     self.cellWidth = (containerWidth / 7.0) - CELL_BORDER_WIDTH;
+    self.cellHeight = (containerWidth / 10.0) - CELL_BORDER_WIDTH;
 
     NSInteger numberOfWeeksToShow = 6;
     if (self.adaptHeightToNumberOfWeeksInMonth) {
         numberOfWeeksToShow = [self _numberOfWeeksInMonthContainingDate:self.monthShowing];
     }
-    CGFloat containerHeight = (numberOfWeeksToShow * (self.cellWidth + CELL_BORDER_WIDTH) + DAYS_HEADER_HEIGHT);
+    CGFloat containerHeight = (numberOfWeeksToShow * (self.cellHeight + CELL_BORDER_WIDTH) + DAYS_HEADER_HEIGHT);
 
     CGRect newFrame = self.frame;
     newFrame.size.height = containerHeight + CALENDAR_MARGIN + TOP_HEIGHT;
@@ -335,6 +339,7 @@
         if (self.selectedDate && [self date:self.selectedDate isSameDayAsDate:date]) {
             [dateButton setTitleColor:item.selectedTextColor forState:UIControlStateNormal];
             dateButton.backgroundColor = item.selectedBackgroundColor;
+            [[dateButton imageView] setContentMode: UIViewContentModeScaleAspectFit];
             [dateButton setBackgroundImage:[UIImage imageNamed:@"calendarCircle"] forState:UIControlStateNormal];
         }
         else if ([self date:[NSDate date] isSameDayAsDate:date])
@@ -457,7 +462,7 @@
 	
     NSInteger placeInWeek = [self _placeInWeekForDate:date];
 
-    return CGRectMake(placeInWeek * (self.cellWidth + CELL_BORDER_WIDTH), (row * (self.cellWidth + CELL_BORDER_WIDTH)) + CGRectGetMaxY(self.daysHeader.frame) + CELL_BORDER_WIDTH, self.cellWidth, self.cellWidth);
+    return CGRectMake(placeInWeek * (self.cellWidth + CELL_BORDER_WIDTH), (row * (self.cellHeight + CELL_BORDER_WIDTH)) + CGRectGetMaxY(self.daysHeader.frame) + CELL_BORDER_WIDTH, self.cellWidth, self.cellHeight);
 }
 
 - (void)_moveCalendarToNextMonth {

@@ -18,7 +18,16 @@
 @property (nonatomic, weak) IBOutlet UIButton* leftSegment;
 @property (nonatomic, weak) IBOutlet UIButton* rightSegment;
 
+@property (nonatomic, weak) IBOutlet UIView* calendarHeader;
+@property (nonatomic, weak) IBOutlet UILabel* dateLabel;
+
+@property (nonatomic, weak) IBOutlet UIButton* targetButton;
+
 - (IBAction)leftSegmentPressed:(id)sender;
 - (IBAction)rightSegmentPressed:(id)sender;
 - (IBAction)targetSwitched:(id)sender;
+
+- (IBAction)commerceVisitClicked:(id)sender;
+- (IBAction)promoVisitClicked:(id)sender;
+- (IBAction)pharmacyCircleClicked:(id)sender;
 @end
