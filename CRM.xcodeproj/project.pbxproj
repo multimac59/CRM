@@ -69,7 +69,6 @@
 		706745D81889798900022D6B /* TopicSideCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 706745D71889798900022D6B /* TopicSideCell.xib */; };
 		7071FFCA18560D4500EF352D /* SalesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7071FFC818560D4500EF352D /* SalesViewController.m */; };
 		7071FFCB18560D4500EF352D /* SalesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7071FFC918560D4500EF352D /* SalesViewController.xib */; };
-		7071FFCF185612C700EF352D /* PharmacyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7071FFCD185612C700EF352D /* PharmacyViewController.m */; };
 		7071FFD0185612C700EF352D /* PharmacyViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7071FFCE185612C700EF352D /* PharmacyViewController.xib */; };
 		70744B8B189958B3005E3536 /* MFSideMenuCustomContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 70744B88189958B3005E3536 /* MFSideMenuCustomContainer.m */; };
 		70744B8C189958B3005E3536 /* MGCustomSplitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 70744B89189958B3005E3536 /* MGCustomSplitViewController.m */; };
@@ -94,11 +93,10 @@
 		70C4ADFB1855ABD300BD0E8B /* VisitViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70C4ADF91855ABD300BD0E8B /* VisitViewController.xib */; };
 		70C4AE031855B4BF00BD0E8B /* PharmaciesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 70C4AE011855B4BF00BD0E8B /* PharmaciesViewController.m */; };
 		70C4AE041855B4BF00BD0E8B /* PharmaciesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70C4AE021855B4BF00BD0E8B /* PharmaciesViewController.xib */; };
-		70C4AE201855E8FB00BD0E8B /* Conferences.json in Resources */ = {isa = PBXBuildFile; fileRef = 70C4AE1A1855E8FB00BD0E8B /* Conferences.json */; };
 		70C4AE211855E8FB00BD0E8B /* Drugs.json in Resources */ = {isa = PBXBuildFile; fileRef = 70C4AE1B1855E8FB00BD0E8B /* Drugs.json */; };
-		70C4AE221855E8FB00BD0E8B /* Participants.json in Resources */ = {isa = PBXBuildFile; fileRef = 70C4AE1C1855E8FB00BD0E8B /* Participants.json */; };
 		70C4AE231855E8FB00BD0E8B /* Pharmacies.json in Resources */ = {isa = PBXBuildFile; fileRef = 70C4AE1D1855E8FB00BD0E8B /* Pharmacies.json */; };
 		70C4AE241855E8FB00BD0E8B /* Visits.json in Resources */ = {isa = PBXBuildFile; fileRef = 70C4AE1E1855E8FB00BD0E8B /* Visits.json */; };
+		70D0CCE618C08AC500A7E629 /* PharmacyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7071FFCD185612C700EF352D /* PharmacyViewController.m */; };
 		70DE57801862F59A00123B1E /* SaleHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70DE577F1862F59A00123B1E /* SaleHeader.xib */; };
 		E409309283D4489A899AFC48 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 82182041B3C04DD69CCC4ACA /* libPods.a */; };
 /* End PBXBuildFile section */
@@ -248,9 +246,7 @@
 		70C4AE001855B4BF00BD0E8B /* PharmaciesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PharmaciesViewController.h; sourceTree = "<group>"; };
 		70C4AE011855B4BF00BD0E8B /* PharmaciesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PharmaciesViewController.m; sourceTree = "<group>"; };
 		70C4AE021855B4BF00BD0E8B /* PharmaciesViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PharmaciesViewController.xib; sourceTree = "<group>"; };
-		70C4AE1A1855E8FB00BD0E8B /* Conferences.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Conferences.json; sourceTree = "<group>"; };
 		70C4AE1B1855E8FB00BD0E8B /* Drugs.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Drugs.json; sourceTree = "<group>"; };
-		70C4AE1C1855E8FB00BD0E8B /* Participants.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Participants.json; sourceTree = "<group>"; };
 		70C4AE1D1855E8FB00BD0E8B /* Pharmacies.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Pharmacies.json; sourceTree = "<group>"; };
 		70C4AE1E1855E8FB00BD0E8B /* Visits.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Visits.json; sourceTree = "<group>"; };
 		70DE577F1862F59A00123B1E /* SaleHeader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SaleHeader.xib; sourceTree = "<group>"; };
@@ -585,9 +581,7 @@
 			children = (
 				70999BA418B792F600394CAF /* Regions.json */,
 				702FEBC718586458009A95BA /* Users.json */,
-				70C4AE1A1855E8FB00BD0E8B /* Conferences.json */,
 				70C4AE1B1855E8FB00BD0E8B /* Drugs.json */,
-				70C4AE1C1855E8FB00BD0E8B /* Participants.json */,
 				70C4AE1D1855E8FB00BD0E8B /* Pharmacies.json */,
 				70C4AE1E1855E8FB00BD0E8B /* Visits.json */,
 			);
@@ -643,6 +637,9 @@
 				LastUpgradeCheck = 0500;
 				ORGANIZATIONNAME = Nestline;
 				TargetAttributes = {
+					70043F7C1855A70A006138CC = {
+						DevelopmentTeam = 6PA346673W;
+					};
 					70043F9D1855A70A006138CC = {
 						TestTargetID = 70043F7C1855A70A006138CC;
 					};
@@ -693,7 +690,6 @@
 				70C4AE211855E8FB00BD0E8B /* Drugs.json in Resources */,
 				70999BA518B792F600394CAF /* Regions.json in Resources */,
 				70C4AE241855E8FB00BD0E8B /* Visits.json in Resources */,
-				70C4AE201855E8FB00BD0E8B /* Conferences.json in Resources */,
 				70744B9C18995948005E3536 /* right_arrow@2x.png in Resources */,
 				703B1C1818B238B700B3C9DE /* CommentViewController.xib in Resources */,
 				70C4AE041855B4BF00BD0E8B /* PharmaciesViewController.xib in Resources */,
@@ -708,7 +704,6 @@
 				70043F8B1855A70A006138CC /* InfoPlist.strings in Resources */,
 				702822481896689900ED033B /* VisitHistoryHeader.xib in Resources */,
 				702822401896685400ED033B /* VisitHistoryCell.xib in Resources */,
-				70C4AE221855E8FB00BD0E8B /* Participants.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -760,6 +755,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				70D0CCE618C08AC500A7E629 /* PharmacyViewController.m in Sources */,
 				70282232189667AE00ED033B /* VisitInfoCell.m in Sources */,
 				706745D61889796400022D6B /* TopicSideCell.m in Sources */,
 				7004C06918B7A1A10078980E /* CommerceVisit.m in Sources */,
@@ -784,7 +780,6 @@
 				7071FFCA18560D4500EF352D /* SalesViewController.m in Sources */,
 				70536F3E18BD06D2009DE1FA /* ParticipantCell.m in Sources */,
 				703B1C1718B238B700B3C9DE /* CommentViewController.m in Sources */,
-				7071FFCF185612C700EF352D /* PharmacyViewController.m in Sources */,
 				70B188811864538800C5A211 /* RaptureXMLResponseSerializer.m in Sources */,
 				70536F4118BE449B009DE1FA /* NSDate+Additions.m in Sources */,
 				7004C06C18B7A1A10078980E /* Drug.m in Sources */,
@@ -929,6 +924,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer: Damir Samigullin (7GJNQ4MWXT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Damir Samigullin (7GJNQ4MWXT)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CRM/CRM-Prefix.pch";
 				INFOPLIST_FILE = "CRM/CRM-Info.plist";
@@ -936,7 +932,7 @@
 				MOMC_NO_INVERSE_RELATIONSHIP_WARNINGS = NO;
 				MOMC_NO_WARNINGS = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "A8C73633-E5F5-49E1-AB5B-EB90DFD4C158";
+				PROVISIONING_PROFILE = "0974811C-AA59-4CF9-8B29-FC39AD1C2B2F";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -949,6 +945,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer: Damir Samigullin (7GJNQ4MWXT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Damir Samigullin (7GJNQ4MWXT)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CRM/CRM-Prefix.pch";
 				INFOPLIST_FILE = "CRM/CRM-Info.plist";
@@ -956,7 +953,7 @@
 				MOMC_NO_INVERSE_RELATIONSHIP_WARNINGS = NO;
 				MOMC_NO_WARNINGS = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "A8C73633-E5F5-49E1-AB5B-EB90DFD4C158";
+				PROVISIONING_PROFILE = "0974811C-AA59-4CF9-8B29-FC39AD1C2B2F";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "YandexMapKit.h"
 
-@interface MapAnnotation : NSObject<YMKAnnotation>
+@interface MapAnnotation : NSObject<YMKDraggableAnnotation>
 @property (nonatomic, copy) NSString * title;
 @property (nonatomic, copy) NSString * subtitle;
 @property (nonatomic, assign) YMKMapCoordinate coordinate;

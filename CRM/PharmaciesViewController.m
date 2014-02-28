@@ -17,7 +17,7 @@
 #import "CommerceVisit.h"
 #import "PharmacyCircle.h"
 #import "NSDate+Additions.h"
-
+#import "User.h"
 
 @interface PharmaciesViewController ()
 {
@@ -124,6 +124,7 @@ static const int filterHeight = 110;
                 self.calendarHeader.frame = CGRectMake(0, self.view.frame.size.height - calendarHeight - headerHeight - delta, panelWidth, headerHeight);
                 self.table.frame = CGRectMake(0, filterHeight, panelWidth, self.view.frame.size.height - calendarHeight - headerHeight - filterHeight - delta);
             } completion:^(BOOL finished) {
+                //[Flurry logEvent:@"Календарь" withParameters:@{@"Действие" : @"Открыть", @"Метод" : @"Свайп", @"Экран" : @"Клиенты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
                 self.calendarOn = YES;
             }];
         }
@@ -134,6 +135,7 @@ static const int filterHeight = 110;
                 self.calendarHeader.frame = CGRectMake(0, self.view.frame.size.height - headerHeight - delta, panelWidth, headerHeight);
                 self.table.frame = CGRectMake(0, filterHeight, panelWidth, self.view.frame.size.height - filterHeight - headerHeight - delta);
             } completion:^(BOOL finished) {
+               // [Flurry logEvent:@"Календарь" withParameters:@{@"Действие" : @"Закрыть", @"Метод" : @"Свайп", @"Экран" : @"Клиенты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
                 self.calendarOn = NO;
             }];
         }
@@ -159,6 +161,7 @@ static const int filterHeight = 110;
             self.calendarHeader.frame = CGRectMake(0, self.view.frame.size.height - headerHeight - delta, panelWidth, headerHeight);
             self.table.frame = CGRectMake(0, filterHeight, panelWidth, self.view.frame.size.height - filterHeight - headerHeight - delta);
         } completion:^(BOOL finished) {
+           // [Flurry logEvent:@"Календарь" withParameters:@{@"Действие" : @"Закрыть", @"Метод" : @"Тап", @"Экран" : @"Клиенты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
             self.calendarOn = NO;
         }];
     }
@@ -169,6 +172,7 @@ static const int filterHeight = 110;
             self.calendarHeader.frame = CGRectMake(0, self.view.frame.size.height - calendarHeight - headerHeight - delta, panelWidth, headerHeight);
             self.table.frame = CGRectMake(0, filterHeight, panelWidth, self.view.frame.size.height - calendarHeight - headerHeight - filterHeight - delta);
         } completion:^(BOOL finished) {
+           // [Flurry logEvent:@"Календарь" withParameters:@{@"Действие" : @"Открыть", @"Метод" : @"Тап", @"Экран" : @"Клиенты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
             self.calendarOn = YES;
         }];
     }
@@ -301,6 +305,7 @@ static const int filterHeight = 110;
     {
         NSString* finalString = [textField.text stringByReplacingCharactersInRange:range withString:string];
         self.filterString = finalString;
+        //[Flurry logEvent:@"Фильтр" withParameters:@{@"Тип" : @"Поиск по строке", @"Состояние" : @"Да", @"Строка поиска" : finalString , @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
     }
     [self reloadData];
     return YES;
@@ -315,6 +320,8 @@ static const int filterHeight = 110;
     self.dateLabel.text = [dateFormatter stringFromDate:date];
     
     [self reloadData];
+    
+    //[Flurry logEvent:@"Выбор даты" withParameters:@{@"Выбранная дата" : date, @"Экран" : @"Клиенты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
     
     [self toggleCalendar];
 }
@@ -332,6 +339,8 @@ static const int filterHeight = 110;
         self.selectedIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
         [self reloadData];
         [self selectFirstFromList];
+        
+        //[Flurry logEvent:@"Фильтр" withParameters:@{@"Тип" : @"Выбранные", @"Состояние" : @"Нет", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
     }
 }
 
@@ -348,6 +357,8 @@ static const int filterHeight = 110;
         self.selectedIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
         [self reloadData];
         [self selectFirstFromList];
+        
+        //[Flurry logEvent:@"Фильтр" withParameters:@{@"Тип" : @"Выбранные", @"Состояние" : @"Да", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
     }
 }
 
@@ -383,13 +394,18 @@ static const int filterHeight = 110;
 - (IBAction)targetSwitched:(id)sender
 {
     targetable = !targetable;
+    
     if (targetable)
     {
         [self.targetButton setBackgroundImage:[UIImage imageNamed:@"targetBgPressed"] forState:UIControlStateNormal];
+        //[Flurry logEvent:@"Фильтр" withParameters:@{@"Тип" : @"Таргентые", @"Состояние" : @"Да", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
+
     }
     else
     {
         [self.targetButton setBackgroundImage:[UIImage imageNamed:@"targetBg"] forState:UIControlStateNormal];
+        //[Flurry logEvent:@"Фильтр" withParameters:@{@"Тип" : @"Таргентые", @"Состояние" : @"Нет", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
+
     }
     self.targetLabel.hidden = !targetable;
     [self reloadData];
@@ -435,8 +451,7 @@ static const int filterHeight = 110;
     visit.pharmacy = pharmacy;
     visit.date = date;
     visit.user = [AppDelegate sharedDelegate].currentUser;
-    //TODO: add fucking id
-    visit.visitId = 0;
+    visit.visitId = [[NSUUID UUID]UUIDString];
     visit.closed = @NO;
     [pharmacy addVisitsObject:visit];
     return visit;
@@ -461,6 +476,7 @@ static const int filterHeight = 110;
                                         insertNewObjectForEntityForName:@"CommerceVisit"
                                         inManagedObjectContext:[AppDelegate sharedDelegate].managedObjectContext];
         visit.commerceVisit = commerceVisit;
+        //[Flurry logEvent:@"Планирование" withParameters:@{@"Событие" : @"Продажи", @"Состояние" : @"Да", @"Аптека" : visit.pharmacy.name, @"Дата визита" : self.selectedDate, @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
     }
     else
     {
@@ -473,6 +489,7 @@ static const int filterHeight = 110;
                 [pharmacy removeVisitsObject:visit];
                 [[AppDelegate sharedDelegate].managedObjectContext deleteObject:visit];
             }
+            //[Flurry logEvent:@"Планирование" withParameters:@{@"Событие" : @"Продажи", @"Состояние" : @"Нет", @"Аптека" : visit.pharmacy.name, @"Дата визита" : self.selectedDate, @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
         }
         else
         {
@@ -480,6 +497,7 @@ static const int filterHeight = 110;
                                             insertNewObjectForEntityForName:@"CommerceVisit"
                                             inManagedObjectContext:[AppDelegate sharedDelegate].managedObjectContext];
             visit.commerceVisit = commerceVisit;
+            //[Flurry logEvent:@"Планирование" withParameters:@{@"Событие" : @"Продажи", @"Состояние" : @"Да", @"Аптека" : visit.pharmacy.name, @"Дата визита" : self.selectedDate, @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
         }
     }
     [[AppDelegate sharedDelegate]saveContext];
@@ -507,6 +525,7 @@ static const int filterHeight = 110;
                                   insertNewObjectForEntityForName:@"PromoVisit"
                                   inManagedObjectContext:[AppDelegate sharedDelegate].managedObjectContext];
         visit.promoVisit = promoVisit;
+        //[Flurry logEvent:@"Планирование" withParameters:@{@"Событие" : @"Промо-визит", @"Состояние" : @"Да", @"Аптека" : visit.pharmacy.name, @"Дата визита" : self.selectedDate, @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
     }
     else
     {
@@ -519,6 +538,7 @@ static const int filterHeight = 110;
                 [pharmacy removeVisitsObject:visit];
                 [[AppDelegate sharedDelegate].managedObjectContext deleteObject:visit];
             }
+            //[Flurry logEvent:@"Планирование" withParameters:@{@"Событие" : @"Промо-визит", @"Состояние" : @"Нет", @"Аптека" : visit.pharmacy.name, @"Дата визита" : self.selectedDate, @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
         }
         else
         {
@@ -526,6 +546,7 @@ static const int filterHeight = 110;
                                       insertNewObjectForEntityForName:@"PromoVisit"
                                       inManagedObjectContext:[AppDelegate sharedDelegate].managedObjectContext];
             visit.promoVisit = promoVisit;
+            //[Flurry logEvent:@"Планирование" withParameters:@{@"Событие" : @"Промо-визит", @"Состояние" : @"Да", @"Аптека" : visit.pharmacy.name, @"Дата визита" : self.selectedDate, @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
         }
     }
     [[AppDelegate sharedDelegate]saveContext];
@@ -553,6 +574,7 @@ static const int filterHeight = 110;
                                           insertNewObjectForEntityForName:@"PharmacyCircle"
                                           inManagedObjectContext:[AppDelegate sharedDelegate].managedObjectContext];
         visit.pharmacyCircle = pharmacyCircle;
+        //[Flurry logEvent:@"Планирование" withParameters:@{@"Событие" : @"Фармкружок", @"Состояние" : @"Да", @"Аптека" : visit.pharmacy.name, @"Дата визита" : self.selectedDate, @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
     }
     else
     {
@@ -565,6 +587,7 @@ static const int filterHeight = 110;
                 [pharmacy removeVisitsObject:visit];
                 [[AppDelegate sharedDelegate].managedObjectContext deleteObject:visit];
             }
+           // [Flurry logEvent:@"Планирование" withParameters:@{@"Событие" : @"Фармкружок", @"Состояние" : @"Нет", @"Аптека" : visit.pharmacy.name, @"Дата визита" : self.selectedDate, @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
         }
         else
         {
@@ -572,6 +595,7 @@ static const int filterHeight = 110;
                                               insertNewObjectForEntityForName:@"PharmacyCircle"
                                               inManagedObjectContext:[AppDelegate sharedDelegate].managedObjectContext];
             visit.pharmacyCircle = pharmacyCircle;
+            //[Flurry logEvent:@"Планирование" withParameters:@{@"Событие" : @"Фармкружок", @"Состояние" : @"Да", @"Аптека" : visit.pharmacy.name, @"Дата визита" : self.selectedDate, @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
         }
     }
     [[AppDelegate sharedDelegate]saveContext];

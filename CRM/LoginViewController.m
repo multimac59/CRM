@@ -32,11 +32,20 @@
     // Do any additional setup after loading the view from its nib.
 }
 
+
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
+//- (void)test
+//{
+//    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+//    [manager GET:[NSString stringWithFormat:@"http://crm.mydigital.guru/server/sync", login, hashedPassword] parameters:nil success:^(AFHTTPRequestOperation *operation, NSDictionary* jsonDic)
+//     {
+//}
 
 - (IBAction)goToMain:(id)sender
 {
@@ -57,6 +66,7 @@
     if (user != nil)
     {
         [AppDelegate sharedDelegate].currentUser = user;
+        //[Flurry logEvent:@"Логин" withParameters:@{@"Пользователь" : user.login, @"Дата" : [NSDate date]}];
         [self dismissViewControllerAnimated:YES completion:nil];
     }
     else
@@ -84,6 +94,7 @@
                 }];
                 
                 [AppDelegate sharedDelegate].currentUser = user;
+                //[Flurry logEvent:@"Логин" withParameters:@{@"Пользователь" : user.login, @"Дата" : [NSDate date]}];
                 [self dismissViewControllerAnimated:YES completion:nil];
             }
             else

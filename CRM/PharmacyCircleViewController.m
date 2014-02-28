@@ -38,6 +38,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    //[Flurry logEvent:@"Переход" withParameters:@{@"Экран":@"Промовизит/Фармкружок", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
+    
     self.participantInput.hidden = YES;
     CGRect frame = self.table.frame;
     frame.size.height = self.view.frame.size.height - 97;
@@ -196,6 +199,8 @@
         self.table.frame = frame;
         
         [self.table reloadData];
+        
+        //[Flurry logEvent:@"Переход" withParameters:@{@"Экран":@"Бренды", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
     }
 }
 
@@ -216,6 +221,8 @@
         self.table.frame = frame;
         
         [self.table reloadData];
+        
+        //[Flurry logEvent:@"Переход" withParameters:@{@"Экран":@"Участники", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
     }
 }
 

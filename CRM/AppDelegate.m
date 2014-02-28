@@ -27,6 +27,7 @@
 #import "CommerceVisit.h"
 #import <AFNetworking/AFNetworking.h>
 #import "NSDate+Additions.h"
+#import "Flurry.h"
 
 @implementation AppDelegate
 
@@ -58,11 +59,11 @@ static AppDelegate* sharedDelegate = nil;
     [self deleteAllObjects:@"User"];
     sharedDelegate = self;
     
-    [self parseRegions];
+    //[self parseRegions];
     self.drugs = [self parseDrugs];
-    [self parseUsers];
-    [self parsePharmacies];
-    [self parseVisits];
+    
+    //[self parsePharmacies];
+    //[self parseVisits];
     //[self parseConferences];
     
     self.currentUser = [self findUserById:1];
@@ -112,6 +113,11 @@ static AppDelegate* sharedDelegate = nil;
     [[UINavigationBar appearance] setTitleTextAttributes:navbarTitleTextAttributes];
     
     [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(checkNewDay) userInfo:Nil repeats:YES];
+    
+    [Flurry startSession:@"VF6G7F9XQ8Jss8QM7249DS"];
+    
+    [self syncVisits];
+    [self parseUsers];
     
     return YES;
 }
@@ -399,7 +405,8 @@ static AppDelegate* sharedDelegate = nil;
         [regions enumerateObjectsUsingBlock:^(id regionObj, NSUInteger idx, BOOL *stop) {
             NSInteger regionId = [[regionObj stringValue]integerValue];
             Region* region = [self findRegionById:regionId];
-            [user addRegionsObject:region];
+            if (region)
+                [user addRegionsObject:region];
         }];
         [users addObject:user];
     }];
@@ -674,5 +681,136 @@ static AppDelegate* sharedDelegate = nil;
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog(@"Error: %@", error);
     }];
+}
+
+- (void)syncVisits
+{
+    NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
+    dateFormatter.dateFormat = @"yyyy-MM-dd HH:mm:ss";
+    NSString* dateString = [dateFormatter stringFromDate:[NSDate date]];
+    dateString = @"2014-02-17 10:00:00";
+    NSString* urlString = [[NSString stringWithFormat:@"http://crm.mydigital.guru/server/sync?clientId=5&date[Region]=%@&date[UserRegion]=%@&date[Pharm]=%@&date[Preparat]=%@&date[PreparatDose]=%@&date[User]=%@", dateString, dateString, dateString, dateString, dateString, dateString]stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    [manager GET:urlString parameters:Nil success:^(AFHTTPRequestOperation *operation, id responseObject)
+    {
+        NSLog(@"Success");
+        //NSLog(responseObject);
+        
+        NSDictionary* pharmDict = [responseObject objectForKey:@"Pharm"];
+        [self parseServerPharm:pharmDict];
+        NSDictionary* regionDict = [responseObject objectForKey:@"Region"];
+        [self parseServerRegions:regionDict];
+        NSDictionary* userRegionDict = [responseObject objectForKey:@"UserRegion"];
+        [self parseServerUserRegions:userRegionDict];
+    }
+    failure:^(AFHTTPRequestOperation *operation, NSError *error)
+    {
+        NSLog(@"Failure");
+    }];
+}
+
+- (void)parseServerPharm:(NSDictionary*)dict
+{
+    NSArray* addDict = [dict objectForKey:@"add"];
+    for (NSDictionary* obj in addDict)
+    {
+        NSNumber* pharmacyId = (NSNumber*)[obj objectForKey:@"pharm_id"];
+        
+        Pharmacy* pharmacy = [self findPharmacyById:pharmacyId.integerValue];
+        if (!pharmacy)
+        {
+            pharmacy = [NSEntityDescription
+                              insertNewObjectForEntityForName:@"Pharmacy"
+                              inManagedObjectContext:self.managedObjectContext];
+            pharmacy.pharmacyId = pharmacyId;
+        }
+        pharmacy.name = [obj objectForKey:@"name"];
+        pharmacy.network = [obj objectForKey:@"net"];
+        pharmacy.city = [obj objectForKey:@"city"];
+        pharmacy.street = [obj objectForKey:@"street"];
+        pharmacy.house = [obj objectForKey:@"house"];
+        pharmacy.phone = [obj objectForKey:@"tel"];
+        pharmacy.psp = [obj objectForKey:@"psp"];
+        pharmacy.sales = [obj objectForKey:@"sales"];
+        pharmacy.doctorName = [obj objectForKey:@"contact"];
+        
+        NSInteger regionId = [[[obj objectForKey:@"region_id"]stringValue]integerValue];
+        Region* region = [self findRegionById:regionId];
+        pharmacy.region = region;
+        
+        NSString* statusString = [obj objectForKey:@"category"];
+        if ([statusString isEqualToString:@"common"])
+        {
+            pharmacy.status = NormalStatus;
+        }
+        else if ([statusString isEqualToString:@"bronze"])
+        {
+            pharmacy.status = BronzeStatus;
+        }
+        else if ([statusString isEqualToString:@"silver"])
+        {
+            pharmacy.status = SilverStatus;
+        }
+        else
+        {
+            pharmacy.status = GoldStatus;
+        }
+    }
+}
+
+- (void)parseServerRegions:(NSDictionary*)dict
+{
+    NSArray* addDict = [dict objectForKey:@"add"];
+    for (NSDictionary* obj in addDict)
+    {
+        NSNumber* regionId = (NSNumber*)[obj objectForKey:@"region_id"];
+        Region* region = [self findRegionById:regionId.integerValue];
+        if (!region)
+        {
+            region = [NSEntityDescription
+                              insertNewObjectForEntityForName:@"Region"
+                              inManagedObjectContext:self.managedObjectContext];
+            region.regionId = regionId;
+        }
+        region.name = [obj objectForKey:@"name"];
+    }
+}
+
+- (void)parseServerUsers:(NSDictionary*)dict
+{
+    NSArray* addDict = [dict objectForKey:@"add"];
+    for (NSDictionary* obj in addDict)
+    {
+        NSNumber* userId = (NSNumber*)[obj objectForKey:@"user_id"];
+        User* user = [self findUserById:userId.integerValue];
+        if (!user)
+        {
+            user = [NSEntityDescription
+                      insertNewObjectForEntityForName:@"User"
+                      inManagedObjectContext:self.managedObjectContext];
+            user.userId = userId;
+        }
+        user.name = [obj objectForKey:@"name"];
+    }
+}
+
+- (void)parseServerUserRegions:(NSDictionary*)dict
+{
+    NSArray* addDict = [dict objectForKey:@"add"];
+    for (NSDictionary* obj in addDict)
+    {
+        NSInteger userId = [[[obj objectForKey:@"user_id"]stringValue]integerValue];
+        User* user = [self findUserById:userId];
+        if (user)
+        {
+            NSInteger regionId = [[(NSNumber*)[obj objectForKey:@"region_id"]stringValue]integerValue];
+            Region* region = [self findRegionById:regionId];
+            
+            if (region)
+            {
+                [user addRegionsObject:region];
+            }
+        }
+    }
 }
 @end

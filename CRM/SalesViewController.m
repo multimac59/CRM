@@ -40,6 +40,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    //[Flurry logEvent:@"Переход" withParameters:@{@"Экран":@"Продажи", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
 
     NSLog(@"TOTAL : %d sales ", self.commerceVisit.sales.count);
     for (Sale* sale in self.commerceVisit.sales)

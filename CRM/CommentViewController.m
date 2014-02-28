@@ -27,6 +27,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+   // [Flurry logEvent:@"Переход" withParameters:@{@"Экран":@"Комментарий", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
+    
     // Do any additional setup after loading the view from its nib.
     //self.textView.text = self.comment;
     self.title = @"Комментарий";

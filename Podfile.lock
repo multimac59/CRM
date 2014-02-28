@@ -17,6 +17,7 @@ PODS:
   - AFNetworking/Serialization (2.0.3)
   - AFNetworking/UIKit (2.0.3):
     - AFNetworking/NSURLConnection
+  - FlurrySDK (4.3.2)
   - MFSideMenu (0.5.4)
   - MGSplitViewController (1.0.0)
   - RaptureXML (1.0.1)
@@ -24,6 +25,7 @@ PODS:
 
 DEPENDENCIES:
   - AFNetworking (~> 2.0.3)
+  - FlurrySDK (~> 4.3.1)
   - MFSideMenu (~> 0.5.4)
   - MGSplitViewController (~> 1.0.0)
   - RaptureXML (~> 1.0.1)
@@ -31,6 +33,7 @@ DEPENDENCIES:
 
 SPEC CHECKSUMS:
   AFNetworking: e499052cbf3d743e9bb727bb37adb9dc2547ba15
+  FlurrySDK: 508afbd655fe2ff935d3e9543cb1c8aa432794de
   MFSideMenu: f59e25c080097a701e108459c207fb22e1f62c30
   MGSplitViewController: bb9408953857b1c89d4a8db41fbbaa56a4bf889d
   RaptureXML: ef017fda62eb95c60300108366d1f0cd0c28cbd4

@@ -49,42 +49,42 @@
   },
   {
   "id":3,
-  "name":"Омез",
+  "name":"Крестор",
   "doses":[
            {
            "id":7,
            "main":false,
-           "name":"Омез 10 мг",
+           "name":"Крестор 10 мг",
            "priority":1
            },
            {
            "id":8,
            "main":false,
-           "name":"Омез 20 мг",
+           "name":"Крестор 20 мг",
            "priority":3
            },
            {
            "id":9,
            "main":true,
-           "name":"Омез 30 мг",
+           "name":"Крестор 30 мг",
            "priority":2
            }
            ]
   },
   {
   "id":4,
-  "name":"Квамател",
+  "name":"Симбикорт",
   "doses":[
            {
            "id":10,
            "main":false,
-           "name":"Квамател 10 мг",
+           "name":"Симбикорт 10 мг",
            "priority":2
            },
            {
            "id":11,
            "main":true,
-           "name":"Квамател 20 мг",
+           "name":"Симбикорт 20 мг",
            "priority":1
            }
            ]

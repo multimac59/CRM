@@ -29,6 +29,7 @@
 - (void)setMapLocationForPharmacy:(Pharmacy*)pharmacy
 {
     self.mapView.showTraffic = NO;
+    self.mapView.delegate = self;
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.responseSerializer = [RaptureXMLResponseSerializer serializer];
     manager.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/xml"];
@@ -55,6 +56,39 @@
          failure:^(AFHTTPRequestOperation *operation, NSError *error) {
              NSLog(@"Error: %@", error);
          }];
+}
+
+- (void)mapView:(YMKMapView *)mapView annotationView:(YMKAnnotationView *)view calloutAccessoryControlTapped:(UIControl *)control
+{
+    NSLog(@"HOHO");
+}
+
+- (void)mapView:(YMKMapView *)mapView annotationViewCalloutTapped:(YMKAnnotationView *)view
+{
+    NSLog(@"Hooty");
+}
+
+- (void)draggablePinAnnotationViewDidStartInteraction:(YMKDraggablePinAnnotationView *)view
+{
+    NSLog(@"OKK");
+}
+
+- (void)draggablePinAnnotationViewDidStartMoving:(YMKDraggablePinAnnotationView *)view
+{
+    NSLog(@"OKK");
+}
+
+- (void)draggablePinAnnotationViewDidEndMoving:(YMKDraggablePinAnnotationView *)view
+{
+    NSLog(@"OKK");
+}
+
+- (YMKAnnotationView *)mapView:(YMKMapView *)mapView viewForAnnotation:(id<YMKAnnotation>)annotation
+{
+    YMKDraggablePinAnnotationView* view = [[YMKDraggablePinAnnotationView alloc]initWithAnnotation:(MapAnnotation*)annotation reuseIdentifier:@"pin"];
+    view.delegate = self;
+    //view.pinColor = YMKPinAnnotationColorGreen;
+    return view;
 }
 
 - (void)awakeFromNib

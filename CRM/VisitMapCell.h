@@ -14,7 +14,7 @@
 #import "MapAnnotation.h"
 #import "AppDelegate.h"
 
-@interface VisitMapCell : UITableViewCell
+@interface VisitMapCell : UITableViewCell<YMKDraggablePinAnnotationViewDelegate, YMKMapViewDelegate>
 @property (nonatomic, weak) IBOutlet YMKMapView* mapView;
 @property (nonatomic, weak) Pharmacy* pharmacy;
 - (void)setMapLocationForPharmacy:(Pharmacy*)pharmacy;
