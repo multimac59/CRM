@@ -116,7 +116,7 @@
         {
             cell = [[NSBundle mainBundle]loadNibNamed:@"VisitMapCell" owner:self options:nil][0];
         }
-        [cell setMapLocationForPharmacy:self.pharmacy];
+        [cell setMapLocationsForPharmacies:self.allPharmacies onDate:self.planDate];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         return cell;
     }
@@ -149,5 +149,10 @@
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
     NSLog(@"Touches moved");
+}
+
+- (void)reloadMap
+{
+    [self.table reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:1 inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 @end

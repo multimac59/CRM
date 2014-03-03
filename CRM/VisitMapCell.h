@@ -17,5 +17,7 @@
 @interface VisitMapCell : UITableViewCell<YMKDraggablePinAnnotationViewDelegate, YMKMapViewDelegate>
 @property (nonatomic, weak) IBOutlet YMKMapView* mapView;
 @property (nonatomic, weak) Pharmacy* pharmacy;
-- (void)setMapLocationForPharmacy:(Pharmacy*)pharmacy;
+
+- (void)setMapLocationsForPharmacies:(NSArray*)pharmacies onDate:(NSDate*)date;
+- (IBAction)commerceVisitButtonClicked:(id)sender;
 @end

@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "CKCalendarView.h"
+#import "PharmacyViewController.h"
 
 @interface PharmaciesViewController : UIViewController<UITextFieldDelegate, CKCalendarDelegate>
 @property (nonatomic, weak) IBOutlet UITableView* table;
@@ -22,6 +23,8 @@
 @property (nonatomic, weak) IBOutlet UILabel* dateLabel;
 
 @property (nonatomic, weak) IBOutlet UIButton* targetButton;
+
+@property (nonatomic, weak) PharmacyViewController* pharmacyViewController;
 
 - (IBAction)leftSegmentPressed:(id)sender;
 - (IBAction)rightSegmentPressed:(id)sender;

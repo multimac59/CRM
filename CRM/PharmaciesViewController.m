@@ -65,6 +65,7 @@ static const int filterHeight = 110;
     [super viewDidLoad];
     
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(removeFromFavourites:) name:@"RemoveFromFavourites" object:nil];
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(reloadData:) name:@"VisitsUpdated" object:nil];
     
     self.navigationController.navigationBar.translucent = NO;
     
@@ -100,6 +101,11 @@ static const int filterHeight = 110;
     {
         delta = 0;
     }
+}
+
+- (void)reloadData:(id)sender
+{
+    [self.table reloadData];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -183,9 +189,9 @@ static const int filterHeight = 110;
     if (self.pharmacies.count <= 0)
         return;
     Pharmacy* pharmacy = self.pharmacies[0];
-    UINavigationController* hostController = [AppDelegate sharedDelegate].clientsSplitController.viewControllers[1];
-    PharmacyViewController* pharmacyViewController = (PharmacyViewController*)hostController.topViewController;
-    [pharmacyViewController showPharmacy:pharmacy];
+    self.pharmacyViewController.allPharmacies = self.pharmacies;
+    self.pharmacyViewController.planDate = self.selectedDate;
+    [self.pharmacyViewController showPharmacy:pharmacy];
     [self.table selectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] animated:NO scrollPosition:UITableViewScrollPositionNone];
 }
 
@@ -505,6 +511,8 @@ static const int filterHeight = 110;
         [self reloadData];
     else
         [self.table reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+    
+    [self.pharmacyViewController reloadMap];
 }
 
 - (IBAction)promoVisitClicked:(id)sender
@@ -554,6 +562,8 @@ static const int filterHeight = 110;
         [self reloadData];
     else
         [self.table reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+    
+    [self.pharmacyViewController reloadMap];
 }
 
 - (IBAction)pharmacyCircleClicked:(id)sender
@@ -603,5 +613,7 @@ static const int filterHeight = 110;
         [self reloadData];
     else
         [self.table reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+    
+    [self.pharmacyViewController reloadMap];
 }
 @end

@@ -19,7 +19,10 @@
 @property (nonatomic, weak) IBOutlet UILabel* phoneLabel;
 @property (nonatomic, weak) IBOutlet UILabel* doctorLabel;
 
+@property (nonatomic, weak) NSMutableArray* allPharmacies;
+@property (nonatomic, weak) NSDate* planDate;
 
+- (void)reloadMap;
 - (IBAction)showPharmacy:(Pharmacy*)pharmacy;
 - (IBAction)removeFromFavourites:(id)sender;
 - (IBAction)closeVisit:(id)sender; //Need it here for builder

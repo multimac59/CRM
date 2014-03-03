@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		30E70B2118C267A7001B3066 /* PharmacyCalloutView.m in Sources */ = {isa = PBXBuildFile; fileRef = 30E70B1F18C267A7001B3066 /* PharmacyCalloutView.m */; };
+		30E70B2218C267A7001B3066 /* PharmacyCalloutView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 30E70B2018C267A7001B3066 /* PharmacyCalloutView.xib */; };
 		70043F811855A70A006138CC /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70043F801855A70A006138CC /* Foundation.framework */; };
 		70043F831855A70A006138CC /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70043F821855A70A006138CC /* CoreGraphics.framework */; };
 		70043F851855A70A006138CC /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70043F841855A70A006138CC /* UIKit.framework */; };
@@ -112,6 +114,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		30E70B1E18C267A7001B3066 /* PharmacyCalloutView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PharmacyCalloutView.h; sourceTree = "<group>"; };
+		30E70B1F18C267A7001B3066 /* PharmacyCalloutView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PharmacyCalloutView.m; sourceTree = "<group>"; };
+		30E70B2018C267A7001B3066 /* PharmacyCalloutView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PharmacyCalloutView.xib; sourceTree = "<group>"; };
 		52792385F4584DFA8DBE0ED0 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
 		70043F7D1855A70A006138CC /* CRM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CRM.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		70043F801855A70A006138CC /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -412,6 +417,9 @@
 		702822501897DE2000ED033B /* Pharmacies */ = {
 			isa = PBXGroup;
 			children = (
+				30E70B1E18C267A7001B3066 /* PharmacyCalloutView.h */,
+				30E70B1F18C267A7001B3066 /* PharmacyCalloutView.m */,
+				30E70B2018C267A7001B3066 /* PharmacyCalloutView.xib */,
 				70C4AE001855B4BF00BD0E8B /* PharmaciesViewController.h */,
 				70C4AE011855B4BF00BD0E8B /* PharmaciesViewController.m */,
 				70C4AE021855B4BF00BD0E8B /* PharmaciesViewController.xib */,
@@ -677,6 +685,7 @@
 				7012808E18AD17570013A14A /* KeyboardView.xib in Resources */,
 				702FEBD3185875B6009A95BA /* SaleCell.xib in Resources */,
 				70744B9918995948005E3536 /* left_arrow.png in Resources */,
+				30E70B2218C267A7001B3066 /* PharmacyCalloutView.xib in Resources */,
 				70C4ADF11855AB3800BD0E8B /* SidePanelController.xib in Resources */,
 				70744B9B18995948005E3536 /* right_arrow.png in Resources */,
 				702FEBC618585656009A95BA /* LoginViewController.xib in Resources */,
@@ -773,6 +782,7 @@
 				70C4ADFA1855ABD300BD0E8B /* VisitViewController.m in Sources */,
 				702FEBC518585656009A95BA /* LoginViewController.m in Sources */,
 				70C44E2118AE4698000357BD /* KeyboardView.m in Sources */,
+				30E70B2118C267A7001B3066 /* PharmacyCalloutView.m in Sources */,
 				702FEBD81858A6B7009A95BA /* MainDatabase.xcdatamodeld in Sources */,
 				7004C08118B7A1A20078980E /* Visit.m in Sources */,
 				70C4ADF01855AB3800BD0E8B /* SidePanelController.m in Sources */,

@@ -135,7 +135,7 @@
         {
             cell = [[NSBundle mainBundle]loadNibNamed:@"VisitMapCell" owner:self options:nil][0];
         }
-        [cell setMapLocationForPharmacy:self.visit.pharmacy];
+        //[cell setMapLocationForPharmacy:self.visit.pharmacy];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         return cell;
     }

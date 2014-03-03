@@ -62,7 +62,7 @@ static AppDelegate* sharedDelegate = nil;
     //[self parseRegions];
     self.drugs = [self parseDrugs];
     
-    //[self parsePharmacies];
+    [self parsePharmacies];
     //[self parseVisits];
     //[self parseConferences];
     
@@ -75,9 +75,14 @@ static AppDelegate* sharedDelegate = nil;
     _visitsSplitController = [[MGCustomSplitViewController alloc]init];
     //_visitsSplitController.dividerStyle = MGSplitViewDividerStylePaneSplitter;
     //_visitsSplitController.dividerView.hidden = YES;
+    
+    PharmacyViewController* pharmacyViewController = [PharmacyViewController new];
+    PharmaciesViewController* pharmaciesViewController = [PharmaciesViewController new];
+    pharmaciesViewController.pharmacyViewController = pharmacyViewController;
+    
     self.visitsSplitController.viewControllers = @[[[UINavigationController alloc]initWithRootViewController:[VisitsViewController new]],[[UINavigationController alloc]initWithRootViewController:[VisitViewController new]]];
     _clientsSplitController = [[MGCustomSplitViewController alloc]init];
-    self.clientsSplitController.viewControllers = @[[[UINavigationController alloc]initWithRootViewController:[PharmaciesViewController new]],[[UINavigationController alloc]initWithRootViewController:[PharmacyViewController new]]];
+    self.clientsSplitController.viewControllers = @[[[UINavigationController alloc]initWithRootViewController:pharmaciesViewController],[[UINavigationController alloc]initWithRootViewController:pharmacyViewController]];
 
     _container = [MFSideMenuCustomContainer
                   containerWithCenterViewController:self.visitsSplitController
@@ -116,7 +121,7 @@ static AppDelegate* sharedDelegate = nil;
     
     [Flurry startSession:@"VF6G7F9XQ8Jss8QM7249DS"];
     
-    [self syncVisits];
+    //[self syncVisits];
     [self parseUsers];
     
     return YES;
