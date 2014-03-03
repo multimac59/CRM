@@ -18,6 +18,7 @@
 #import "PharmacyCircle.h"
 #import "NSDate+Additions.h"
 #import "User.h"
+#import "VisitManager.h"
 
 @interface PharmaciesViewController ()
 {
@@ -466,47 +467,10 @@ static const int filterHeight = 110;
 #pragma mark plan buttons
 - (IBAction)commerceVisitClicked:(id)sender
 {
-    if ([self.selectedDate compare:[NSDate currentDate]] == NSOrderedAscending)
-        return;
-    
     NSIndexPath* indexPath = [self indexPathForSender:sender];
     Pharmacy* pharmacy = self.pharmacies[indexPath.row];
-    Visit* visit = [self visitInPharmacy:pharmacy forDate:self.selectedDate];
-    if (visit.closed.boolValue)
-        return;
+    [[VisitManager sharedManager]toggleCommerceVisitInPharmacy:pharmacy forDate:self.selectedDate];
     
-    if (!visit)
-    {
-        Visit* visit = [self createVisitInPharamacy:pharmacy forDate:self.selectedDate];
-        CommerceVisit* commerceVisit = [NSEntityDescription
-                                        insertNewObjectForEntityForName:@"CommerceVisit"
-                                        inManagedObjectContext:[AppDelegate sharedDelegate].managedObjectContext];
-        visit.commerceVisit = commerceVisit;
-        //[Flurry logEvent:@"Планирование" withParameters:@{@"Событие" : @"Продажи", @"Состояние" : @"Да", @"Аптека" : visit.pharmacy.name, @"Дата визита" : self.selectedDate, @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
-    }
-    else
-    {
-        if (visit.commerceVisit)
-        {
-            [[AppDelegate sharedDelegate].managedObjectContext deleteObject:visit.commerceVisit];
-            visit.commerceVisit = nil;
-            if (!visit.promoVisit && !visit.pharmacyCircle)
-            {
-                [pharmacy removeVisitsObject:visit];
-                [[AppDelegate sharedDelegate].managedObjectContext deleteObject:visit];
-            }
-            //[Flurry logEvent:@"Планирование" withParameters:@{@"Событие" : @"Продажи", @"Состояние" : @"Нет", @"Аптека" : visit.pharmacy.name, @"Дата визита" : self.selectedDate, @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
-        }
-        else
-        {
-            CommerceVisit* commerceVisit = [NSEntityDescription
-                                            insertNewObjectForEntityForName:@"CommerceVisit"
-                                            inManagedObjectContext:[AppDelegate sharedDelegate].managedObjectContext];
-            visit.commerceVisit = commerceVisit;
-            //[Flurry logEvent:@"Планирование" withParameters:@{@"Событие" : @"Продажи", @"Состояние" : @"Да", @"Аптека" : visit.pharmacy.name, @"Дата визита" : self.selectedDate, @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
-        }
-    }
-    [[AppDelegate sharedDelegate]saveContext];
     if (planned)
         [self reloadData];
     else
@@ -517,47 +481,10 @@ static const int filterHeight = 110;
 
 - (IBAction)promoVisitClicked:(id)sender
 {
-    if ([self.selectedDate compare:[NSDate currentDate]] == NSOrderedAscending)
-        return;
-    
     NSIndexPath* indexPath = [self indexPathForSender:sender];
     Pharmacy* pharmacy = self.pharmacies[indexPath.row];
-    Visit* visit = [self visitInPharmacy:pharmacy forDate:self.selectedDate];
-    if (visit.closed.boolValue)
-        return;
+    [[VisitManager sharedManager]togglePromoVisitInPharmacy:pharmacy forDate:self.selectedDate];
     
-    if (!visit)
-    {
-        Visit* visit = [self createVisitInPharamacy:pharmacy forDate:self.selectedDate];
-        PromoVisit* promoVisit = [NSEntityDescription
-                                  insertNewObjectForEntityForName:@"PromoVisit"
-                                  inManagedObjectContext:[AppDelegate sharedDelegate].managedObjectContext];
-        visit.promoVisit = promoVisit;
-        //[Flurry logEvent:@"Планирование" withParameters:@{@"Событие" : @"Промо-визит", @"Состояние" : @"Да", @"Аптека" : visit.pharmacy.name, @"Дата визита" : self.selectedDate, @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
-    }
-    else
-    {
-        if (visit.promoVisit)
-        {
-            [[AppDelegate sharedDelegate].managedObjectContext deleteObject:visit.promoVisit];
-            visit.promoVisit = nil;
-            if (!visit.commerceVisit && !visit.pharmacyCircle)
-            {
-                [pharmacy removeVisitsObject:visit];
-                [[AppDelegate sharedDelegate].managedObjectContext deleteObject:visit];
-            }
-            //[Flurry logEvent:@"Планирование" withParameters:@{@"Событие" : @"Промо-визит", @"Состояние" : @"Нет", @"Аптека" : visit.pharmacy.name, @"Дата визита" : self.selectedDate, @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
-        }
-        else
-        {
-            PromoVisit* promoVisit = [NSEntityDescription
-                                      insertNewObjectForEntityForName:@"PromoVisit"
-                                      inManagedObjectContext:[AppDelegate sharedDelegate].managedObjectContext];
-            visit.promoVisit = promoVisit;
-            //[Flurry logEvent:@"Планирование" withParameters:@{@"Событие" : @"Промо-визит", @"Состояние" : @"Да", @"Аптека" : visit.pharmacy.name, @"Дата визита" : self.selectedDate, @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
-        }
-    }
-    [[AppDelegate sharedDelegate]saveContext];
     if (planned)
         [self reloadData];
     else
@@ -568,47 +495,10 @@ static const int filterHeight = 110;
 
 - (IBAction)pharmacyCircleClicked:(id)sender
 {
-    if ([self.selectedDate compare:[NSDate currentDate]] == NSOrderedAscending)
-        return;
-    
     NSIndexPath* indexPath = [self indexPathForSender:sender];
     Pharmacy* pharmacy = self.pharmacies[indexPath.row];
-    Visit* visit = [self visitInPharmacy:pharmacy forDate:self.selectedDate];
-    if (visit.closed.boolValue)
-        return;
+    [[VisitManager sharedManager]togglePharmacyCircleInPharmacy:pharmacy forDate:self.selectedDate];
     
-    if (!visit)
-    {
-        Visit* visit = [self createVisitInPharamacy:pharmacy forDate:self.selectedDate];
-        PharmacyCircle* pharmacyCircle = [NSEntityDescription
-                                          insertNewObjectForEntityForName:@"PharmacyCircle"
-                                          inManagedObjectContext:[AppDelegate sharedDelegate].managedObjectContext];
-        visit.pharmacyCircle = pharmacyCircle;
-        //[Flurry logEvent:@"Планирование" withParameters:@{@"Событие" : @"Фармкружок", @"Состояние" : @"Да", @"Аптека" : visit.pharmacy.name, @"Дата визита" : self.selectedDate, @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
-    }
-    else
-    {
-        if (visit.pharmacyCircle)
-        {
-            [[AppDelegate sharedDelegate].managedObjectContext deleteObject:visit.pharmacyCircle];
-            visit.pharmacyCircle = nil;
-            if (!visit.commerceVisit && !visit.promoVisit)
-            {
-                [pharmacy removeVisitsObject:visit];
-                [[AppDelegate sharedDelegate].managedObjectContext deleteObject:visit];
-            }
-           // [Flurry logEvent:@"Планирование" withParameters:@{@"Событие" : @"Фармкружок", @"Состояние" : @"Нет", @"Аптека" : visit.pharmacy.name, @"Дата визита" : self.selectedDate, @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
-        }
-        else
-        {
-            PharmacyCircle* pharmacyCircle = [NSEntityDescription
-                                              insertNewObjectForEntityForName:@"PharmacyCircle"
-                                              inManagedObjectContext:[AppDelegate sharedDelegate].managedObjectContext];
-            visit.pharmacyCircle = pharmacyCircle;
-            //[Flurry logEvent:@"Планирование" withParameters:@{@"Событие" : @"Фармкружок", @"Состояние" : @"Да", @"Аптека" : visit.pharmacy.name, @"Дата визита" : self.selectedDate, @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
-        }
-    }
-    [[AppDelegate sharedDelegate]saveContext];
     if (planned)
         [self reloadData];
     else

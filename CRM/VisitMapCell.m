@@ -10,6 +10,7 @@
 #import "PharmacyCalloutView.h"
 #import "Visit.h"
 #import "NSDate+Additions.h"
+#import "VisitManager.h"
 @interface VisitMapCell()
 {
     int total;
@@ -58,7 +59,7 @@
          annotation.coordinate = location.coordinate;
          annotation.title = address;
          annotation.subtitle = pharmacy.name;
-         annotation.visit = [self visitInPharmacy:pharmacy forDate:date];
+         annotation.visit = [[VisitManager sharedManager] visitInPharmacy:pharmacy forDate:date];
          annotation.pharmacy = pharmacy;
          [mapAnnotations addObject:annotation];
          total--;
@@ -85,27 +86,6 @@
     {
         [self setMapLocationForPharmacy:pharmacy onDate:date];
     }
-}
-
-- (Visit*)visitInPharmacy:(Pharmacy*)pharmacy forDate:(NSDate*)date
-{
-    for (Visit* visit in pharmacy.visits)
-    {
-        //get date without time component. We don't need it in fact, because we already have it without time from calendar control
-        NSDate* startDate;
-        [[NSCalendar currentCalendar] rangeOfUnit:NSDayCalendarUnit startDate:&startDate interval:NULL forDate:date];
-        //Add one day
-        NSDateComponents *oneDay = [NSDateComponents new];
-        oneDay.day = 1;
-        NSDate *endDate = [[NSCalendar currentCalendar] dateByAddingComponents:oneDay
-                                                                        toDate:startDate
-                                                                       options:0];
-        if ([visit.date compare:startDate] != NSOrderedAscending && [visit.date compare:endDate] == NSOrderedAscending && visit.user.userId == [AppDelegate sharedDelegate].currentUser.userId)
-        {
-            return visit;
-        }
-    }
-    return nil;
 }
 
 - (void)zoomMap
@@ -204,7 +184,7 @@
     
     calloutView.contentView = calloutContent;
     
-    [self.mapView setCenterCoordinate:mapAnnotation.coordinate];
+    //[self.mapView setCenterCoordinate:mapAnnotation.coordinate];
     
     return calloutView;
 }
@@ -213,75 +193,53 @@
 {
     UIButton* button = sender;
     PharmacyCalloutView* calloutView = (PharmacyCalloutView*)button.superview;
-    Pharmacy* pharmacy = calloutView.pharmacy;
     
-    if ([self.selectedDate compare:[NSDate currentDate]] == NSOrderedAscending)
-        return;
-    
-    Visit* visit = [self visitInPharmacy:pharmacy forDate:self.selectedDate];
-    if (visit.closed.boolValue)
-        return;
-    
-    if (!visit)
+    BOOL commerceVisitOn = [[VisitManager sharedManager]toggleCommerceVisitInPharmacy:calloutView.pharmacy forDate:self.selectedDate];
+    if (commerceVisitOn)
     {
-        Visit* visit = [self createVisitInPharamacy:pharmacy forDate:self.selectedDate];
-        CommerceVisit* commerceVisit = [NSEntityDescription
-                                        insertNewObjectForEntityForName:@"CommerceVisit"
-                                        inManagedObjectContext:[AppDelegate sharedDelegate].managedObjectContext];
-        visit.commerceVisit = commerceVisit;
-        
         [button setBackgroundImage:[UIImage imageNamed:@"typeButton2"] forState:UIControlStateHighlighted];
         [button setBackgroundImage:[UIImage imageNamed:@"typeButton2Pressed"] forState:UIControlStateNormal];
-        //[Flurry logEvent:@"Планирование" withParameters:@{@"Событие" : @"Продажи", @"Состояние" : @"Да", @"Аптека" : visit.pharmacy.name, @"Дата визита" : self.selectedDate, @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
     }
     else
     {
-        if (visit.commerceVisit)
-        {
-            [[AppDelegate sharedDelegate].managedObjectContext deleteObject:visit.commerceVisit];
-            visit.commerceVisit = nil;
-            if (!visit.promoVisit && !visit.pharmacyCircle)
-            {
-                [pharmacy removeVisitsObject:visit];
-                [[AppDelegate sharedDelegate].managedObjectContext deleteObject:visit];
-            }
-            
-            [button setBackgroundImage:[UIImage imageNamed:@"typeButton2"] forState:UIControlStateNormal];
-            [button setBackgroundImage:[UIImage imageNamed:@"typeButton2Pressed"] forState:UIControlStateHighlighted];
-            //[Flurry logEvent:@"Планирование" withParameters:@{@"Событие" : @"Продажи", @"Состояние" : @"Нет", @"Аптека" : visit.pharmacy.name, @"Дата визита" : self.selectedDate, @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
-        }
-        else
-        {
-            CommerceVisit* commerceVisit = [NSEntityDescription
-                                            insertNewObjectForEntityForName:@"CommerceVisit"
-                                            inManagedObjectContext:[AppDelegate sharedDelegate].managedObjectContext];
-            visit.commerceVisit = commerceVisit;
-            [button setBackgroundImage:[UIImage imageNamed:@"typeButton2"] forState:UIControlStateHighlighted];
-            [button setBackgroundImage:[UIImage imageNamed:@"typeButton2Pressed"] forState:UIControlStateNormal];
-            //[Flurry logEvent:@"Планирование" withParameters:@{@"Событие" : @"Продажи", @"Состояние" : @"Да", @"Аптека" : visit.pharmacy.name, @"Дата визита" : self.selectedDate, @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
-        }
+        [button setBackgroundImage:[UIImage imageNamed:@"typeButton2Pressed"] forState:UIControlStateHighlighted];
+        [button setBackgroundImage:[UIImage imageNamed:@"typeButton2"] forState:UIControlStateNormal];
     }
-    [[AppDelegate sharedDelegate]saveContext];
-    [[NSNotificationCenter defaultCenter]postNotificationName:@"VisitsUpdated" object:self];
 }
 
-- (Visit*)createVisitInPharamacy:(Pharmacy*)pharmacy forDate:(NSDate*)date
+- (IBAction)promoVisitButtonClicked:(id)sender
 {
-    Visit* visit = [NSEntityDescription
-                    insertNewObjectForEntityForName:@"Visit"
-                    inManagedObjectContext:[AppDelegate sharedDelegate].managedObjectContext];
-    visit.pharmacy = pharmacy;
-    visit.date = date;
-    visit.user = [AppDelegate sharedDelegate].currentUser;
-    visit.visitId = [[NSUUID UUID]UUIDString];
-    visit.closed = @NO;
-    [pharmacy addVisitsObject:visit];
-    return visit;
-}
-
-- (void)awakeFromNib
-{
+    UIButton* button = sender;
+    PharmacyCalloutView* calloutView = (PharmacyCalloutView*)button.superview;
     
+    BOOL promoVisitOn = [[VisitManager sharedManager]togglePromoVisitInPharmacy:calloutView.pharmacy forDate:self.selectedDate];
+    if (promoVisitOn)
+    {
+        [button setBackgroundImage:[UIImage imageNamed:@"typeButton2"] forState:UIControlStateHighlighted];
+        [button setBackgroundImage:[UIImage imageNamed:@"typeButton2Pressed"] forState:UIControlStateNormal];
+    }
+    else
+    {
+        [button setBackgroundImage:[UIImage imageNamed:@"typeButton2Pressed"] forState:UIControlStateHighlighted];
+        [button setBackgroundImage:[UIImage imageNamed:@"typeButton2"] forState:UIControlStateNormal];
+    }
 }
 
+- (IBAction)pharmacyCircleButtonClicked:(id)sender
+{
+    UIButton* button = sender;
+    PharmacyCalloutView* calloutView = (PharmacyCalloutView*)button.superview;
+    
+    BOOL pharmacyCircleOn = [[VisitManager sharedManager]togglePharmacyCircleInPharmacy:calloutView.pharmacy forDate:self.selectedDate];
+    if (pharmacyCircleOn)
+    {
+        [button setBackgroundImage:[UIImage imageNamed:@"typeButton2"] forState:UIControlStateHighlighted];
+        [button setBackgroundImage:[UIImage imageNamed:@"typeButton2Pressed"] forState:UIControlStateNormal];
+    }
+    else
+    {
+        [button setBackgroundImage:[UIImage imageNamed:@"typeButton2Pressed"] forState:UIControlStateHighlighted];
+        [button setBackgroundImage:[UIImage imageNamed:@"typeButton2"] forState:UIControlStateNormal];
+    }
+}
 @end

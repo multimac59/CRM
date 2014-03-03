@@ -29,6 +29,7 @@
 
 @property (nonatomic, strong) NSMutableArray* oldVisits;
 @property (nonatomic, strong) NSArray* allPharmacies;
+@property (nonatomic, weak) NSDate* planDate;
 
 - (IBAction)goToSalesList:(id)sender;
 - (IBAction)goToPharmacyCircle:(id)sender;

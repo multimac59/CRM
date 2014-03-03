@@ -20,4 +20,6 @@
 
 - (void)setMapLocationsForPharmacies:(NSArray*)pharmacies onDate:(NSDate*)date;
 - (IBAction)commerceVisitButtonClicked:(id)sender;
+- (IBAction)promoVisitButtonClicked:(id)sender;
+- (IBAction)pharmacyCircleButtonClicked:(id)sender;
 @end

@@ -60,13 +60,13 @@ static AppDelegate* sharedDelegate = nil;
     sharedDelegate = self;
     
     //[self parseRegions];
-    self.drugs = [self parseDrugs];
+    //self.drugs = [self parseDrugs];
     
     [self parsePharmacies];
     //[self parseVisits];
     //[self parseConferences];
     
-    self.currentUser = [self findUserById:1];
+    //self.currentUser = [self findUserById:1];
     
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
@@ -121,8 +121,7 @@ static AppDelegate* sharedDelegate = nil;
     
     [Flurry startSession:@"VF6G7F9XQ8Jss8QM7249DS"];
     
-    //[self syncVisits];
-    [self parseUsers];
+    [self syncVisits];
     
     return YES;
 }
@@ -701,18 +700,71 @@ static AppDelegate* sharedDelegate = nil;
         NSLog(@"Success");
         //NSLog(responseObject);
         
+        NSDictionary* usersDict = [responseObject objectForKey:@"User"];
+        [self parseServerUsers:usersDict];
         NSDictionary* pharmDict = [responseObject objectForKey:@"Pharm"];
         [self parseServerPharm:pharmDict];
         NSDictionary* regionDict = [responseObject objectForKey:@"Region"];
         [self parseServerRegions:regionDict];
         NSDictionary* userRegionDict = [responseObject objectForKey:@"UserRegion"];
         [self parseServerUserRegions:userRegionDict];
+        NSDictionary* preparatDict = [responseObject objectForKey:@"Preparat"];
+        self.drugs = [self parseServerPreparat:preparatDict];
+        NSDictionary* doseDict = [responseObject objectForKey:@"PreparatDose"];
+        [self parseServerPreparatDose:doseDict];
     }
     failure:^(AFHTTPRequestOperation *operation, NSError *error)
     {
         NSLog(@"Failure");
     }];
 }
+
+- (NSMutableArray*)parseServerPreparat:(NSDictionary*)dict
+{
+    NSMutableArray* drugs = [NSMutableArray new];
+    NSArray* addDict = [dict objectForKey:@"add"];
+    for (NSDictionary* obj in addDict)
+    {
+        NSNumber* drugId = (NSNumber*)[obj objectForKey:@"preparat_id"];
+        Drug* drug = [self findDrugById:drugId.integerValue];
+        if (!drug)
+        {
+            drug = [NSEntityDescription
+                        insertNewObjectForEntityForName:@"Drug"
+                        inManagedObjectContext:self.managedObjectContext];
+            drug.drugId = drugId;
+            drug.name = [obj objectForKey:@"code"];
+            [drugs addObject:drug];
+        }
+    }
+    return drugs;
+}
+
+- (void)parseServerPreparatDose:(NSDictionary*)dict
+{
+    NSArray* addDict = [dict objectForKey:@"add"];
+    for (NSDictionary* obj in addDict)
+    {
+        NSNumber* doseId = (NSNumber*)[obj objectForKey:@"preparat_dose_id"];
+        Dose* dose = [self findDoseById:doseId.integerValue];
+        if (!dose)
+        {
+            dose = [NSEntityDescription
+                    insertNewObjectForEntityForName:@"Dose"
+                    inManagedObjectContext:self.managedObjectContext];
+            dose.doseId = doseId;
+            dose.name = [obj objectForKey:@"code"];
+        }
+        NSNumber* drugId = (NSNumber*)[obj objectForKey:@"preparat_id"];
+        Drug* drug = [self findDrugById:drugId.integerValue];
+        if (drug)
+        {
+            [drug addDosesObject:dose];
+        }
+    }
+}
+
+
 
 - (void)parseServerPharm:(NSDictionary*)dict
 {

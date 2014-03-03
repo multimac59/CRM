@@ -231,13 +231,26 @@
 
 - (Sale*)getCurrentSaleFor:(Dose*)dose
 {
+    NSLog(@"Search dose id = %@", dose.doseId);
     //Or use predicate instead
     for (Sale* currentSale in self.commerceVisit.sales)
     {
-        if (currentSale.dose.doseId == dose.doseId)
+        if (dose.doseId == dose.doseId)
+        {
+            NSLog(@"NSNumbers are equal");
+        }
+        else
+        {
+            NSLog(@"WTF??!");
+            if ([dose.doseId isEqual:dose.doseId])
+            {
+                NSLog(@"Correct");
+            }
+        }
+        
+        if (currentSale.dose == dose)
             return currentSale;
     }
-    assert("YOU SUCK");
     return nil;
 }
 
@@ -277,7 +290,14 @@
             sale.sold = @0;
             sale.remainder = @0;
             sale.order = @0;
+            [self.commerceVisit addSalesObject:sale];
         }
+    }
+    [[AppDelegate sharedDelegate]saveContext];
+    
+    for (Sale* sale in self.commerceVisit.sales)
+    {
+        NSLog(@"id = %@", sale.dose.doseId);
     }
 }
 

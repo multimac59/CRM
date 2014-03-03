@@ -268,6 +268,7 @@ static const int filterHeight = 0;
         [allPharmacies addObject:visit.pharmacy];
     }
     visitViewController.allPharmacies = allPharmacies;
+    visitViewController.planDate = self.filterDate;
     
     NSLog(@"Clicked, row = %ld", (long)index);
     NSObject* object = self.visits[index];
@@ -278,7 +279,6 @@ static const int filterHeight = 0;
 
     [visitViewController reloadContent];
 }
-
 
 - (void)calendar:(CKCalendarView *)calendar didSelectDate:(NSDate *)date
 {
@@ -294,7 +294,6 @@ static const int filterHeight = 0;
     self.dateLabel.text = [dateFormatter stringFromDate:self.filterDate];
     
    // [Flurry logEvent:@"Выбор даты" withParameters:@{@"Выбранная дата" : date, @"Экран" : @"Визиты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
-    
     [self toggleCalendar];
 }
 

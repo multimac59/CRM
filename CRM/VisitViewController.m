@@ -136,6 +136,7 @@
             cell = [[NSBundle mainBundle]loadNibNamed:@"VisitMapCell" owner:self options:nil][0];
         }
         //[cell setMapLocationForPharmacy:self.visit.pharmacy];
+        [cell setMapLocationsForPharmacies:self.allPharmacies onDate:self.planDate];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         return cell;
     }
