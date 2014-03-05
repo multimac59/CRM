@@ -15,4 +15,10 @@
 @interface SidePanelController : UIViewController<UITableViewDataSource, UITableViewDelegate>
 @property (nonatomic, weak) id<SidePanelDelegate> delegate;
 @property (nonatomic, weak) IBOutlet UITableView* table;
+
+@property (nonatomic, weak) IBOutlet UILabel* syncLabel;
+@property (nonatomic, weak) IBOutlet UILabel* nameLabel;
+@property (nonatomic, weak) IBOutlet UILabel* mailLabel;
+
+- (IBAction)logout:(id)sender;
 @end

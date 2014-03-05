@@ -73,10 +73,10 @@ static const int filterHeight = 0;
 {
     [super viewDidLoad];
     self.navigationController.navigationBar.translucent = NO;
+    [self.navigationController setNavigationBarHidden:YES animated:NO];
     
     //self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Clear Filter" style:UIBarButtonSystemItemAdd target:self action:@selector(clearFilter)];
     //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Add" style:UIBarButtonSystemItemAdd target:self action:@selector(showPopover)];
-    self.navigationItem.title = @"Визиты";
 
 
     //[self performSelector:@selector(selectObjectAtIndex:) withObject:0 afterDelay:1];
@@ -120,7 +120,7 @@ static const int filterHeight = 0;
     self.filterDate = [NSDate currentDate];
     
     [self.calendarWidget selectDate:self.filterDate makeVisible:NO];
-    [self loadAll];
+    [self reloadData];
     [self filterVisits];
     [self.table reloadData];
     
@@ -181,7 +181,7 @@ static const int filterHeight = 0;
     [self.table reloadData];
 }
 
-- (void)loadAll
+- (void)reloadData
 {
     NSManagedObjectContext* context = [AppDelegate sharedDelegate].managedObjectContext;
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
@@ -237,14 +237,6 @@ static const int filterHeight = 0;
         }
         Visit* visit = self.visits[indexPath.row];
         [cell setupCellWithPharmacy:visit.pharmacy andVisit:visit];
-    if (visit.pharmacy.status == NormalStatus)
-    {
-        cell.pspView.frame = CGRectMake(15, 42, 30, 16);
-    }
-    else
-    {
-        cell.pspView.frame = CGRectMake(44, 42, 30, 16);
-    }
     cell.commerceVisitButton.enabled = NO;
     cell.promoVisitButton.enabled = NO;
     cell.pharmacyCircleButton.enabled = NO;
@@ -284,7 +276,7 @@ static const int filterHeight = 0;
 {
     self.filterDate = date;
     //TODO: optimize it
-    [self loadAll];
+    [self reloadData];
     [self filterVisits];
     [self.table reloadData];
     

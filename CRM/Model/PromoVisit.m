@@ -8,7 +8,6 @@
 
 #import "PromoVisit.h"
 #import "Drug.h"
-#import "Participant.h"
 #import "Visit.h"
 
 
@@ -17,5 +16,18 @@
 @dynamic brands;
 @dynamic participants;
 @dynamic visit;
+
+- (NSDictionary*)encodeToJSON
+{
+    NSMutableDictionary* dic = [NSMutableDictionary dictionary];
+    [dic setObject:self.participants forKey:@"participants"];
+    NSMutableArray* brandsArray = [NSMutableArray new];
+    for (Drug* drug in self.brands)
+    {
+        [brandsArray addObject:drug.drugId];
+    }
+    [dic setObject:brandsArray forKey:@"brands"];
+    return dic;
+}
 
 @end

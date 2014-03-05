@@ -11,6 +11,8 @@
 #import "MGCustomSplitViewController.h"
 #import "SidePanelController.h"
 #import "MFSideMenuCustomContainer.h"
+#import "PharmaciesViewController.h"
+#import "VisitsViewController.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, SidePanelDelegate>
 
@@ -28,10 +30,20 @@
 @property (strong, nonatomic) User* currentUser;
 @property (strong, nonatomic) NSArray* drugs;
 
+@property (strong, nonatomic) PharmaciesViewController* pharmaciesViewController;
+@property (strong, nonatomic) VisitsViewController* visitsViewController;
+
 + (AppDelegate*)sharedDelegate;
 - (void)saveContext;
 
+- (User*)findUserById:(NSInteger)userId;
 - (User*)findUserByLogin:(NSString*)login andPassword:(NSString*)password;
 - (Region*)findRegionById:(NSInteger)regionId;
+
+- (void)sendDataToServer;
+- (void)showLoginScreenWithAnimation:(BOOL)animated;
+
+- (void)syncVisits;
+- (void)reloadData;
 
 @end

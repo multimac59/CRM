@@ -46,7 +46,6 @@
         key.enabled = !self.onlyRemainder;
     }
     self.pointButton.enabled = !self.onlyRemainder;
-    self.delButton.enabled = !self.onlyRemainder;
 }
 
 /*

@@ -19,6 +19,8 @@
 #import "CommerceVisit.h"
 #import "AppDelegate.h"
 
+#import "NumberObject.h"
+
 @interface SalesViewController ()
 @property (nonatomic, strong) NSArray* drugs;
 @property (nonatomic) BOOL isMyVisit;
@@ -64,8 +66,8 @@
     [leftButton addTarget:self action:@selector(back) forControlEvents:UIControlEventTouchDown];
     
     UIButton* rightButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 82, 20)];
-    [rightButton setBackgroundImage:[UIImage imageNamed:@"saveButtonPressed"] forState:UIControlStateNormal];
-    [rightButton setBackgroundImage:[UIImage imageNamed:@"saveButton"] forState:UIControlStateHighlighted];
+    [rightButton setBackgroundImage:[UIImage imageNamed:@"sendButtonBg"] forState:UIControlStateNormal];
+    [rightButton setBackgroundImage:[UIImage imageNamed:@"sendButtonPressedBg"] forState:UIControlStateHighlighted];
     [rightButton addTarget:self action:@selector(saveVisit:) forControlEvents:UIControlEventTouchDown];
 
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:leftButton];
@@ -126,6 +128,18 @@
     NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
     dateFormatter.dateFormat = @"dd.MM.yyyy HH:mm";
     cell.drugLabel.text = dose.name;
+    
+    NSCharacterSet* digits = [NSCharacterSet decimalDigitCharacterSet];
+    NSRange firstNumRange = [dose.name rangeOfCharacterFromSet:digits];
+    if (firstNumRange.location != NSNotFound)
+    {
+        cell.drugLabel.text = [dose.name substringToIndex:firstNumRange.location];
+        cell.doseLabel.text = [dose.name substringFromIndex:firstNumRange.location];
+    }
+    else
+        cell.drugLabel.text = dose.name;
+    
+    
     if (lastSale != nil)
     {
         cell.dateLabel.text = [dateFormatter stringFromDate:lastSale.commerceVisit.visit.date];
@@ -235,6 +249,8 @@
     //Or use predicate instead
     for (Sale* currentSale in self.commerceVisit.sales)
     {
+        NSNumber* first = dose.doseId;
+        NSNumber* second = dose.doseId;
         if (dose.doseId == dose.doseId)
         {
             NSLog(@"NSNumbers are equal");
@@ -242,6 +258,20 @@
         else
         {
             NSLog(@"WTF??!");
+            
+            
+            if (first != second)
+            {
+                NSLog(@"WTF??");
+            }
+            
+            second = first;
+            if (first != second)
+            {
+                NSLog(@"WTF??");
+            }
+            
+         
             if ([dose.doseId isEqual:dose.doseId])
             {
                 NSLog(@"Correct");
@@ -368,6 +398,8 @@
 
 - (void)textFieldDidBeginEditing:(UITextField *)textField
 {
+    if ([self.activeField.text isEqualToString:@""])
+        self.activeField.text = @"0";
     [self saveInput];
     self.activeField = textField;
     CGRect senderRect = [textField.superview convertRect:textField.frame toView:self.view];
@@ -402,6 +434,11 @@
     }
     else if (key == self.keyboard.delButton)
     {
+        if ([self.activeField.text isEqualToString:@"Ост."])
+        {
+            self.activeField.text = @"";
+            self.keyboard.onlyRemainder = !self.keyboard.onlyRemainder;
+        }
         if (self.activeField.text.length > 0)
             self.activeField.text = [self.activeField.text substringToIndex:[self.activeField.text length]-1];
     }
@@ -461,6 +498,7 @@
     self.activeField = nil;
     [self.keyboard removeFromSuperview];
 }
+
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
 {
 }

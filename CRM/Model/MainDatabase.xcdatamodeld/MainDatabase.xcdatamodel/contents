@@ -16,9 +16,6 @@
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="doses" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Dose" inverseName="drug" inverseEntity="Dose" syncable="YES"/>
     </entity>
-    <entity name="Participant" representedClassName="Participant" syncable="YES">
-        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
-    </entity>
     <entity name="Pharmacy" representedClassName="Pharmacy" syncable="YES">
         <attribute name="city" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="doctorName" optional="YES" attributeType="String" syncable="YES"/>
@@ -37,8 +34,8 @@
     </entity>
     <entity name="PharmacyCircle" representedClassName="PharmacyCircle" parentEntity="PromoVisit" syncable="YES"/>
     <entity name="PromoVisit" representedClassName="PromoVisit" syncable="YES">
+        <attribute name="participants" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <relationship name="brands" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Drug" syncable="YES"/>
-        <relationship name="participants" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Participant" syncable="YES"/>
         <relationship name="visit" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Visit" inverseName="promoVisit" inverseEntity="Visit" syncable="YES"/>
     </entity>
     <entity name="Region" representedClassName="Region" syncable="YES">
@@ -79,7 +76,6 @@
         <element name="CommerceVisit" positionX="0" positionY="0" width="0" height="0"/>
         <element name="Dose" positionX="0" positionY="0" width="0" height="0"/>
         <element name="Drug" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="Participant" positionX="0" positionY="0" width="0" height="0"/>
         <element name="Pharmacy" positionX="0" positionY="0" width="0" height="0"/>
         <element name="PharmacyCircle" positionX="0" positionY="0" width="0" height="0"/>
         <element name="PromoVisit" positionX="0" positionY="0" width="0" height="0"/>

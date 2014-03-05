@@ -19,6 +19,7 @@
 #import "NSDate+Additions.h"
 #import "User.h"
 #import "VisitManager.h"
+#import "Region.h"
 
 @interface PharmaciesViewController ()
 {
@@ -61,9 +62,16 @@ static const int filterHeight = 110;
     return self;
 }
 
+- (void)reloadAll
+{
+    
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    [self.navigationController setNavigationBarHidden:YES animated:NO];
     
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(removeFromFavourites:) name:@"RemoveFromFavourites" object:nil];
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(reloadData:) name:@"VisitsUpdated" object:nil];
@@ -223,15 +231,6 @@ static const int filterHeight = 110;
     Pharmacy* pharmacy = self.pharmacies[indexPath.row];
     Visit* visit = [self visitInPharmacy:pharmacy forDate:self.selectedDate];
     [cell setupCellWithPharmacy:pharmacy andVisit:visit];
-    if (pharmacy.status == NormalStatus)
-    {
-        //cell.pspView.hidden = YES;
-        cell.pspView.frame = CGRectMake(15, 42, 30, 16);
-    }
-    else
-    {
-        cell.pspView.frame = CGRectMake(44, 42, 30, 16);
-    }
     return cell;
 }
 
@@ -259,8 +258,12 @@ static const int filterHeight = 110;
     
     NSMutableArray* filterPredicates = [NSMutableArray new];
     
+    for (Region* region in [AppDelegate sharedDelegate].currentUser.regions)
+    {
+        NSLog(@"Region is %@", region.name);
+    }
     NSPredicate* userPredicate = [NSPredicate predicateWithFormat:@"region IN %@", [AppDelegate sharedDelegate].currentUser.regions];
-    //[filterPredicates addObject:userPredicate];
+    [filterPredicates addObject:userPredicate];
     
     if (planned)
     {
@@ -303,7 +306,9 @@ static const int filterHeight = 110;
 {
     NSSortDescriptor* statusDescriptor = [[NSSortDescriptor alloc]initWithKey:@"status" ascending:NO];
     NSSortDescriptor* visitsDescriptor = [[NSSortDescriptor alloc]initWithKey:@"visitsInCurrentQuarter.@count" ascending:YES];
-    [self.pharmacies sortUsingDescriptors:@[statusDescriptor, visitsDescriptor]];
+    NSSortDescriptor* nameDescriptor = [[NSSortDescriptor alloc]initWithKey:@"name" ascending:YES];
+    NSSortDescriptor* streetDescriptor = [[NSSortDescriptor alloc]initWithKey:@"street" ascending:YES];
+    [self.pharmacies sortUsingDescriptors:@[statusDescriptor, visitsDescriptor, nameDescriptor, streetDescriptor]];
 }
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string

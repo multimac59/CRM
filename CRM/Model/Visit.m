@@ -25,4 +25,26 @@
 @dynamic promoVisit;
 @dynamic user;
 
+- (NSDictionary*)encodeToJSON
+{
+    NSMutableDictionary* dic = [NSMutableDictionary dictionary];
+    [dic setObject:self.visitId forKey:@"id"];
+    NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
+    dateFormatter.locale = [NSLocale localeWithLocaleIdentifier:@"RU-ru"];
+    dateFormatter.dateFormat = @"yyyy-MM-dd";
+    [dic setObject:[dateFormatter stringFromDate:self.date] forKey:@"date"];
+    if (self.promoVisit)
+    {
+        [dic setObject:[self.promoVisit encodeToJSON] forKey:@"promoVisit"];
+    }
+    if (self.pharmacyCircle)
+    {
+        [dic setObject:[self.pharmacyCircle encodeToJSON] forKey:@"pharmacyCircle"];
+    }
+    if (self.commerceVisit)
+    {
+        [dic setObject:[self.commerceVisit encodeToJSON] forKey:@"sales"];
+    }
+    return dic;
+}
 @end

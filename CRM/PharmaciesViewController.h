@@ -33,4 +33,6 @@
 - (IBAction)commerceVisitClicked:(id)sender;
 - (IBAction)promoVisitClicked:(id)sender;
 - (IBAction)pharmacyCircleClicked:(id)sender;
+
+- (void)reloadData;
 @end

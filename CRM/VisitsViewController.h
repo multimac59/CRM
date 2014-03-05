@@ -16,4 +16,5 @@
 @property (nonatomic, weak) IBOutlet UIView* calendarHeader;
 @property (nonatomic, weak) IBOutlet UILabel* dateLabel;
 - (IBAction)hidePopover:(id)sender;
+- (void)reloadData;
 @end

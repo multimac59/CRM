@@ -49,16 +49,8 @@
 
 - (IBAction)goToMain:(id)sender
 {
- [self dismissViewControllerAnimated:YES completion:nil];
-    return;
-    
     NSString* login = self.loginField.text;
     NSString* password = self.passwordField.text;
-    
-    //TODO: delete in production
-    login = @"roma@nestline.ru";
-    password = @"123";
-    
     
     NSString* hashedPassword = [password md5];
     
@@ -67,11 +59,12 @@
     {
         [AppDelegate sharedDelegate].currentUser = user;
         //[Flurry logEvent:@"Логин" withParameters:@{@"Пользователь" : user.login, @"Дата" : [NSDate date]}];
+        [[AppDelegate sharedDelegate]syncVisits];
+        [[AppDelegate sharedDelegate]reloadData];
         [self dismissViewControllerAnimated:YES completion:nil];
     }
     else
     {
-    
         AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
         [manager GET:[NSString stringWithFormat:@"http://crm.mydigital.guru/server/auth?email=%@&passwd=%@", login, hashedPassword] parameters:nil success:^(AFHTTPRequestOperation *operation, NSDictionary* jsonDic)
         {
@@ -86,12 +79,12 @@
                 user.login = login;
                 user.password = hashedPassword;
                 
-                NSArray* regions = @[@1, @2];
-                [regions enumerateObjectsUsingBlock:^(NSNumber* regionObj, NSUInteger idx, BOOL *stop) {
-                    NSInteger regionId = [regionObj integerValue];
-                    Region* region = [[AppDelegate sharedDelegate]findRegionById:regionId];
-                    [user addRegionsObject:region];
-                }];
+//                NSArray* regions = @[@1, @2];
+//                [regions enumerateObjectsUsingBlock:^(NSNumber* regionObj, NSUInteger idx, BOOL *stop) {
+//                    NSInteger regionId = [regionObj integerValue];
+//                    Region* region = [[AppDelegate sharedDelegate]findRegionById:regionId];
+//                    [user addRegionsObject:region];
+//                }];
                 
                 [AppDelegate sharedDelegate].currentUser = user;
                 //[Flurry logEvent:@"Логин" withParameters:@{@"Пользователь" : user.login, @"Дата" : [NSDate date]}];

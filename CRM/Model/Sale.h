@@ -21,4 +21,6 @@
 @property (nonatomic, retain) CommerceVisit *commerceVisit;
 @property (nonatomic, retain) Dose *dose;
 
+- (NSDictionary*)encodeToJSON;
+
 @end

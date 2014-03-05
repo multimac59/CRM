@@ -25,8 +25,15 @@
                         <color key="textColor" red="0.29411764709999999" green="0.18823529410000001" blue="0.41568627450000001" alpha="1" colorSpace="deviceRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Брилинта 20 мг" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cPp-xV-Sae">
-                        <rect key="frame" x="41" y="18" width="129" height="21"/>
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Брилинта" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cPp-xV-Sae">
+                        <rect key="frame" x="41" y="12" width="190" height="21"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <color key="textColor" red="0.29411764709999999" green="0.18823529410000001" blue="0.41568627450000001" alpha="1" colorSpace="deviceRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="20 мг" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Xv3-Cf-ciW">
+                        <rect key="frame" x="41" y="29" width="190" height="21"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                         <color key="textColor" red="0.29411764709999999" green="0.18823529410000001" blue="0.41568627450000001" alpha="1" colorSpace="deviceRGB"/>
@@ -93,6 +100,7 @@
                 <outlet property="arrowView" destination="8zp-mr-9Rj" id="KHF-ox-Peb"/>
                 <outlet property="cellBg" destination="aZm-rJ-u8W" id="oeu-Vs-5P8"/>
                 <outlet property="dateLabel" destination="XPC-IJ-Yu5" id="AHo-yH-7Ra"/>
+                <outlet property="doseLabel" destination="Xv3-Cf-ciW" id="GWf-rZ-qxv"/>
                 <outlet property="drugLabel" destination="cPp-xV-Sae" id="nxh-6f-dqE"/>
                 <outlet property="orderField" destination="scq-ez-IIY" id="Qzy-NC-XO0"/>
                 <outlet property="remainderField" destination="hHI-4b-3a0" id="Nhi-Gu-QAw"/>

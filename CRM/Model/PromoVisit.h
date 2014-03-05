@@ -14,7 +14,7 @@
 @interface PromoVisit : NSManagedObject
 
 @property (nonatomic, retain) NSSet *brands;
-@property (nonatomic, retain) NSSet *participants;
+@property (nonatomic, retain) NSNumber *participants;
 @property (nonatomic, retain) Visit *visit;
 @end
 
@@ -25,9 +25,6 @@
 - (void)addBrands:(NSSet *)values;
 - (void)removeBrands:(NSSet *)values;
 
-- (void)addParticipantsObject:(Participant *)value;
-- (void)removeParticipantsObject:(Participant *)value;
-- (void)addParticipants:(NSSet *)values;
-- (void)removeParticipants:(NSSet *)values;
+- (NSDictionary*)encodeToJSON;
 
 @end

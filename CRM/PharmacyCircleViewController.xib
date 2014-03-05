@@ -7,12 +7,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="PharmacyCircleViewController">
             <connections>
-                <outlet property="addButton" destination="b9K-eU-Hoc" id="uqO-KP-gCw"/>
-                <outlet property="editButton" destination="F7o-ea-cZL" id="o5B-8O-jhD"/>
-                <outlet property="leftSegment" destination="MQ0-l6-uOQ" id="Cb5-DL-28M"/>
-                <outlet property="participantField" destination="8fe-cd-aax" id="2kw-A7-Zbc"/>
-                <outlet property="participantInput" destination="Ckg-T8-fON" id="5cA-tC-v6N"/>
-                <outlet property="rightSegment" destination="e55-P0-cGR" id="3sI-If-ein"/>
+                <outlet property="participantField" destination="80l-5l-Jic" id="ykv-ki-ZgN"/>
                 <outlet property="table" destination="9Zg-Rg-dAv" id="z3C-RR-fd2"/>
                 <outlet property="view" destination="2" id="3"/>
             </connections>
@@ -31,43 +26,6 @@
                         <outlet property="delegate" destination="-1" id="y8T-dH-bgW"/>
                     </connections>
                 </tableView>
-                <view contentMode="scaleToFill" id="Ckg-T8-fON">
-                    <rect key="frame" x="0.0" y="97" width="768" height="47"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                    <subviews>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="searchBarBg" id="FxX-xj-fP2">
-                            <rect key="frame" x="0.0" y="0.0" width="704" height="47"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        </imageView>
-                        <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" id="8fe-cd-aax">
-                            <rect key="frame" x="20" y="13" width="574" height="22"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                            <textInputTraits key="textInputTraits"/>
-                        </textField>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="b9K-eU-Hoc">
-                            <rect key="frame" x="673" y="13" width="31" height="22"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                            <state key="normal" image="plusButton2">
-                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                            </state>
-                            <connections>
-                                <action selector="addParticipant:" destination="-1" eventType="touchUpInside" id="EMa-4R-EBx"/>
-                            </connections>
-                        </button>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="F7o-ea-cZL">
-                            <rect key="frame" x="712" y="13" width="20" height="22"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                            <state key="normal" image="editIcon">
-                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                            </state>
-                            <connections>
-                                <action selector="editParticipants:" destination="-1" eventType="touchUpInside" id="wsw-ur-QCK"/>
-                            </connections>
-                        </button>
-                    </subviews>
-                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                </view>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="J7n-4Y-XPb">
                     <rect key="frame" x="20" y="20" width="76" height="22"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -79,43 +37,21 @@
                         <action selector="goBack:" destination="-1" eventType="touchUpInside" id="0tf-wt-2LO"/>
                     </connections>
                 </button>
-                <view contentMode="scaleToFill" id="ech-xR-Ope">
-                    <rect key="frame" x="280" y="48" width="181" height="30"/>
+                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" id="80l-5l-Jic">
+                    <rect key="frame" x="651" y="88" width="97" height="30"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <textInputTraits key="textInputTraits"/>
+                    <connections>
+                        <outlet property="delegate" destination="-1" id="q3P-tL-8zF"/>
+                    </connections>
+                </textField>
+                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Количество участников:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="C65-HU-jzy">
+                    <rect key="frame" x="20" y="92" width="605" height="21"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <subviews>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="MQ0-l6-uOQ">
-                            <rect key="frame" x="0.0" y="1" width="92" height="29"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="15"/>
-                            <state key="normal" title="Бренды" backgroundImage="leftPinkPressed">
-                                <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                            </state>
-                            <state key="highlighted" backgroundImage="buttonFilled">
-                                <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                            </state>
-                            <connections>
-                                <action selector="leftSegmentPressed:" destination="-1" eventType="touchUpInside" id="Ea1-EU-ogM"/>
-                            </connections>
-                        </button>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="e55-P0-cGR">
-                            <rect key="frame" x="89" y="1" width="92" height="29"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="15"/>
-                            <state key="normal" title="Участники" backgroundImage="rightPink">
-                                <color key="titleColor" red="0.51372549020000002" green="0.0" blue="0.31764705879999999" alpha="1" colorSpace="calibratedRGB"/>
-                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                            </state>
-                            <state key="highlighted" backgroundImage="buttonFilled">
-                                <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                            </state>
-                            <connections>
-                                <action selector="rightSegmentPressed:" destination="-1" eventType="touchUpInside" id="cdP-TV-DFj"/>
-                            </connections>
-                        </button>
-                    </subviews>
-                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                </view>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <nil key="highlightedColor"/>
+                </label>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
@@ -124,11 +60,5 @@
     </objects>
     <resources>
         <image name="back" width="20" height="20"/>
-        <image name="buttonFilled" width="139" height="29"/>
-        <image name="editIcon" width="17" height="18"/>
-        <image name="leftPinkPressed" width="113" height="29"/>
-        <image name="plusButton2" width="16" height="16"/>
-        <image name="rightPink" width="113" height="29"/>
-        <image name="searchBarBg" width="627" height="53"/>
     </resources>
 </document>

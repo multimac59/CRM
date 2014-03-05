@@ -44,11 +44,20 @@
     manager.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/xml"];
     NSString* address = [NSString stringWithFormat:@"г. %@ %@ %@", pharmacy.city, pharmacy.street, pharmacy.house];
     NSString* urlString = [[NSString stringWithFormat:@"http://geocode-maps.yandex.ru/1.x/?geocode=%@", address]stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    NSLog(@"Search for %@", address);
+    total++;
     [manager GET:urlString parameters:nil success:^(AFHTTPRequestOperation *operation, NSArray* positionArray)
      {
-         NSLog(@"JSON: %@", positionArray);
+         NSLog(@"returned for %@", address);
+         //NSLog(@"MORE %d ops", manager.operationQueue.operationCount);
+         //NSLog(@"JSON: %@", positionArray);
          if (positionArray.count == 0)
          {
+             total--;
+             if (total == 0)
+             {
+                 [self zoomMap];
+             }
              NSLog(@"Not found");
              return;
          }
@@ -63,7 +72,6 @@
          annotation.pharmacy = pharmacy;
          [mapAnnotations addObject:annotation];
          total--;
-         
          if (total == 0)
          {
              [self zoomMap];
@@ -72,6 +80,10 @@
          failure:^(AFHTTPRequestOperation *operation, NSError *error) {
              NSLog(@"Error: %@", error);
              total--;
+             if (total == 0)
+             {
+                 [self zoomMap];
+             }
          }];
 }
 
@@ -80,10 +92,11 @@
     self.selectedDate = date;
     self.mapView.showTraffic = NO;
     self.mapView.delegate = self;
-    total = pharmacies.count;
+    total = 0;
     mapAnnotations = [NSMutableArray new];
-    for (Pharmacy* pharmacy in pharmacies)
+    for (int i = 0; i < pharmacies.count; i++)
     {
+        Pharmacy* pharmacy = pharmacies[i];
         [self setMapLocationForPharmacy:pharmacy onDate:date];
     }
 }

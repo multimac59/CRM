@@ -57,7 +57,7 @@
                         <state key="disabled">
                             <color key="titleShadowColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         </state>
-                        <state key="highlighted" backgroundImage="typeButton2Pressed"/>
+                        <state key="highlighted" backgroundImage="commerceButton"/>
                         <connections>
                             <action selector="commerceVisitClicked:" destination="-1" eventType="touchUpInside" id="LON-tG-sdF"/>
                         </connections>
@@ -72,7 +72,7 @@
                         <state key="disabled">
                             <color key="titleShadowColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         </state>
-                        <state key="highlighted" backgroundImage="typeButton2Pressed"/>
+                        <state key="highlighted" backgroundImage="promoButton"/>
                         <connections>
                             <action selector="promoVisitClicked:" destination="-1" eventType="touchUpInside" id="gAE-Qp-thR"/>
                         </connections>
@@ -84,7 +84,7 @@
                         <state key="normal" backgroundImage="typeButton2">
                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                         </state>
-                        <state key="highlighted" backgroundImage="typeButton2Pressed"/>
+                        <state key="highlighted" backgroundImage="pharmacyCircleButton"/>
                         <connections>
                             <action selector="pharmacyCircleClicked:" destination="-1" eventType="touchUpInside" id="UBM-qL-H0B"/>
                         </connections>
@@ -128,9 +128,11 @@
     </objects>
     <resources>
         <image name="cellTriangle" width="10" height="20"/>
+        <image name="commerceButton" width="40" height="40"/>
         <image name="goldButton" width="16" height="16"/>
+        <image name="pharmacyCircleButton" width="40" height="40"/>
+        <image name="promoButton" width="40" height="40"/>
         <image name="pspButton" width="29" height="16"/>
         <image name="typeButton2" width="40" height="40"/>
-        <image name="typeButton2Pressed" width="40" height="40"/>
     </resources>
 </document>

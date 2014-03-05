@@ -52,11 +52,11 @@
     
     switch (pharmacy.status)
     {
-        case SilverStatus:
+        case GoldStatus:
             self.statusView.hidden = NO;
             self.statusView.image = [UIImage imageNamed:@"goldButton"];
             break;
-        case GoldStatus:
+        case SilverStatus:
             self.statusView.hidden = NO;
             self.statusView.image = [UIImage imageNamed:@"silverButton"];
             break;
@@ -68,36 +68,37 @@
             self.statusView.hidden = YES;
             break;
     }
+    self.pspView.hidden = pharmacy.psp.boolValue ? NO : YES;
     
     if (visit.commerceVisit)
     {
         [self.commerceVisitButton setBackgroundImage:[UIImage imageNamed:@"typeButton2"] forState:UIControlStateHighlighted];
-        [self.commerceVisitButton setBackgroundImage:[UIImage imageNamed:@"typeButton2Pressed"] forState:UIControlStateNormal];
+        [self.commerceVisitButton setBackgroundImage:[UIImage imageNamed:@"commerceButton"] forState:UIControlStateNormal];
     }
     else
     {
         [self.commerceVisitButton setBackgroundImage:[UIImage imageNamed:@"typeButton2"] forState:UIControlStateNormal];
-        [self.commerceVisitButton setBackgroundImage:[UIImage imageNamed:@"typeButton2Pressed"] forState:UIControlStateHighlighted];
+        [self.commerceVisitButton setBackgroundImage:[UIImage imageNamed:@"commerceButton"] forState:UIControlStateHighlighted];
     }
     if (visit.promoVisit)
     {
         [self.promoVisitButton setBackgroundImage:[UIImage imageNamed:@"typeButton2"] forState:UIControlStateHighlighted];
-        [self.promoVisitButton setBackgroundImage:[UIImage imageNamed:@"typeButton2Pressed"] forState:UIControlStateNormal];
+        [self.promoVisitButton setBackgroundImage:[UIImage imageNamed:@"promoButton"] forState:UIControlStateNormal];
     }
     else
     {
         [self.promoVisitButton setBackgroundImage:[UIImage imageNamed:@"typeButton2"] forState:UIControlStateNormal];
-        [self.promoVisitButton setBackgroundImage:[UIImage imageNamed:@"typeButton2Pressed"] forState:UIControlStateHighlighted];
+        [self.promoVisitButton setBackgroundImage:[UIImage imageNamed:@"promoButton"] forState:UIControlStateHighlighted];
     }
     if (visit.pharmacyCircle)
     {
         [self.pharmacyCircleButton setBackgroundImage:[UIImage imageNamed:@"typeButton2"] forState:UIControlStateHighlighted];
-        [self.pharmacyCircleButton setBackgroundImage:[UIImage imageNamed:@"typeButton2Pressed"] forState:UIControlStateNormal];
+        [self.pharmacyCircleButton setBackgroundImage:[UIImage imageNamed:@"pharmacyCircleButton"] forState:UIControlStateNormal];
     }
     else
     {
         [self.pharmacyCircleButton setBackgroundImage:[UIImage imageNamed:@"typeButton2"] forState:UIControlStateNormal];
-        [self.pharmacyCircleButton setBackgroundImage:[UIImage imageNamed:@"typeButton2Pressed"] forState:UIControlStateHighlighted];
+        [self.pharmacyCircleButton setBackgroundImage:[UIImage imageNamed:@"pharmacyCircleButton"] forState:UIControlStateHighlighted];
     }
     
     if (visit.closed.boolValue)

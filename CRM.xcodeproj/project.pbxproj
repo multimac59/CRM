@@ -29,7 +29,6 @@
 		7004C07218B7A1A10078980E /* PharmacyCircle.m in Sources */ = {isa = PBXBuildFile; fileRef = 7004C07118B7A1A10078980E /* PharmacyCircle.m */; };
 		7004C07518B7A1A10078980E /* Region.m in Sources */ = {isa = PBXBuildFile; fileRef = 7004C07418B7A1A10078980E /* Region.m */; };
 		7004C07818B7A1A10078980E /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 7004C07718B7A1A10078980E /* User.m */; };
-		7004C07B18B7A1A10078980E /* Participant.m in Sources */ = {isa = PBXBuildFile; fileRef = 7004C07A18B7A1A10078980E /* Participant.m */; };
 		7004C07E18B7A1A10078980E /* Pharmacy.m in Sources */ = {isa = PBXBuildFile; fileRef = 7004C07D18B7A1A10078980E /* Pharmacy.m */; };
 		7004C08118B7A1A20078980E /* Visit.m in Sources */ = {isa = PBXBuildFile; fileRef = 7004C08018B7A1A20078980E /* Visit.m */; };
 		7004C08418BB3A020078980E /* NSString+MD5Extension.m in Sources */ = {isa = PBXBuildFile; fileRef = 7004C08318BB3A020078980E /* NSString+MD5Extension.m */; };
@@ -59,6 +58,8 @@
 		703B1C1E18B49F0000B3C9DE /* PharmacyCircleViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 703B1C1C18B49F0000B3C9DE /* PharmacyCircleViewController.xib */; };
 		704975A318A4D3DC005DFEC4 /* Pharmacy+QuarterVisits.m in Sources */ = {isa = PBXBuildFile; fileRef = 704975A218A4D3DC005DFEC4 /* Pharmacy+QuarterVisits.m */; };
 		7053645918C46FA900C8C1E0 /* VisitManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 7053645818C46FA900C8C1E0 /* VisitManager.m */; };
+		7053645C18C61FFD00C8C1E0 /* NumberObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 7053645B18C61FFD00C8C1E0 /* NumberObject.m */; };
+		7053645E18C761FB00C8C1E0 /* UserRegion.json in Resources */ = {isa = PBXBuildFile; fileRef = 7053645D18C761FB00C8C1E0 /* UserRegion.json */; };
 		70536F3318BD0522009DE1FA /* BrandCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70536F3218BD0522009DE1FA /* BrandCell.xib */; };
 		70536F3518BD0655009DE1FA /* ParticipantCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70536F3418BD0655009DE1FA /* ParticipantCell.xib */; };
 		70536F3818BD06AC009DE1FA /* BrandCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 70536F3718BD06AC009DE1FA /* BrandCell.m */; };
@@ -151,8 +152,6 @@
 		7004C07418B7A1A10078980E /* Region.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Region.m; path = CRM/Model/Region.m; sourceTree = "<group>"; };
 		7004C07618B7A1A10078980E /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = User.h; path = CRM/Model/User.h; sourceTree = "<group>"; };
 		7004C07718B7A1A10078980E /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = User.m; path = CRM/Model/User.m; sourceTree = "<group>"; };
-		7004C07918B7A1A10078980E /* Participant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Participant.h; path = CRM/Model/Participant.h; sourceTree = "<group>"; };
-		7004C07A18B7A1A10078980E /* Participant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Participant.m; path = CRM/Model/Participant.m; sourceTree = "<group>"; };
 		7004C07C18B7A1A10078980E /* Pharmacy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Pharmacy.h; path = CRM/Model/Pharmacy.h; sourceTree = "<group>"; };
 		7004C07D18B7A1A10078980E /* Pharmacy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Pharmacy.m; path = CRM/Model/Pharmacy.m; sourceTree = "<group>"; };
 		7004C07F18B7A1A20078980E /* Visit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Visit.h; path = CRM/Model/Visit.h; sourceTree = "<group>"; };
@@ -197,6 +196,9 @@
 		704975A218A4D3DC005DFEC4 /* Pharmacy+QuarterVisits.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "Pharmacy+QuarterVisits.m"; path = "CRM/Model/Pharmacy+QuarterVisits.m"; sourceTree = "<group>"; };
 		7053645718C46FA900C8C1E0 /* VisitManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VisitManager.h; path = CRM/VisitManager.h; sourceTree = "<group>"; };
 		7053645818C46FA900C8C1E0 /* VisitManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = VisitManager.m; path = CRM/VisitManager.m; sourceTree = "<group>"; };
+		7053645A18C61FFD00C8C1E0 /* NumberObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NumberObject.h; path = CRM/NumberObject.h; sourceTree = "<group>"; };
+		7053645B18C61FFD00C8C1E0 /* NumberObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NumberObject.m; path = CRM/NumberObject.m; sourceTree = "<group>"; };
+		7053645D18C761FB00C8C1E0 /* UserRegion.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = UserRegion.json; sourceTree = "<group>"; };
 		70536F3218BD0522009DE1FA /* BrandCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = BrandCell.xib; path = CRM/BrandCell.xib; sourceTree = "<group>"; };
 		70536F3418BD0655009DE1FA /* ParticipantCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = ParticipantCell.xib; path = CRM/ParticipantCell.xib; sourceTree = "<group>"; };
 		70536F3618BD06AC009DE1FA /* BrandCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BrandCell.h; path = CRM/BrandCell.h; sourceTree = "<group>"; };
@@ -293,6 +295,8 @@
 		70043F741855A70A006138CC = {
 			isa = PBXGroup;
 			children = (
+				7053645A18C61FFD00C8C1E0 /* NumberObject.h */,
+				7053645B18C61FFD00C8C1E0 /* NumberObject.m */,
 				70744B8D18995948005E3536 /* CKCalendar */,
 				70C4AE051855C24300BD0E8B /* Model */,
 				70043F861855A70A006138CC /* CRM */,
@@ -556,8 +560,6 @@
 				7004C08018B7A1A20078980E /* Visit.m */,
 				7004C07C18B7A1A10078980E /* Pharmacy.h */,
 				7004C07D18B7A1A10078980E /* Pharmacy.m */,
-				7004C07918B7A1A10078980E /* Participant.h */,
-				7004C07A18B7A1A10078980E /* Participant.m */,
 				7004C07618B7A1A10078980E /* User.h */,
 				7004C07718B7A1A10078980E /* User.m */,
 				7004C07318B7A1A10078980E /* Region.h */,
@@ -594,6 +596,7 @@
 			children = (
 				70999BA418B792F600394CAF /* Regions.json */,
 				702FEBC718586458009A95BA /* Users.json */,
+				7053645D18C761FB00C8C1E0 /* UserRegion.json */,
 				70C4AE1B1855E8FB00BD0E8B /* Drugs.json */,
 				70C4AE1D1855E8FB00BD0E8B /* Pharmacies.json */,
 				70C4AE1E1855E8FB00BD0E8B /* Visits.json */,
@@ -713,6 +716,7 @@
 				70C4ADFB1855ABD300BD0E8B /* VisitViewController.xib in Resources */,
 				70744B9718995948005E3536 /* README.md in Resources */,
 				70282234189667C100ED033B /* VisitInfoCell.xib in Resources */,
+				7053645E18C761FB00C8C1E0 /* UserRegion.json in Resources */,
 				70744B9A18995948005E3536 /* left_arrow@2x.png in Resources */,
 				70536F3518BD0655009DE1FA /* ParticipantCell.xib in Resources */,
 				70043F8B1855A70A006138CC /* InfoPlist.strings in Resources */,
@@ -802,7 +806,6 @@
 				7004C06318B7A1A00078980E /* Sale.m in Sources */,
 				7004C07518B7A1A10078980E /* Region.m in Sources */,
 				702822461896688A00ED033B /* VisitHistoryHeader.m in Sources */,
-				7004C07B18B7A1A10078980E /* Participant.m in Sources */,
 				70043F911855A70A006138CC /* AppDelegate.m in Sources */,
 				702FEBD11858759D009A95BA /* SaleCell.m in Sources */,
 				7028223C1896682500ED033B /* VisitMapCell.m in Sources */,
@@ -811,6 +814,7 @@
 				704975A318A4D3DC005DFEC4 /* Pharmacy+QuarterVisits.m in Sources */,
 				70541E671886895600B9C64A /* VisitsCell.m in Sources */,
 				7004C07818B7A1A10078980E /* User.m in Sources */,
+				7053645C18C61FFD00C8C1E0 /* NumberObject.m in Sources */,
 				70744B8C189958B3005E3536 /* MGCustomSplitViewController.m in Sources */,
 				70043F8D1855A70A006138CC /* main.m in Sources */,
 				7004C08418BB3A020078980E /* NSString+MD5Extension.m in Sources */,

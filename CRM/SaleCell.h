@@ -12,6 +12,7 @@
 @property (nonatomic, strong) IBOutlet UIImageView* cellBg;
 @property (nonatomic, strong) IBOutlet UILabel* nameLabel;
 @property (nonatomic, strong) IBOutlet UILabel* drugLabel;
+@property (nonatomic, strong) IBOutlet UILabel* doseLabel;
 @property (nonatomic, strong) IBOutlet UILabel* dateLabel;
 @property (nonatomic, strong) IBOutlet UITextField* soldField;
 @property (nonatomic, strong) IBOutlet UITextField* remainderField;

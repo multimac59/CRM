@@ -24,4 +24,5 @@
 - (void)addSales:(NSSet *)values;
 - (void)removeSales:(NSSet *)values;
 
+- (NSArray*)encodeToJSON;
 @end

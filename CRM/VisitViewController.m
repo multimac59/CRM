@@ -43,6 +43,7 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
+    [self.navigationController setNavigationBarHidden:YES animated:NO];
     self.navigationController.navigationBar.translucent = NO;
     self.oldVisits = [NSMutableArray new];
 }
@@ -167,7 +168,7 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.section == 0)
-        return 330;
+        return 260;
     else if (indexPath.section == 2)
         return 75;
     else if (indexPath.section == 3)
@@ -213,6 +214,8 @@
 
 - (IBAction)goToSalesList:(id)sender
 {
+    UIButton* senderButton = sender;
+    senderButton.enabled =  NO;
     SalesViewController* salesViewController = [SalesViewController new];
     AppDelegate* sharedDelegate = [AppDelegate sharedDelegate];
     NSManagedObjectContext* context = [sharedDelegate managedObjectContext];
@@ -238,6 +241,8 @@
     [delegate.container.view addSubview:self.salesNavigationController.view];
     [UIView animateWithDuration:0.3 animations:^{
         self.salesNavigationController.view.frame = CGRectMake(0, y, 1024, 768);
+    }completion:^(BOOL finished) {
+        senderButton.enabled = YES;
     }];
 }
 

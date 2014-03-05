@@ -45,7 +45,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 2;
+    return 3;
 }
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -62,6 +62,9 @@
             cell.topicLabel.text = @"Клиенты";
             cell.tag = 1;
             break;
+        case 2:
+            cell.topicLabel.text = @"Отправить";
+            cell.tag = 2;
     }
     return cell;
 }
@@ -95,5 +98,10 @@
     self.menuContainerViewController.centerViewController = targetController;
     self.menuContainerViewController.leftMenuViewController = self;
     [self.menuContainerViewController setMenuState:MFSideMenuStateClosed completion:^{}];
+}
+
+- (void)logout:(id)sender
+{
+    [[AppDelegate sharedDelegate]showLoginScreenWithAnimation:YES];
 }
 @end

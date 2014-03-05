@@ -55,18 +55,9 @@ static AppDelegate* sharedDelegate = nil;
     [self deleteAllObjects:@"Pharmacy"];
     [self deleteAllObjects:@"Drug"];
     [self deleteAllObjects:@"Sale"];
-    [self deleteAllObjects:@"Participant"];
     [self deleteAllObjects:@"User"];
     sharedDelegate = self;
     
-    //[self parseRegions];
-    //self.drugs = [self parseDrugs];
-    
-    [self parsePharmacies];
-    //[self parseVisits];
-    //[self parseConferences];
-    
-    //self.currentUser = [self findUserById:1];
     
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
@@ -77,12 +68,14 @@ static AppDelegate* sharedDelegate = nil;
     //_visitsSplitController.dividerView.hidden = YES;
     
     PharmacyViewController* pharmacyViewController = [PharmacyViewController new];
-    PharmaciesViewController* pharmaciesViewController = [PharmaciesViewController new];
-    pharmaciesViewController.pharmacyViewController = pharmacyViewController;
+    self.pharmaciesViewController = [PharmaciesViewController new];
+    self.pharmaciesViewController.pharmacyViewController = pharmacyViewController;
     
-    self.visitsSplitController.viewControllers = @[[[UINavigationController alloc]initWithRootViewController:[VisitsViewController new]],[[UINavigationController alloc]initWithRootViewController:[VisitViewController new]]];
+    self.visitsViewController = [VisitsViewController new];
+    
+    self.visitsSplitController.viewControllers = @[[[UINavigationController alloc]initWithRootViewController:self.visitsViewController],[[UINavigationController alloc]initWithRootViewController:[VisitViewController new]]];
     _clientsSplitController = [[MGCustomSplitViewController alloc]init];
-    self.clientsSplitController.viewControllers = @[[[UINavigationController alloc]initWithRootViewController:pharmaciesViewController],[[UINavigationController alloc]initWithRootViewController:pharmacyViewController]];
+    self.clientsSplitController.viewControllers = @[[[UINavigationController alloc]initWithRootViewController:self.pharmaciesViewController],[[UINavigationController alloc]initWithRootViewController:pharmacyViewController]];
 
     _container = [MFSideMenuCustomContainer
                   containerWithCenterViewController:self.visitsSplitController
@@ -107,7 +100,7 @@ static AppDelegate* sharedDelegate = nil;
     self.window.rootViewController = self.container;
     //self.window.rootViewController = [MapViewController new];
     [self.window makeKeyAndVisible];
-    [self.container presentViewController:[LoginViewController new] animated:NO completion:nil];
+    
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
     
     NSDictionary *navbarTitleTextAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -121,9 +114,15 @@ static AppDelegate* sharedDelegate = nil;
     
     [Flurry startSession:@"VF6G7F9XQ8Jss8QM7249DS"];
     
-    [self syncVisits];
+    [self parseUsersLocal];
+    [self showLoginScreenWithAnimation:NO];
     
     return YES;
+}
+
+- (void)showLoginScreenWithAnimation:(BOOL)animated
+{
+    [self.container presentViewController:[LoginViewController new] animated:animated completion:nil];
 }
 
 - (void)sidePanelController:(SidePanelController *)controller didSelectItem:(NSInteger)item
@@ -141,6 +140,7 @@ static AppDelegate* sharedDelegate = nil;
             self.container.centerViewController = self.clientsSplitController;
             break;
         default:
+            [self sendDataToServer];
             break;
     }
     //Seems that container removes panel after change in centerviewcontroller, so we reuse it here
@@ -422,6 +422,24 @@ static AppDelegate* sharedDelegate = nil;
     return users;
 }
 
+- (void)parseUsersLocal
+{
+    NSString* usersFile = [[NSBundle mainBundle]pathForResource:@"Users" ofType:@"json"];
+    NSData* usersData = [NSData dataWithContentsOfFile:usersFile];
+    NSDictionary* usersJSON = [NSJSONSerialization JSONObjectWithData:usersData options:kNilOptions error:nil];
+    NSDictionary* dic = [usersJSON objectForKey:@"User"];
+    [self parseServerUsers:dic];
+}
+
+- (void)parseUserRegionsLocal
+{
+    NSString* usersFile = [[NSBundle mainBundle]pathForResource:@"UserRegion" ofType:@"json"];
+    NSData* usersData = [NSData dataWithContentsOfFile:usersFile];
+    NSDictionary* usersJSON = [NSJSONSerialization JSONObjectWithData:usersData options:kNilOptions error:nil];
+    NSDictionary* dic = [usersJSON objectForKey:@"UserRegion"];
+    [self parseServerUserRegions:dic];
+}
+
 - (Region*)findRegionById:(NSInteger)regionId
 {
     NSManagedObjectContext* context = self.managedObjectContext;
@@ -502,7 +520,8 @@ static AppDelegate* sharedDelegate = nil;
     NSManagedObjectContext* context = self.managedObjectContext;
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     [request setEntity:[NSEntityDescription entityForName:@"User" inManagedObjectContext:context]];
-    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"login=%@ AND password=%@", login, password];
+    //NSPredicate* predicate = [NSPredicate predicateWithFormat:@"login=%@ AND password=%@", login, password];
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"login=%@", login];
     [request setPredicate:predicate];
     NSError *error = nil;
     NSArray *results = [context executeFetchRequest:request error:&error];
@@ -693,25 +712,50 @@ static AppDelegate* sharedDelegate = nil;
     dateFormatter.dateFormat = @"yyyy-MM-dd HH:mm:ss";
     NSString* dateString = [dateFormatter stringFromDate:[NSDate date]];
     dateString = @"2014-02-17 10:00:00";
-    NSString* urlString = [[NSString stringWithFormat:@"http://crm.mydigital.guru/server/sync?clientId=5&date[Region]=%@&date[UserRegion]=%@&date[Pharm]=%@&date[Preparat]=%@&date[PreparatDose]=%@&date[User]=%@", dateString, dateString, dateString, dateString, dateString, dateString]stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    NSString* urlString = [[NSString stringWithFormat:@"http://crm.mydigital.guru/server/sync?clientId=%@&date[Region]=%@&date[UserRegion]=%@&date[Pharm]=%@&date[Preparat]=%@&date[PreparatDose]=%@&date[User]=%@", self.currentUser.userId, dateString, dateString, dateString, dateString, dateString, dateString]stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     [manager GET:urlString parameters:Nil success:^(AFHTTPRequestOperation *operation, id responseObject)
     {
         NSLog(@"Success");
-        //NSLog(responseObject);
+
+        /*
+        id usersDict = [responseObject objectForKey:@"User"];
+        if ([usersDict isKindOfClass:[NSDictionary class]])
+        {
+            [self parseServerUsers:usersDict];
+        }*/
         
-        NSDictionary* usersDict = [responseObject objectForKey:@"User"];
-        [self parseServerUsers:usersDict];
-        NSDictionary* pharmDict = [responseObject objectForKey:@"Pharm"];
-        [self parseServerPharm:pharmDict];
-        NSDictionary* regionDict = [responseObject objectForKey:@"Region"];
-        [self parseServerRegions:regionDict];
-        NSDictionary* userRegionDict = [responseObject objectForKey:@"UserRegion"];
-        [self parseServerUserRegions:userRegionDict];
-        NSDictionary* preparatDict = [responseObject objectForKey:@"Preparat"];
-        self.drugs = [self parseServerPreparat:preparatDict];
-        NSDictionary* doseDict = [responseObject objectForKey:@"PreparatDose"];
-        [self parseServerPreparatDose:doseDict];
+        id regionDict = [responseObject objectForKey:@"Region"];
+        if ([regionDict isKindOfClass:[NSDictionary class]])
+        {
+            [self parseServerRegions:regionDict];
+        }
+        id userRegionDict = [responseObject objectForKey:@"UserRegion"];
+        if ([userRegionDict isKindOfClass:[NSDictionary class]])
+        {
+            [self parseServerUserRegions:userRegionDict];
+        }
+        //[self parseUserRegionsLocal];
+        id pharmDict = [responseObject objectForKey:@"Pharm"];
+        if ([pharmDict isKindOfClass:[NSDictionary class]])
+        {
+            [self parseServerPharm:pharmDict];
+        }
+        id preparatDict = [responseObject objectForKey:@"Preparat"];
+        if ([preparatDict isKindOfClass:[NSDictionary class]])
+        {
+            [self parseServerPreparat:preparatDict];
+        }
+        id drugDict = [responseObject objectForKey:@"Preparat"];
+        if ([drugDict isKindOfClass:[NSDictionary class]])
+        {
+            [self parseServerPreparat:drugDict];
+        }
+        id doseDict = [responseObject objectForKey:@"PreparatDose"];
+        if ([doseDict isKindOfClass:[NSDictionary class]])
+        {
+            [self parseServerPreparatDose:drugDict];
+        }
     }
     failure:^(AFHTTPRequestOperation *operation, NSError *error)
     {
@@ -788,12 +832,20 @@ static AppDelegate* sharedDelegate = nil;
         pharmacy.house = [obj objectForKey:@"house"];
         pharmacy.phone = [obj objectForKey:@"tel"];
         pharmacy.psp = [obj objectForKey:@"psp"];
+        if (pharmacy.psp == nil)
+        {
+            NSLog(@"Fuck");
+        }
         pharmacy.sales = [obj objectForKey:@"sales"];
         pharmacy.doctorName = [obj objectForKey:@"contact"];
         
         NSInteger regionId = [[[obj objectForKey:@"region_id"]stringValue]integerValue];
         Region* region = [self findRegionById:regionId];
         pharmacy.region = region;
+        if (pharmacy.region == nil)
+        {
+            NSLog(@"Fuck");
+        }
         
         NSString* statusString = [obj objectForKey:@"category"];
         if ([statusString isEqualToString:@"common"])
@@ -848,6 +900,8 @@ static AppDelegate* sharedDelegate = nil;
             user.userId = userId;
         }
         user.name = [obj objectForKey:@"name"];
+        if ([obj objectForKey:@"email"]!=[NSNull null])
+            user.login = [obj objectForKey:@"email"];
     }
 }
 
@@ -869,5 +923,55 @@ static AppDelegate* sharedDelegate = nil;
             }
         }
     }
+}
+
+- (void)sendDataToServer
+{
+    NSLog(@"Sending to server...");
+    NSManagedObjectContext* context = self.managedObjectContext;
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:[NSEntityDescription entityForName:@"Visit" inManagedObjectContext:context]];
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"closed==YES"];
+    [request setPredicate:predicate];
+    NSError *error = nil;
+    NSArray *visits = [context executeFetchRequest:request error:&error];
+    
+    NSMutableArray* visitsJSON = [NSMutableArray new];
+    [visits enumerateObjectsUsingBlock:^(Visit* visit, NSUInteger idx, BOOL *stop) {
+        NSDictionary* arrDic = [visit encodeToJSON];
+        [visitsJSON addObject:arrDic];
+    }];
+    NSDictionary* fullJSON = @{@"visits" : visitsJSON};
+    NSData* jsonData = [NSJSONSerialization dataWithJSONObject:fullJSON options:NSJSONWritingPrettyPrinted error:nil];
+    NSString* json = [[NSString alloc]initWithData:jsonData encoding:NSUTF8StringEncoding];
+    NSLog(@"%@", json);
+    
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    manager.requestSerializer = [AFJSONRequestSerializer new];
+    manager.responseSerializer = [AFJSONResponseSerializer new];
+    NSMutableSet* responseTypes = [NSMutableSet setWithSet:manager.responseSerializer.acceptableContentTypes];
+    [responseTypes addObject:@"text/html"];
+    manager.responseSerializer.acceptableContentTypes = responseTypes;
+    
+    NSString* urlString = [NSString stringWithFormat:@"http://crm.mydigital.guru/server/sync?clientId=5"];
+    [manager POST:urlString parameters:fullJSON success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        NSString* utfString = [[NSString alloc]initWithData:responseObject encoding:NSUTF8StringEncoding];
+        NSLog(@"response: %@", utfString);
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        NSLog(@"Error: %@", error);
+    }];
+}
+
+- (void)setCurrentUser:(User *)currentUser
+{
+    self.sidePanelController.nameLabel.text = currentUser.name;
+    self.sidePanelController.mailLabel.text = currentUser.login;
+    _currentUser = currentUser;
+}
+
+- (void)reloadData
+{
+    [self.pharmaciesViewController reloadData];
+    [self.visitsViewController reloadData];
 }
 @end

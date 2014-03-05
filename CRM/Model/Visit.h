@@ -22,4 +22,6 @@
 @property (nonatomic, retain) PromoVisit *promoVisit;
 @property (nonatomic, retain) User *user;
 
+- (NSDictionary*)encodeToJSON;
+
 @end
