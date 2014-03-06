@@ -9,12 +9,15 @@
 #import <UIKit/UIKit.h>
 #import "ChoiseTableController.h"
 #import "CKCalendarView.h"
+#import "VisitViewController.h"
 
 @interface VisitsViewController : UIViewController<CKCalendarDelegate>
 @property (nonatomic, weak) IBOutlet UITableView* table;
-@property (nonatomic, weak) IBOutlet UITableView* popoverTable;
+@property (nonatomic, strong) CKCalendarView* calendarWidget;
 @property (nonatomic, weak) IBOutlet UIView* calendarHeader;
 @property (nonatomic, weak) IBOutlet UILabel* dateLabel;
-- (IBAction)hidePopover:(id)sender;
+
+@property (nonatomic, weak) VisitViewController* visitViewController;
+
 - (void)reloadData;
 @end

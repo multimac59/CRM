@@ -12,29 +12,15 @@
 
 
 @interface VisitViewController : UIViewController<UITableViewDataSource, UITableViewDelegate, UITabBarDelegate>
-@property (nonatomic, strong) Visit* visit;
-@property (nonatomic) BOOL isConference;
-//@property (nonatomic, weak) IBOutlet UILabel* dateLabel;
-//@property (nonatomic, weak) IBOutlet UILabel* timeLabel;
-//@property (nonatomic, weak) IBOutlet UILabel* nameLabel;
-//@property (nonatomic, weak) IBOutlet UILabel* networkLabel;
-//@property (nonatomic, weak) IBOutlet UILabel* addressLabel;
-//@property (nonatomic, weak) IBOutlet UILabel* phoneLabel;
-//@property (nonatomic, weak) IBOutlet UILabel* doctorLabel;
-
 @property (nonatomic, weak) IBOutlet UITableView* table;
 
-@property (nonatomic, weak) IBOutlet UIButton* brandsButton;
-@property (nonatomic, weak) IBOutlet UIButton* participantsButton;
-
-@property (nonatomic, strong) NSMutableArray* oldVisits;
+//Data for map
 @property (nonatomic, strong) NSArray* allPharmacies;
 @property (nonatomic, weak) NSDate* planDate;
 
 - (IBAction)goToSalesList:(id)sender;
+- (IBAction)goToPromoVisit:(id)sender;
 - (IBAction)goToPharmacyCircle:(id)sender;
-- (IBAction)closeVisit:(id)sender;
 
-
-- (void)reloadContent;
+- (void)showVisit:(Visit*)visit;
 @end

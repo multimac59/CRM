@@ -15,4 +15,10 @@
 @property (nonatomic, weak) IBOutlet UIImageView* passwordBgView;
 @property (nonatomic, weak) IBOutlet UITextField* loginField;
 @property (nonatomic, weak) IBOutlet UITextField* passwordField;
+
+@property (nonatomic, weak) IBOutlet UIActivityIndicatorView* activityIndicator;
+@property (nonatomic, weak) IBOutlet UIView* overlay;
+
+- (void)showLoader;
+- (void)hideLoader;
 @end

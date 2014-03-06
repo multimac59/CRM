@@ -22,9 +22,7 @@
 #import "NumberObject.h"
 
 @interface SalesViewController ()
-@property (nonatomic, strong) NSArray* drugs;
-@property (nonatomic) BOOL isMyVisit;
-@property (nonatomic, strong) NSMutableArray* bools;
+@property (nonatomic, strong) NSMutableArray* sectionStates;
 @property (nonatomic, strong) KeyboardView* keyboard;
 @property (nonatomic, strong) UITextField* activeField;
 @end
@@ -44,13 +42,6 @@
     [super viewDidLoad];
     
     //[Flurry logEvent:@"Переход" withParameters:@{@"Экран":@"Продажи", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
-
-    NSLog(@"TOTAL : %d sales ", self.commerceVisit.sales.count);
-    for (Sale* sale in self.commerceVisit.sales)
-    {
-        NSLog(@"dose = %@, order = %@, sold = %@, remainder = %@",sale.dose.name, sale.order, sale.sold, sale.remainder);
-    }
-    
     self.keyboard = [[NSBundle mainBundle]loadNibNamed:@"KeyboardView" owner:self options:nil][0];
 
     self.navigationController.navigationBar.shadowImage =[[UIImage alloc] init];
@@ -73,24 +64,30 @@
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:leftButton];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:rightButton];
     
-    self.isMyVisit = NO;
-    NSSortDescriptor* sortByNameDescriptor = [[NSSortDescriptor alloc]initWithKey:@"name" ascending:YES];
-    _drugs = [[AppDelegate sharedDelegate].drugs sortedArrayUsingDescriptors:@[sortByNameDescriptor]];
-    if (self.commerceVisit.sales.count == 0)
-        [self createSales];
-    
     UIImageView *tempImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tableBg"]];
     [tempImageView setFrame:self.table.frame];
     self.table.alwaysBounceVertical = NO;
     
-    self.bools = [[NSMutableArray alloc]init];
+    [self loadDrugs];
+    
+    self.sectionStates = [[NSMutableArray alloc]init];
     for (int i = 0; i < self.drugs.count; i++)
     {
         NSNumber* state = @NO;
-        [self.bools addObject:state];
+        [self.sectionStates addObject:state];
     }
 }
 
+- (void)loadDrugs
+{
+    NSManagedObjectContext* context = [AppDelegate sharedDelegate].managedObjectContext;
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:[NSEntityDescription entityForName:@"Drug" inManagedObjectContext:context]];
+    request.sortDescriptors = @[[[NSSortDescriptor alloc]initWithKey:@"name" ascending:YES]];
+    self.drugs = [[context executeFetchRequest:request error:nil]mutableCopy];
+}
+
+#pragma mark table methods
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     return self.drugs.count;
@@ -98,15 +95,14 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    //NSLog(@"Table will contain %lu drugs", (unsigned long)self.drugs.count);
-    NSNumber* state = self.bools[section];
-    if (!state.boolValue)
-        return 1;
-    else
+    NSNumber* sectionOpened = self.sectionStates[section];
+    if (sectionOpened.boolValue)
     {
         Drug* drug = self.drugs[section];
         return drug.doses.count;
     }
+    else
+        return 1;
 }
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -120,90 +116,33 @@
     
     NSArray* doses = [drug.doses.allObjects sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"priority" ascending:YES]]];
     Dose* dose = doses[indexPath.row];
-
+    
     Sale* lastSale;
     lastSale = [self getLastSaleFor:dose mySale:NO];
     Sale* currentSale = [self getCurrentSaleFor:dose];
     
-    NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
-    dateFormatter.dateFormat = @"dd.MM.yyyy HH:mm";
-    cell.drugLabel.text = dose.name;
+    [cell setupCellWithLastSale:lastSale andCurrentSale:currentSale forDose:dose];
     
-    NSCharacterSet* digits = [NSCharacterSet decimalDigitCharacterSet];
-    NSRange firstNumRange = [dose.name rangeOfCharacterFromSet:digits];
-    if (firstNumRange.location != NSNotFound)
-    {
-        cell.drugLabel.text = [dose.name substringToIndex:firstNumRange.location];
-        cell.doseLabel.text = [dose.name substringFromIndex:firstNumRange.location];
-    }
-    else
-        cell.drugLabel.text = dose.name;
-    
-    
-    if (lastSale != nil)
-    {
-        cell.dateLabel.text = [dateFormatter stringFromDate:lastSale.commerceVisit.visit.date];
-        cell.nameLabel.text = lastSale.commerceVisit.visit.user.name;
-        cell.orderLabel.text = [NSString stringWithFormat:@"%@", lastSale.order];
-        cell.soldLabel.text = [NSString stringWithFormat:@"%@", lastSale.sold];
-        cell.remainderLabel.text = [NSString stringWithFormat:@"%@", lastSale.remainder];
-    }
-    else
-    {
-        cell.dateLabel.text = @" - ";
-        cell.nameLabel.text = @" - ";
-        cell.orderLabel.text = @"0";
-        cell.soldLabel.text = @"0";
-        cell.remainderLabel.text = @"0";
-    }
-
-    if (currentSale.order.integerValue == -1)
-        cell.orderField.text = @"Ост.";
-    else
-        cell.orderField.text = [NSString stringWithFormat:@"%@", currentSale.order];
-    
-    if (currentSale.sold.integerValue == -1)
-        cell.soldField.text = @"Ост.";
-    else
-        cell.soldField.text = [NSString stringWithFormat:@"%@", currentSale.sold];
-    
-    if (currentSale.remainder.integerValue == -1)
-        cell.remainderField.text = @"Ост.";
-    else
-        cell.remainderField.text = [NSString stringWithFormat:@"%@", currentSale.remainder];
-
-    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    [cell setCellEnabled:!self.commerceVisit.visit.closed.boolValue];
     
     if (indexPath.row == 0)
     {
-        //cell.contentView.backgroundColor = [UIColor colorWithRed:252/255.0 green:236/255.0 blue:199/255.0 alpha:1.0];
         cell.cellBg.image = [UIImage imageNamed:@"groupCellBg"];
         cell.arrowView.hidden = NO;
         
-        NSNumber* state = self.bools[indexPath.section];
+        NSNumber* state = self.sectionStates[indexPath.section];
         if (state.boolValue)
-        {
             cell.arrowView.image = [UIImage imageNamed:@"arrowClosed"];
-        }
         else
-        {
             cell.arrowView.image = [UIImage imageNamed:@"arrowOpened"];
-        }
     }
     else
     {
-        //cell.contentView.backgroundColor = [UIColor colorWithRed:249/255.0 green:248/255.0 blue:247/255.0 alpha:1.0];
         cell.cellBg.image = [UIImage imageNamed:@"singleCellBg"];
         cell.arrowView.hidden = YES;
     }
     
-    if (self.commerceVisit.visit.closed.boolValue)
-    {
-        cell.orderField.enabled = NO;
-        cell.soldField.enabled = NO;
-        cell.remainderField.enabled = NO;
-    }
-    
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
     return cell;
 }
 
@@ -213,7 +152,7 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (IBAction)saveVisit:(id)sender
+- (void)saveVisit:(id)sender
 {
     self.commerceVisit.visit.closed = @YES;
     [self back];
@@ -221,21 +160,12 @@
 
 - (void)back
 {
-    NSLog(@"TOTAL : %d sales ", self.commerceVisit.sales.count);
-    
-    for (Sale* sale in self.commerceVisit.sales)
-    {
-        NSLog(@"dose = %@, order = %@, sold = %@, remainder = %@",sale.dose.name, sale.order, sale.sold, sale.remainder);
-    }
     int y;
     if (SYSTEM_VERSION_LESS_THAN(@"7.0"))
-    {
         y = - 20;
-    }
     else
-    {
         y = 0;
-    }
+
     [UIView animateWithDuration:0.3 animations:^{
         self.navigationController.view.frame = CGRectMake(1024, y, 1024, 768);
     }completion:^(BOOL finished) {
@@ -245,43 +175,12 @@
 
 - (Sale*)getCurrentSaleFor:(Dose*)dose
 {
-    NSLog(@"Search dose id = %@", dose.doseId);
-    //Or use predicate instead
-    for (Sale* currentSale in self.commerceVisit.sales)
-    {
-        NSNumber* first = dose.doseId;
-        NSNumber* second = dose.doseId;
-        if (dose.doseId == dose.doseId)
-        {
-            NSLog(@"NSNumbers are equal");
-        }
-        else
-        {
-            NSLog(@"WTF??!");
-            
-            
-            if (first != second)
-            {
-                NSLog(@"WTF??");
-            }
-            
-            second = first;
-            if (first != second)
-            {
-                NSLog(@"WTF??");
-            }
-            
-         
-            if ([dose.doseId isEqual:dose.doseId])
-            {
-                NSLog(@"Correct");
-            }
-        }
-        
-        if (currentSale.dose == dose)
-            return currentSale;
-    }
-    return nil;
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"dose=%@", dose];
+    NSSet* sales = [self.commerceVisit.sales filteredSetUsingPredicate:predicate];
+    if (sales.count > 0)
+        return [sales anyObject];
+    else
+        return nil;
 }
 
 - (Sale*)getLastSaleFor:(Dose*)dose mySale:(BOOL)isMine
@@ -289,7 +188,7 @@
     NSManagedObjectContext* context = [AppDelegate sharedDelegate].managedObjectContext;
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     [request setEntity:[NSEntityDescription entityForName:@"Sale" inManagedObjectContext:context]];
-    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"(commerceVisit.visit.pharmacy=%@) && (commerceVisit.visit.date<%@) && (dose.doseId=%@)", self.commerceVisit.visit.pharmacy, self.commerceVisit.visit.date, dose.doseId];
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"(commerceVisit.visit.pharmacy=%@) && (commerceVisit.visit.date<%@) && (dose=%@)", self.commerceVisit.visit.pharmacy, self.commerceVisit.visit.date, dose];
     NSSortDescriptor* sortByDateDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"commerceVisit.visit.date" ascending:YES];
     request.predicate = predicate;
     request.sortDescriptors = @[sortByDateDescriptor];
@@ -298,84 +197,6 @@
     NSArray* sales = [[context executeFetchRequest:request error:&error]mutableCopy];
     return sales.count>0 ? sales[0] : nil;
 }
-
-- (IBAction)switchFilter:(id)sender
-{
-    [self.table reloadData];
-}
-
-- (void)createSales
-{
-    User* currentUser = [AppDelegate sharedDelegate].currentUser;
-    for (Drug* drug in self.drugs)
-    {
-        for (Dose* dose in drug.doses)
-        {
-            Sale* sale = [NSEntityDescription
-                        insertNewObjectForEntityForName:@"Sale"
-                        inManagedObjectContext:[AppDelegate sharedDelegate].managedObjectContext];
-            sale.dose = dose;
-            sale.commerceVisit = self.commerceVisit;
-            sale.commerceVisit.visit.user = currentUser;
-            sale.sold = @0;
-            sale.remainder = @0;
-            sale.order = @0;
-            [self.commerceVisit addSalesObject:sale];
-        }
-    }
-    [[AppDelegate sharedDelegate]saveContext];
-    
-    for (Sale* sale in self.commerceVisit.sales)
-    {
-        NSLog(@"id = %@", sale.dose.doseId);
-    }
-}
-
-
-//- (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
-//{
-//    return [UIView new];
-//}
-//
-//- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
-//{
-//    UIView *view = [[UIView alloc] init];
-//    
-//    return view;
-//}
-
-//- (void)scrollViewDidScroll:(UIScrollView *)scrollView
-//{
-//    if (scrollView.contentOffset.y < 0) {
-//        scrollView.contentOffset = CGPointMake(scrollView.contentOffset.x, 0);
-//        NSLog(@"Little");
-//           }
-//}
-
-/*
-- (IBAction)lastVisitButtonPressed:(id)sender
-{
-    if (self.isMyVisit)
-    {
-        [self.lastVisitButton setBackgroundImage:[UIImage imageNamed:@"leftSegmentPressed"] forState:UIControlStateNormal];
-        [self.myLastVisitButton setBackgroundImage:[UIImage imageNamed:@"rightSegment"] forState:UIControlStateNormal];
-        [self.lastVisitButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [self.myLastVisitButton setTitleColor:[UIColor orangeColor] forState:UIControlStateNormal];
-        self.isMyVisit = NO;
-    }
-}
-
-- (IBAction)myLastVisitButtonPressed:(id)sender
-{
-    if (!self.isMyVisit)
-    {
-        [self.myLastVisitButton setBackgroundImage:[UIImage imageNamed:@"rightSegmentPressed"] forState:UIControlStateNormal];
-        [self.lastVisitButton setBackgroundImage:[UIImage imageNamed:@"leftSegment"] forState:UIControlStateNormal];
-        [self.myLastVisitButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [self.lastVisitButton setTitleColor:[UIColor orangeColor] forState:UIControlStateNormal];
-        self.isMyVisit = YES;
-    }
-}*/
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
     return 0;
@@ -388,25 +209,33 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.row != 0)
-        return;
-    [self dismissKeyboard];
-    NSNumber* state = self.bools[indexPath.section];
-    self.bools[indexPath.section] = @(!state.boolValue);
-    [self.table reloadSections:[NSIndexSet indexSetWithIndex:indexPath.section] withRowAnimation:UITableViewRowAnimationAutomatic];
+    //"Section" clicked
+    if (indexPath.row == 0)
+    {
+        [self dismissKeyboard];
+        NSNumber* state = self.sectionStates[indexPath.section];
+        self.sectionStates[indexPath.section] = @(!state.boolValue);
+        [self.table reloadSections:[NSIndexSet indexSetWithIndex:indexPath.section] withRowAnimation:UITableViewRowAnimationAutomatic];
+    }
 }
 
 - (void)textFieldDidBeginEditing:(UITextField *)textField
 {
+    //Empty input is 0
     if ([self.activeField.text isEqualToString:@""])
         self.activeField.text = @"0";
+    
     [self saveInput];
+    
+    //Reposition keyboard
     self.activeField = textField;
     CGRect senderRect = [textField.superview convertRect:textField.frame toView:self.view];
     [self.view addSubview:self.keyboard];
     CGRect frame = self.keyboard.frame;
     frame.origin = CGPointMake(senderRect.origin.x - frame.size.width + senderRect.size.width/2, senderRect.origin.y + senderRect.size.height);
     self.keyboard.frame = frame;
+    
+    //Setup keyboard
     if ([self.activeField.text isEqualToString:@"Ост."])
     {
         self.keyboard.onlyRemainder = YES;
@@ -415,7 +244,6 @@
     {
         self.keyboard.onlyRemainder = NO;
     }
-    
 }
 
 - (IBAction)keyPressed:(id)sender
@@ -457,6 +285,22 @@
     }
 }
 
+- (Sale*)createNewSaleForDose:(Dose*)dose
+{
+    Sale* sale = [NSEntityDescription
+            insertNewObjectForEntityForName:@"Sale"
+            inManagedObjectContext:[AppDelegate sharedDelegate].managedObjectContext];
+    sale.dose = dose;
+    sale.commerceVisit = self.commerceVisit;
+    sale.commerceVisit.visit.user = [AppDelegate sharedDelegate].currentUser;
+    sale.sold = @0;
+    sale.remainder = @0;
+    sale.order = @0;
+    [self.commerceVisit addSalesObject:sale];
+    [[AppDelegate sharedDelegate]saveContext];
+    return sale;
+}
+
 - (void)saveInput
 {
     if (!self.activeField)
@@ -467,6 +311,11 @@
     NSArray* doses = [drug.doses.allObjects sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"priority" ascending:YES]]];
     Dose* dose = doses[indexPath.row];
     Sale* sale = [self getCurrentSaleFor:dose];
+    
+    if (!sale)
+    {
+        sale = [self createNewSaleForDose:dose];
+    }
     
     if (self.activeField == cell.remainderField)
     {
@@ -499,10 +348,7 @@
     [self.keyboard removeFromSuperview];
 }
 
-- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
-{
-}
-
+//Keyboard should follow scrolling table
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
     CGRect senderRect = [self.activeField.superview convertRect:self.activeField.frame toView:self.view];
@@ -513,14 +359,23 @@
 
 - (void)showComment:(id)sender
 {
+    //Find cell
     CGPoint buttonPosition = [sender convertPoint:CGPointZero toView:self.table];
     NSIndexPath *indexPath = [self.table indexPathForRowAtPoint:buttonPosition];
     
+    //Find dose by cell
     Drug* drug = self.drugs[indexPath.section];
     NSArray* doses = [drug.doses.allObjects sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"priority" ascending:YES]]];
     Dose* dose = doses[indexPath.row];
-    Sale* sale = [self getCurrentSaleFor:dose];
     
+    //Find or create dose for cell
+    Sale* sale = [self getCurrentSaleFor:dose];
+    if (!sale)
+    {
+        sale = [self createNewSaleForDose:dose];
+    }
+    
+    //Show comment controller
     CommentViewController* commentViewController = [CommentViewController new];
     commentViewController.sale = sale;
     ModalNavigationController* commentParentController = [[ModalNavigationController alloc]initWithRootViewController:commentViewController];

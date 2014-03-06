@@ -1,0 +1,55 @@
+{
+    "Preparat":{
+        "add":[
+               {
+               "code":"Крестор",
+               "preparat_id":1,
+               "status":"regular",
+               "ts":"2014-03-03 13:55:28"
+               },
+               {
+               "code":"Нексиум",
+               "preparat_id":2,
+               "status":"regular",
+               "ts":"2014-03-03 13:55:28"
+               },
+               {
+               "code":"Беталок",
+               "preparat_id":3,
+               "status":"regular",
+               "ts":"2014-03-03 13:55:28"
+               },
+               {
+               "code":"Лосек",
+               "preparat_id":4,
+               "status":"regular",
+               "ts":"2014-03-03 13:55:28"
+               },
+               {
+               "code":"Атаканд",
+               "preparat_id":5,
+               "status":"regular",
+               "ts":"2014-03-03 13:55:28"
+               },
+               {
+               "code":"Вимово",
+               "preparat_id":6,
+               "status":"regular",
+               "ts":"2014-03-03 13:55:28"
+               },
+               {
+               "code":"Симбикорт",
+               "preparat_id":7,
+               "status":"regular",
+               "ts":"2014-03-03 13:55:28"
+               },
+               {
+               "code":"Пульмикорт",
+               "preparat_id":8,
+               "status":"regular",
+               "ts":"2014-03-03 13:55:28"
+               }
+               ],
+        "date":"2014-03-03 13:55:28"
+    }
+}

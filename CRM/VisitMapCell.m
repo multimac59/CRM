@@ -13,7 +13,7 @@
 #import "VisitManager.h"
 @interface VisitMapCell()
 {
-    int total;
+    //int total;
     NSMutableArray* mapAnnotations;
 }
 @property (nonatomic, strong) NSDate* selectedDate;
@@ -37,8 +37,11 @@
     // Configure the view for the selected state
 }
 
+
+#pragma mark map setup methods
 - (void)setMapLocationForPharmacy:(Pharmacy*)pharmacy onDate:(NSDate*)date
 {
+    /*
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.responseSerializer = [RaptureXMLResponseSerializer serializer];
     manager.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/xml"];
@@ -84,7 +87,17 @@
              {
                  [self zoomMap];
              }
-         }];
+         }];*/
+    
+    MapAnnotation* annotation = [MapAnnotation new];
+    CLLocation* location = [[CLLocation alloc]initWithLatitude:pharmacy.latitude.doubleValue longitude:pharmacy.longitude.doubleValue];
+    annotation.coordinate = location.coordinate;
+    NSString* address = [NSString stringWithFormat:@"г. %@ %@ %@", pharmacy.city, pharmacy.street, pharmacy.house];
+    annotation.title = address;
+    annotation.subtitle = pharmacy.name;
+    annotation.visit = [[VisitManager sharedManager] visitInPharmacy:pharmacy forDate:date];
+    annotation.pharmacy = pharmacy;
+    [mapAnnotations addObject:annotation];
 }
 
 - (void)setMapLocationsForPharmacies:(NSArray*)pharmacies onDate:(NSDate*)date
@@ -92,13 +105,14 @@
     self.selectedDate = date;
     self.mapView.showTraffic = NO;
     self.mapView.delegate = self;
-    total = 0;
+    //total = 0;
     mapAnnotations = [NSMutableArray new];
     for (int i = 0; i < pharmacies.count; i++)
     {
         Pharmacy* pharmacy = pharmacies[i];
         [self setMapLocationForPharmacy:pharmacy onDate:date];
     }
+    [self zoomMap];
 }
 
 - (void)zoomMap
@@ -110,31 +124,7 @@
     [self.mapView setRegion:region];
 }
 
-
-- (void)mapView:(YMKMapView *)mapView annotationView:(YMKAnnotationView *)view calloutAccessoryControlTapped:(UIControl *)control
-{
-    NSLog(@"HOHO");
-}
-
-- (void)mapView:(YMKMapView *)mapView annotationViewCalloutTapped:(YMKAnnotationView *)view
-{
-    NSLog(@"Hooty");
-}
-
-- (void)draggablePinAnnotationViewDidStartInteraction:(YMKDraggablePinAnnotationView *)view
-{
-    NSLog(@"OKK");
-}
-
-- (void)draggablePinAnnotationViewDidStartMoving:(YMKDraggablePinAnnotationView *)view
-{
-    NSLog(@"OKK");
-}
-
-- (void)draggablePinAnnotationViewDidEndMoving:(YMKDraggablePinAnnotationView *)view
-{
-    NSLog(@"OKK");
-}
+#pragma mark map delegates
 
 - (YMKAnnotationView *)mapView:(YMKMapView *)mapView viewForAnnotation:(id<YMKAnnotation>)annotation
 {
@@ -202,6 +192,7 @@
     return calloutView;
 }
 
+#pragma mark planning buttons
 - (IBAction)commerceVisitButtonClicked:(id)sender
 {
     UIButton* button = sender;

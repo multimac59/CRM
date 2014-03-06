@@ -71,14 +71,16 @@ static AppDelegate* sharedDelegate = nil;
     self.pharmaciesViewController = [PharmaciesViewController new];
     self.pharmaciesViewController.pharmacyViewController = pharmacyViewController;
     
+    VisitViewController* visitViewController = [VisitViewController new];
     self.visitsViewController = [VisitsViewController new];
+    self.visitsViewController.visitViewController = visitViewController;
     
-    self.visitsSplitController.viewControllers = @[[[UINavigationController alloc]initWithRootViewController:self.visitsViewController],[[UINavigationController alloc]initWithRootViewController:[VisitViewController new]]];
+    self.visitsSplitController.viewControllers = @[[[UINavigationController alloc]initWithRootViewController:self.visitsViewController],[[UINavigationController alloc]initWithRootViewController:visitViewController]];
     _clientsSplitController = [[MGCustomSplitViewController alloc]init];
     self.clientsSplitController.viewControllers = @[[[UINavigationController alloc]initWithRootViewController:self.pharmaciesViewController],[[UINavigationController alloc]initWithRootViewController:pharmacyViewController]];
 
     _container = [MFSideMenuCustomContainer
-                  containerWithCenterViewController:self.visitsSplitController
+                  containerWithCenterViewController:self.clientsSplitController
                                                     leftMenuViewController:nil
                                                     rightMenuViewController:nil];
     
@@ -114,7 +116,7 @@ static AppDelegate* sharedDelegate = nil;
     
     [Flurry startSession:@"VF6G7F9XQ8Jss8QM7249DS"];
     
-    [self parseUsersLocal];
+    [self parseUserLocal];
     [self showLoginScreenWithAnimation:NO];
     
     return YES;
@@ -122,7 +124,8 @@ static AppDelegate* sharedDelegate = nil;
 
 - (void)showLoginScreenWithAnimation:(BOOL)animated
 {
-    [self.container presentViewController:[LoginViewController new] animated:animated completion:nil];
+    self.loginViewController = [LoginViewController new];
+    [self.container presentViewController:self.loginViewController animated:animated completion:nil];
 }
 
 - (void)sidePanelController:(SidePanelController *)controller didSelectItem:(NSInteger)item
@@ -188,102 +191,6 @@ static AppDelegate* sharedDelegate = nil;
     }
 }
 
-- (NSMutableArray*)parseRegions
-{
-    NSString* regionsFile = [[NSBundle mainBundle]pathForResource:@"Regions" ofType:@"json"];
-    NSData* regionsData = [NSData dataWithContentsOfFile:regionsFile];
-    NSArray* regionsJSON = [NSJSONSerialization JSONObjectWithData:regionsData options:kNilOptions error:nil];
-    NSMutableArray* regions = [NSMutableArray new];
-    [regionsJSON enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        Region* region = [NSEntityDescription
-                      insertNewObjectForEntityForName:@"Region"
-                      inManagedObjectContext:self.managedObjectContext];
-        region.regionId = (NSNumber*)[obj objectForKey:@"id"];
-        region.name = [obj objectForKey:@"name"];
-        [regions addObject:region];
-    }];
-    return regions;
-}
-
-- (NSMutableArray*)parseDrugs
-{
-    NSString* drugsFile = [[NSBundle mainBundle]pathForResource:@"Drugs" ofType:@"json"];
-    NSData* drugsData = [NSData dataWithContentsOfFile:drugsFile];
-    NSArray* drugsJSON = [NSJSONSerialization JSONObjectWithData:drugsData options:kNilOptions error:nil];
-    NSMutableArray* drugs = [NSMutableArray new];
-    [drugsJSON enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop)
-     {
-         Drug* drug = [NSEntityDescription
-                         insertNewObjectForEntityForName:@"Drug"
-                         inManagedObjectContext:self.managedObjectContext];
-         drug.drugId = (NSNumber*)[obj objectForKey:@"id"];
-         drug.name = [obj objectForKey:@"name"];
-         drug.doses = [NSSet new];
-         NSMutableArray* doses = [obj objectForKey:@"doses"];
-         [doses enumerateObjectsUsingBlock:^(id doseObj, NSUInteger idx, BOOL *stop)
-         {
-             Dose* dose = [NSEntityDescription
-                           insertNewObjectForEntityForName:@"Dose"
-                           inManagedObjectContext:self.managedObjectContext];
-             dose.doseId = (NSNumber*)[doseObj objectForKey:@"id"];
-             dose.name = [doseObj objectForKey:@"name"];
-             dose.priority = [doseObj objectForKey:@"priority"];
-             [drug addDosesObject:dose];
-         }];
-         [drugs addObject:drug];
-     }];
-    NSError *error;
-    if (![self.managedObjectContext save:&error])
-    {
-        NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
-    }
-    return drugs;
-}
-
-- (NSMutableArray*)parsePharmacies
-{
-    NSString* pharmaciesFile = [[NSBundle mainBundle]pathForResource:@"Pharmacies" ofType:@"json"];
-    NSData* pharmaciesData = [NSData dataWithContentsOfFile:pharmaciesFile];
-    NSArray* pharmaciesJSON = [NSJSONSerialization JSONObjectWithData:pharmaciesData options:kNilOptions error:nil];
-    NSMutableArray* pharmacies = [NSMutableArray new];
-    [pharmaciesJSON enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop)
-     {
-         Pharmacy* pharmacy = [NSEntityDescription
-                       insertNewObjectForEntityForName:@"Pharmacy"
-                       inManagedObjectContext:self.managedObjectContext];
-         pharmacy.pharmacyId = (NSNumber*)[obj objectForKey:@"id"];
-         pharmacy.name = [obj objectForKey:@"name"];
-         pharmacy.network = [obj objectForKey:@"network"];
-         pharmacy.city = [obj objectForKey:@"city"];
-         pharmacy.street = [obj objectForKey:@"street"];
-         pharmacy.house = [obj objectForKey:@"house"];
-         pharmacy.phone = [obj objectForKey:@"phone"];
-         pharmacy.doctorName = [obj objectForKey:@"doctorName"];
-         //pharmacy.region = [obj objectForKey:@"region"];
-         pharmacy.visits = [NSSet new];
-         pharmacy.status =  [[[obj objectForKey:@"status"]stringValue]integerValue];
-         pharmacy.sales = [obj objectForKey:@"sales"];
-         pharmacy.users = [NSSet new];
-         NSMutableArray* users = [obj objectForKey:@"users"];
-         [users enumerateObjectsUsingBlock:^(id userObj, NSUInteger idx, BOOL *stop) {
-             NSInteger userId = [[userObj stringValue]integerValue];
-             User* user = [self findUserById:userId];
-             if (user)
-                 [pharmacy addUsersObject:user];
-         }];
-         NSInteger regionId = [[[obj objectForKey:@"region"]stringValue]integerValue];
-         Region* region = [self findRegionById:regionId];
-         pharmacy.region = region;
-         [pharmacies addObject:pharmacy];
-     }];
-    NSError *error;
-    if (![self.managedObjectContext save:&error])
-    {
-        NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
-    }
-    return pharmacies;
-}
-
 - (NSMutableArray*)parseVisits
 {
     NSString* visitsFile = [[NSBundle mainBundle]pathForResource:@"Visits" ofType:@"json"];
@@ -339,105 +246,6 @@ static AppDelegate* sharedDelegate = nil;
         NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
     }
     return visits;
-}
-
-/*
-- (NSMutableArray*)parseConferences
-{
-    NSString* conferencesFile = [[NSBundle mainBundle]pathForResource:@"Conferences" ofType:@"json"];
-    NSData* conferencesData = [NSData dataWithContentsOfFile:conferencesFile];
-    NSArray* conferencesJSON = [NSJSONSerialization JSONObjectWithData:conferencesData options:kNilOptions error:nil];
-    NSMutableArray* conferences = [NSMutableArray new];
-    [conferencesJSON enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop)
-     {
-         Conference* conference = [NSEntityDescription
-                         insertNewObjectForEntityForName:@"Conference"
-                         inManagedObjectContext:self.managedObjectContext];
-         NSString* visitDateString = [obj objectForKey:@"date"];
-         NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
-         dateFormatter.dateFormat = @"dd.MM.yyyy HH:mm";
-         conference.date = [dateFormatter dateFromString:visitDateString];
-         conference.conferenceId = (NSNumber*)[obj objectForKey:@"id"];
-         //TODO: fix it
-         NSInteger userId = ((NSNumber*)[obj objectForKey:@"userId"]).integerValue;
-         conference.user = [self findUserById:userId];
-         conference.name = [obj objectForKey:@"name"];
-         conference.participants = [NSSet new];
-         NSArray* participants = [obj objectForKey:@"participants"];
-         [participants enumerateObjectsUsingBlock:^(NSString *name, NSUInteger idx, BOOL *stop) {
-             Participant* participant = [NSEntityDescription
-                                       insertNewObjectForEntityForName:@"Participant"
-                                       inManagedObjectContext:self.managedObjectContext];
-             participant.name = name;
-             [conference addParticipantsObject:participant];
-         }];
-         conference.brands = [NSSet new];
-         NSMutableArray* brandIds = [obj objectForKey:@"brands"];
-         [brandIds enumerateObjectsUsingBlock:^(NSNumber* brandObj, NSUInteger idx, BOOL *stop) {
-             //TODO: fix it
-             NSInteger brandId = brandObj.integerValue;
-             Brand* brand = [self findBrandById:brandId];
-             [conference addBrandsObject:brand];
-         }];
-         //TODO: fix it
-         NSInteger pharmacyId = ((NSNumber*)[obj objectForKey:@"pharmacy"]).integerValue;
-         Pharmacy* pharmacy = [self findPharmacyById:pharmacyId];
-         conference.pharmacy = pharmacy;
-         [conferences addObject:conference];
-     }];
-    NSError *error;
-    if (![self.managedObjectContext save:&error])
-    {
-        NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
-    }
-    return conferences;
-}*/
-
-- (NSMutableArray*)parseUsers
-{
-    NSString* usersFile = [[NSBundle mainBundle]pathForResource:@"Users" ofType:@"json"];
-    NSData* usersData = [NSData dataWithContentsOfFile:usersFile];
-    NSMutableArray* usersJSON = [NSJSONSerialization JSONObjectWithData:usersData options:kNilOptions error:nil];
-    NSMutableArray* users = [NSMutableArray new];
-    [usersJSON enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        User* user = [NSEntityDescription
-                                  insertNewObjectForEntityForName:@"User"
-                                  inManagedObjectContext:self.managedObjectContext];
-        user.userId = (NSNumber*)[obj objectForKey:@"id"];
-        user.name = [obj objectForKey:@"name"];
-        NSArray* regions = [obj objectForKey:@"regions"];
-        [regions enumerateObjectsUsingBlock:^(id regionObj, NSUInteger idx, BOOL *stop) {
-            NSInteger regionId = [[regionObj stringValue]integerValue];
-            Region* region = [self findRegionById:regionId];
-            if (region)
-                [user addRegionsObject:region];
-        }];
-        [users addObject:user];
-    }];
-    NSError *error;
-    if (![self.managedObjectContext save:&error])
-    {
-        NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
-    }
-    return users;
-}
-
-- (void)parseUsersLocal
-{
-    NSString* usersFile = [[NSBundle mainBundle]pathForResource:@"Users" ofType:@"json"];
-    NSData* usersData = [NSData dataWithContentsOfFile:usersFile];
-    NSDictionary* usersJSON = [NSJSONSerialization JSONObjectWithData:usersData options:kNilOptions error:nil];
-    NSDictionary* dic = [usersJSON objectForKey:@"User"];
-    [self parseServerUsers:dic];
-}
-
-- (void)parseUserRegionsLocal
-{
-    NSString* usersFile = [[NSBundle mainBundle]pathForResource:@"UserRegion" ofType:@"json"];
-    NSData* usersData = [NSData dataWithContentsOfFile:usersFile];
-    NSDictionary* usersJSON = [NSJSONSerialization JSONObjectWithData:usersData options:kNilOptions error:nil];
-    NSDictionary* dic = [usersJSON objectForKey:@"UserRegion"];
-    [self parseServerUserRegions:dic];
 }
 
 - (Region*)findRegionById:(NSInteger)regionId
@@ -670,7 +478,6 @@ static AppDelegate* sharedDelegate = nil;
     for (NSManagedObject *managedObject in items)
     {
     	[self.managedObjectContext deleteObject:managedObject];
-        NSLog(@"Try to delete %@",entityDescription);
     }
     if (![self.managedObjectContext save:&error])
     {
@@ -681,7 +488,7 @@ static AppDelegate* sharedDelegate = nil;
 
 - (void)checkNewDay
 {
-    NSLog(@"Checking new day....");
+    //NSLog(@"Checking new day....");
     NSManagedObjectContext* context = self.managedObjectContext;
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     [request setEntity:[NSEntityDescription entityForName:@"Visit" inManagedObjectContext:context]];
@@ -696,17 +503,21 @@ static AppDelegate* sharedDelegate = nil;
     [self saveContext];
 }
 
-- (void)loadFromServer
+- (void)setCurrentUser:(User *)currentUser
 {
-    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-    [manager GET:@"http://ourserver/getAll.json" parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
-        NSLog(@"JSON: %@", responseObject);
-    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        NSLog(@"Error: %@", error);
-    }];
+    self.sidePanelController.nameLabel.text = currentUser.name;
+    self.sidePanelController.mailLabel.text = currentUser.login;
+    _currentUser = currentUser;
 }
 
-- (void)syncVisits
+- (void)reloadData
+{
+    [self.pharmaciesViewController reloadData];
+    [self.pharmaciesViewController selectFirstFromList];
+    [self.visitsViewController reloadData];
+}
+
+- (void)loadDataFromServer
 {
     NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
     dateFormatter.dateFormat = @"yyyy-MM-dd HH:mm:ss";
@@ -715,55 +526,164 @@ static AppDelegate* sharedDelegate = nil;
     NSString* urlString = [[NSString stringWithFormat:@"http://crm.mydigital.guru/server/sync?clientId=%@&date[Region]=%@&date[UserRegion]=%@&date[Pharm]=%@&date[Preparat]=%@&date[PreparatDose]=%@&date[User]=%@", self.currentUser.userId, dateString, dateString, dateString, dateString, dateString, dateString]stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     [manager GET:urlString parameters:Nil success:^(AFHTTPRequestOperation *operation, id responseObject)
-    {
-        NSLog(@"Success");
-
-        /*
-        id usersDict = [responseObject objectForKey:@"User"];
-        if ([usersDict isKindOfClass:[NSDictionary class]])
-        {
-            [self parseServerUsers:usersDict];
-        }*/
-        
-        id regionDict = [responseObject objectForKey:@"Region"];
-        if ([regionDict isKindOfClass:[NSDictionary class]])
-        {
-            [self parseServerRegions:regionDict];
-        }
-        id userRegionDict = [responseObject objectForKey:@"UserRegion"];
-        if ([userRegionDict isKindOfClass:[NSDictionary class]])
-        {
-            [self parseServerUserRegions:userRegionDict];
-        }
-        //[self parseUserRegionsLocal];
-        id pharmDict = [responseObject objectForKey:@"Pharm"];
-        if ([pharmDict isKindOfClass:[NSDictionary class]])
-        {
-            [self parseServerPharm:pharmDict];
-        }
-        id preparatDict = [responseObject objectForKey:@"Preparat"];
-        if ([preparatDict isKindOfClass:[NSDictionary class]])
-        {
-            [self parseServerPreparat:preparatDict];
-        }
-        id drugDict = [responseObject objectForKey:@"Preparat"];
-        if ([drugDict isKindOfClass:[NSDictionary class]])
-        {
-            [self parseServerPreparat:drugDict];
-        }
-        id doseDict = [responseObject objectForKey:@"PreparatDose"];
-        if ([doseDict isKindOfClass:[NSDictionary class]])
-        {
-            [self parseServerPreparatDose:drugDict];
-        }
-    }
-    failure:^(AFHTTPRequestOperation *operation, NSError *error)
-    {
-        NSLog(@"Failure");
-    }];
+     {
+         NSLog(@"Success");
+         
+         if (LOCAL)
+         {
+             [self parseRegionLocal];
+             [self parseUserRegionLocal];
+             [self parsePreparatLocal];
+             [self parsePreparatDoseLocal];
+             [self parsePharmLocal];
+         }
+         else
+         {
+             
+             /*
+              id usersDict = [responseObject objectForKey:@"User"];
+              if ([usersDict isKindOfClass:[NSDictionary class]])
+              {
+                [self parseServerUsers:usersDict];
+              }*/
+             id regionDict = [responseObject objectForKey:@"Region"];
+             if ([regionDict isKindOfClass:[NSDictionary class]])
+             {
+                 [self parseRegion:regionDict];
+             }
+             id userRegionDict = [responseObject objectForKey:@"UserRegion"];
+             if ([userRegionDict isKindOfClass:[NSDictionary class]])
+             {
+                 [self parseUserRegion:userRegionDict];
+             }
+             id preparatDict = [responseObject objectForKey:@"Preparat"];
+             if ([preparatDict isKindOfClass:[NSDictionary class]])
+             {
+                 [self parsePreparat:preparatDict];
+             }
+             id doseDict = [responseObject objectForKey:@"PreparatDose"];
+             if ([doseDict isKindOfClass:[NSDictionary class]])
+             {
+                 [self parsePreparatDose:doseDict];
+             }
+             id pharmDict = [responseObject objectForKey:@"Pharm"];
+             if ([pharmDict isKindOfClass:[NSDictionary class]])
+             {
+                 [self parsePharm:pharmDict];
+             }
+         }
+         [self reloadData];
+         LoginViewController* login = self.loginViewController;
+         [login hideLoader];
+         [login dismissViewControllerAnimated:YES completion:nil];
+     }
+         failure:^(AFHTTPRequestOperation *operation, NSError *error)
+     {
+         NSLog(@"Failure");
+     }];
 }
 
-- (NSMutableArray*)parseServerPreparat:(NSDictionary*)dict
+
+
+- (void)sendDataToServer
+{
+    NSLog(@"Sending to server...");
+    NSManagedObjectContext* context = self.managedObjectContext;
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:[NSEntityDescription entityForName:@"Visit" inManagedObjectContext:context]];
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"closed==YES"];
+    [request setPredicate:predicate];
+    NSError *error = nil;
+    NSArray *visits = [context executeFetchRequest:request error:&error];
+    
+    [visits enumerateObjectsUsingBlock:^(Visit* visit, NSUInteger idx, BOOL *stop) {
+        NSDictionary* arrDic = [visit encodeToJSON];
+        
+        NSDictionary* fullJSON = @{@"visit" : arrDic};
+        NSData* jsonData = [NSJSONSerialization dataWithJSONObject:fullJSON options:NSJSONWritingPrettyPrinted error:nil];
+        NSString* json = [[NSString alloc]initWithData:jsonData encoding:NSUTF8StringEncoding];
+        NSLog(@"%@", json);
+        
+        AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+        manager.requestSerializer = [AFJSONRequestSerializer new];
+        manager.responseSerializer = [AFJSONResponseSerializer new];
+        NSMutableSet* responseTypes = [NSMutableSet setWithSet:manager.responseSerializer.acceptableContentTypes];
+        [responseTypes addObject:@"text/html"];
+        manager.responseSerializer.acceptableContentTypes = responseTypes;
+        
+        NSString* urlString = [NSString stringWithFormat:@"http://crm.mydigital.guru/server/sync?clientId=5"];
+        [manager POST:urlString parameters:fullJSON success:^(AFHTTPRequestOperation *operation, id responseObject) {
+            NSString* utfString = [[NSString alloc]initWithData:responseObject encoding:NSUTF8StringEncoding];
+            NSLog(@"response: %@", utfString);
+        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+            NSLog(@"Error: %@", error);
+        }];
+    }];
+    
+}
+
+
+
+#pragma mark json parser methods
+- (void)parseRegion:(NSDictionary*)dict
+{
+    NSArray* addDict = [dict objectForKey:@"add"];
+    for (NSDictionary* obj in addDict)
+    {
+        NSNumber* regionId = (NSNumber*)[obj objectForKey:@"region_id"];
+        Region* region = [self findRegionById:regionId.integerValue];
+        if (!region)
+        {
+            region = [NSEntityDescription
+                      insertNewObjectForEntityForName:@"Region"
+                      inManagedObjectContext:self.managedObjectContext];
+            region.regionId = regionId;
+        }
+        region.name = [obj objectForKey:@"name"];
+    }
+}
+
+- (void)parseUser:(NSDictionary*)dict
+{
+    NSArray* addDict = [dict objectForKey:@"add"];
+    for (NSDictionary* obj in addDict)
+    {
+        NSNumber* userId = (NSNumber*)[obj objectForKey:@"user_id"];
+        User* user = [self findUserById:userId.integerValue];
+        if (!user)
+        {
+            user = [NSEntityDescription
+                    insertNewObjectForEntityForName:@"User"
+                    inManagedObjectContext:self.managedObjectContext];
+            user.userId = userId;
+        }
+        user.name = [obj objectForKey:@"name"];
+        if ([obj objectForKey:@"email"]!=[NSNull null])
+        user.login = [obj objectForKey:@"email"];
+    }
+}
+
+- (void)parseUserRegion:(NSDictionary*)dict
+{
+    NSArray* addDict = [dict objectForKey:@"add"];
+    for (NSDictionary* obj in addDict)
+    {
+        NSInteger userId = [[[obj objectForKey:@"user_id"]stringValue]integerValue];
+        User* user = [self findUserById:userId];
+        if (user)
+        {
+            NSInteger regionId = [[(NSNumber*)[obj objectForKey:@"region_id"]stringValue]integerValue];
+            Region* region = [self findRegionById:regionId];
+            
+            if (region)
+            {
+                [user addRegionsObject:region];
+            }
+        }
+    }
+}
+
+- (NSMutableArray*)parsePreparat:(NSDictionary*)dict
 {
     NSMutableArray* drugs = [NSMutableArray new];
     NSArray* addDict = [dict objectForKey:@"add"];
@@ -774,8 +694,8 @@ static AppDelegate* sharedDelegate = nil;
         if (!drug)
         {
             drug = [NSEntityDescription
-                        insertNewObjectForEntityForName:@"Drug"
-                        inManagedObjectContext:self.managedObjectContext];
+                    insertNewObjectForEntityForName:@"Drug"
+                    inManagedObjectContext:self.managedObjectContext];
             drug.drugId = drugId;
             drug.name = [obj objectForKey:@"code"];
             [drugs addObject:drug];
@@ -784,7 +704,7 @@ static AppDelegate* sharedDelegate = nil;
     return drugs;
 }
 
-- (void)parseServerPreparatDose:(NSDictionary*)dict
+- (void)parsePreparatDose:(NSDictionary*)dict
 {
     NSArray* addDict = [dict objectForKey:@"add"];
     for (NSDictionary* obj in addDict)
@@ -810,7 +730,7 @@ static AppDelegate* sharedDelegate = nil;
 
 
 
-- (void)parseServerPharm:(NSDictionary*)dict
+- (void)parsePharm:(NSDictionary*)dict
 {
     NSArray* addDict = [dict objectForKey:@"add"];
     for (NSDictionary* obj in addDict)
@@ -821,30 +741,31 @@ static AppDelegate* sharedDelegate = nil;
         if (!pharmacy)
         {
             pharmacy = [NSEntityDescription
-                              insertNewObjectForEntityForName:@"Pharmacy"
-                              inManagedObjectContext:self.managedObjectContext];
+                        insertNewObjectForEntityForName:@"Pharmacy"
+                        inManagedObjectContext:self.managedObjectContext];
             pharmacy.pharmacyId = pharmacyId;
         }
         pharmacy.name = [obj objectForKey:@"name"];
-        pharmacy.network = [obj objectForKey:@"net"];
+        pharmacy.network = @([[obj objectForKey:@"net"]boolValue]);
         pharmacy.city = [obj objectForKey:@"city"];
         pharmacy.street = [obj objectForKey:@"street"];
         pharmacy.house = [obj objectForKey:@"house"];
         pharmacy.phone = [obj objectForKey:@"tel"];
-        pharmacy.psp = [obj objectForKey:@"psp"];
-        if (pharmacy.psp == nil)
-        {
-            NSLog(@"Fuck");
-        }
+        pharmacy.psp = @([[obj objectForKey:@"psp"]boolValue]);
         pharmacy.sales = [obj objectForKey:@"sales"];
         pharmacy.doctorName = [obj objectForKey:@"contact"];
         
-        NSInteger regionId = [[[obj objectForKey:@"region_id"]stringValue]integerValue];
+        NSInteger regionId = [[obj objectForKey:@"region_id"]integerValue];
         Region* region = [self findRegionById:regionId];
         pharmacy.region = region;
-        if (pharmacy.region == nil)
+        
+        NSNumber* targetUserIdNum = [obj objectForKey:@"target_user_id"];
+        if (targetUserIdNum!=[NSNull null])
         {
-            NSLog(@"Fuck");
+        NSInteger targetUserId = [[obj objectForKey:@"target_user_id"]integerValue];
+        User* user = [self findUserById:targetUserId];
+        [user addTargetablePharmaciesObject:pharmacy];
+            [[AppDelegate sharedDelegate]saveContext];
         }
         
         NSString* statusString = [obj objectForKey:@"category"];
@@ -865,113 +786,61 @@ static AppDelegate* sharedDelegate = nil;
             pharmacy.status = GoldStatus;
         }
     }
-}
-
-- (void)parseServerRegions:(NSDictionary*)dict
-{
-    NSArray* addDict = [dict objectForKey:@"add"];
-    for (NSDictionary* obj in addDict)
-    {
-        NSNumber* regionId = (NSNumber*)[obj objectForKey:@"region_id"];
-        Region* region = [self findRegionById:regionId.integerValue];
-        if (!region)
-        {
-            region = [NSEntityDescription
-                              insertNewObjectForEntityForName:@"Region"
-                              inManagedObjectContext:self.managedObjectContext];
-            region.regionId = regionId;
-        }
-        region.name = [obj objectForKey:@"name"];
-    }
-}
-
-- (void)parseServerUsers:(NSDictionary*)dict
-{
-    NSArray* addDict = [dict objectForKey:@"add"];
-    for (NSDictionary* obj in addDict)
-    {
-        NSNumber* userId = (NSNumber*)[obj objectForKey:@"user_id"];
-        User* user = [self findUserById:userId.integerValue];
-        if (!user)
-        {
-            user = [NSEntityDescription
-                      insertNewObjectForEntityForName:@"User"
-                      inManagedObjectContext:self.managedObjectContext];
-            user.userId = userId;
-        }
-        user.name = [obj objectForKey:@"name"];
-        if ([obj objectForKey:@"email"]!=[NSNull null])
-            user.login = [obj objectForKey:@"email"];
-    }
-}
-
-- (void)parseServerUserRegions:(NSDictionary*)dict
-{
-    NSArray* addDict = [dict objectForKey:@"add"];
-    for (NSDictionary* obj in addDict)
-    {
-        NSInteger userId = [[[obj objectForKey:@"user_id"]stringValue]integerValue];
-        User* user = [self findUserById:userId];
-        if (user)
-        {
-            NSInteger regionId = [[(NSNumber*)[obj objectForKey:@"region_id"]stringValue]integerValue];
-            Region* region = [self findRegionById:regionId];
-            
-            if (region)
-            {
-                [user addRegionsObject:region];
-            }
-        }
-    }
-}
-
-- (void)sendDataToServer
-{
-    NSLog(@"Sending to server...");
-    NSManagedObjectContext* context = self.managedObjectContext;
-    NSFetchRequest *request = [[NSFetchRequest alloc] init];
-    [request setEntity:[NSEntityDescription entityForName:@"Visit" inManagedObjectContext:context]];
-    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"closed==YES"];
-    [request setPredicate:predicate];
-    NSError *error = nil;
-    NSArray *visits = [context executeFetchRequest:request error:&error];
     
-    NSMutableArray* visitsJSON = [NSMutableArray new];
-    [visits enumerateObjectsUsingBlock:^(Visit* visit, NSUInteger idx, BOOL *stop) {
-        NSDictionary* arrDic = [visit encodeToJSON];
-        [visitsJSON addObject:arrDic];
-    }];
-    NSDictionary* fullJSON = @{@"visits" : visitsJSON};
-    NSData* jsonData = [NSJSONSerialization dataWithJSONObject:fullJSON options:NSJSONWritingPrettyPrinted error:nil];
-    NSString* json = [[NSString alloc]initWithData:jsonData encoding:NSUTF8StringEncoding];
-    NSLog(@"%@", json);
-    
-    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-    manager.requestSerializer = [AFJSONRequestSerializer new];
-    manager.responseSerializer = [AFJSONResponseSerializer new];
-    NSMutableSet* responseTypes = [NSMutableSet setWithSet:manager.responseSerializer.acceptableContentTypes];
-    [responseTypes addObject:@"text/html"];
-    manager.responseSerializer.acceptableContentTypes = responseTypes;
-    
-    NSString* urlString = [NSString stringWithFormat:@"http://crm.mydigital.guru/server/sync?clientId=5"];
-    [manager POST:urlString parameters:fullJSON success:^(AFHTTPRequestOperation *operation, id responseObject) {
-        NSString* utfString = [[NSString alloc]initWithData:responseObject encoding:NSUTF8StringEncoding];
-        NSLog(@"response: %@", utfString);
-    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        NSLog(@"Error: %@", error);
-    }];
 }
 
-- (void)setCurrentUser:(User *)currentUser
+#pragma mark local json load methods
+- (void)parseRegionLocal
 {
-    self.sidePanelController.nameLabel.text = currentUser.name;
-    self.sidePanelController.mailLabel.text = currentUser.login;
-    _currentUser = currentUser;
+    NSString* usersFile = [[NSBundle mainBundle]pathForResource:@"Region" ofType:@"json"];
+    NSData* usersData = [NSData dataWithContentsOfFile:usersFile];
+    NSDictionary* usersJSON = [NSJSONSerialization JSONObjectWithData:usersData options:kNilOptions error:nil];
+    NSDictionary* dic = [usersJSON objectForKey:@"Region"];
+    [self parseRegion:dic];
 }
 
-- (void)reloadData
+- (void)parseUserLocal
 {
-    [self.pharmaciesViewController reloadData];
-    [self.visitsViewController reloadData];
+    NSString* usersFile = [[NSBundle mainBundle]pathForResource:@"User" ofType:@"json"];
+    NSData* usersData = [NSData dataWithContentsOfFile:usersFile];
+    NSDictionary* usersJSON = [NSJSONSerialization JSONObjectWithData:usersData options:kNilOptions error:nil];
+    NSDictionary* dic = [usersJSON objectForKey:@"User"];
+    [self parseUser:dic];
+}
+
+- (void)parseUserRegionLocal
+{
+    NSString* usersFile = [[NSBundle mainBundle]pathForResource:@"UserRegion" ofType:@"json"];
+    NSData* usersData = [NSData dataWithContentsOfFile:usersFile];
+    NSDictionary* usersJSON = [NSJSONSerialization JSONObjectWithData:usersData options:kNilOptions error:nil];
+    NSDictionary* dic = [usersJSON objectForKey:@"UserRegion"];
+    [self parseUserRegion:dic];
+}
+
+- (void)parsePreparatLocal
+{
+    NSString* usersFile = [[NSBundle mainBundle]pathForResource:@"Preparat" ofType:@"json"];
+    NSData* usersData = [NSData dataWithContentsOfFile:usersFile];
+    NSDictionary* usersJSON = [NSJSONSerialization JSONObjectWithData:usersData options:kNilOptions error:nil];
+    NSDictionary* dic = [usersJSON objectForKey:@"Preparat"];
+    [self parsePreparat:dic];
+}
+
+- (void)parsePreparatDoseLocal
+{
+    NSString* usersFile = [[NSBundle mainBundle]pathForResource:@"PreparatDose" ofType:@"json"];
+    NSData* usersData = [NSData dataWithContentsOfFile:usersFile];
+    NSDictionary* usersJSON = [NSJSONSerialization JSONObjectWithData:usersData options:kNilOptions error:nil];
+    NSDictionary* dic = [usersJSON objectForKey:@"PreparatDose"];
+    [self parsePreparatDose:dic];
+}
+
+- (void)parsePharmLocal
+{
+    NSString* usersFile = [[NSBundle mainBundle]pathForResource:@"Pharm" ofType:@"json"];
+    NSData* usersData = [NSData dataWithContentsOfFile:usersFile];
+    NSDictionary* usersJSON = [NSJSONSerialization JSONObjectWithData:usersData options:kNilOptions error:nil];
+    NSDictionary* dic = [usersJSON objectForKey:@"Pharm"];
+    [self parsePharm:dic];
 }
 @end

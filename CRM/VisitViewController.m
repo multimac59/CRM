@@ -24,7 +24,9 @@
 #import "NSDate+Additions.h"
 
 @interface VisitViewController ()
-@property (nonatomic, weak) IBOutlet YMKMapView* mapView;
+@property (nonatomic, strong) Visit* visit;
+@property (nonatomic, strong) NSArray* oldVisits;
+
 @property (nonatomic, strong) UINavigationController* salesNavigationController;
 @end
 
@@ -35,6 +37,7 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         // Custom initialization
+        self.oldVisits = [NSMutableArray new];
     }
     return self;
 }
@@ -45,18 +48,12 @@
     // Do any additional setup after loading the view from its nib.
     [self.navigationController setNavigationBarHidden:YES animated:NO];
     self.navigationController.navigationBar.translucent = NO;
-    self.oldVisits = [NSMutableArray new];
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
-}
-
-- (void)back
-{
-    NSLog(@"back");
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -66,6 +63,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
+    //Show no more than 6 visits
     if (section == 1)
     {
         if (self.oldVisits.count < 6)
@@ -77,23 +75,24 @@
         return 1;
 }
 
-- (void)reloadContent
+- (void)showVisit:(Visit*)visit
 {
-    if (self.visit)
-        self.table.hidden = NO;
-    else
-        self.table.hidden = YES;
-    [self.oldVisits removeAllObjects];
+    self.visit = visit;
+    [self loadOldVisits];
+    [self.table reloadData];
+}
+
+- (void)loadOldVisits
+{
     NSManagedObjectContext* context = [AppDelegate sharedDelegate].managedObjectContext;
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     [request setEntity:[NSEntityDescription entityForName:@"Visit" inManagedObjectContext:context]];
     NSPredicate* predicate = [NSPredicate predicateWithFormat:@"pharmacy.pharmacyId=%@ AND date<%@", self.visit.pharmacy.pharmacyId, [NSDate currentDate]];
     [request setPredicate:predicate];
     NSError *error = nil;
-    NSArray* visits = [context executeFetchRequest:request error:&error];
-    [self.oldVisits addObjectsFromArray:visits];
-    [self.table reloadData];
+    self.oldVisits = [context executeFetchRequest:request error:&error];
 }
+
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -105,28 +104,18 @@
             cell =[[NSBundle mainBundle]loadNibNamed:@"VisitInfoCell" owner:self options:nil][0];
         }
         [cell showVisit:self.visit];
+        
         cell.favouriteButton.hidden = YES;
+        
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         return cell;
     }
     else if (indexPath.section == 2)
     {
         VisitButtonsCell* cell = [[NSBundle mainBundle]loadNibNamed:@"VisitButtonsCell" owner:self options:nil][0];
+        [cell showVisit:self.visit];
+        
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        if (self.visit.commerceVisit)
-            cell.salesButton.hidden = NO;
-        else
-            cell.salesButton.hidden = YES;
-        
-        if (self.visit.pharmacyCircle)
-            cell.pharmacyCircleButton.hidden = NO;
-        else
-            cell.pharmacyCircleButton.hidden = YES;
-        
-        if (self.visit.promoVisit)
-            cell.promoVisitButton.hidden = NO;
-        else
-            cell.promoVisitButton.hidden = YES;
         return cell;
     }
     else if (indexPath.section == 3)
@@ -136,8 +125,8 @@
         {
             cell = [[NSBundle mainBundle]loadNibNamed:@"VisitMapCell" owner:self options:nil][0];
         }
-        //[cell setMapLocationForPharmacy:self.visit.pharmacy];
         [cell setMapLocationsForPharmacies:self.allPharmacies onDate:self.planDate];
+        
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         return cell;
     }
@@ -178,16 +167,6 @@
             return 55;
         else
             return 40;
-}
-
-- (IBAction)closeVisit:(id)sender
-{
-    if (self.visit)
-    {
-        self.visit.closed = @YES;
-        [[AppDelegate sharedDelegate]saveContext];
-        [self.table reloadData];
-    }
 }
 
 - (IBAction)goToPharmacyCircle:(id)sender
@@ -245,8 +224,4 @@
         senderButton.enabled = YES;
     }];
 }
-
-
-
-
 @end

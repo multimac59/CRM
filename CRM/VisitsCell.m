@@ -107,6 +107,11 @@
     }
 }
 
-
+- (void)disableButtons
+{
+    self.commerceVisitButton.enabled = NO;
+    self.promoVisitButton.enabled = NO;
+    self.pharmacyCircleButton.enabled = NO;
+}
 
 @end

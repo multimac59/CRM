@@ -28,5 +28,7 @@
 @dynamic users;
 @dynamic visits;
 @dynamic sales;
+@dynamic latitude;
+@dynamic longitude;
 
 @end

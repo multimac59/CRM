@@ -23,4 +23,5 @@
 @property (nonatomic, weak) IBOutlet UIButton* pharmacyCircleButton;
 
 - (void)setupCellWithPharmacy:(Pharmacy*)pharmacy andVisit:(Visit*)visit;
+- (void)disableButtons;
 @end

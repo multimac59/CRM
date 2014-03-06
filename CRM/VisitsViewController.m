@@ -21,13 +21,12 @@
     int delta;
 }
 @property (nonatomic, strong) NSMutableArray* visits;
-@property (nonatomic, strong) UIPopoverController* popover;
 @property (nonatomic, strong) NSDate* filterDate;
-@property (nonatomic, strong) CKCalendarView* calendarWidget;
 @property (nonatomic) BOOL calendarOn;
 @end
 
 @implementation VisitsViewController
+
 static const int panelWidth = 320;
 static const int calendarHeight = 226;
 static const int headerHeight = 46;
@@ -43,46 +42,132 @@ static const int filterHeight = 0;
     return self;
 }
 
-//Compare without time
-//Maybe it's better to create extension NSDate -(NSComparisionResult)compare method and use it in sort descriptor?
-- (BOOL)date:(NSDate*)date1 equalToDate:(NSDate*)date2
-{
-    NSCalendar *calendar = [NSCalendar currentCalendar];
-    NSInteger comps = (NSDayCalendarUnit | NSMonthCalendarUnit | NSYearCalendarUnit);
-    
-    NSDateComponents *date1Components = [calendar components:comps
-                                                    fromDate: date1];
-    NSDateComponents *date2Components = [calendar components:comps
-                                                    fromDate: date2];
-    
-    date1 = [calendar dateFromComponents:date1Components];
-    date2 = [calendar dateFromComponents:date2Components];
-    
-    NSComparisonResult result = [date1 compare:date2];
-    if (result == NSOrderedSame)
-    {
-        return YES;
-    }
-    else
-    {
-        return NO;
-    }
-}
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     self.navigationController.navigationBar.translucent = NO;
     [self.navigationController setNavigationBarHidden:YES animated:NO];
     
-    //self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Clear Filter" style:UIBarButtonSystemItemAdd target:self action:@selector(clearFilter)];
-    //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Add" style:UIBarButtonSystemItemAdd target:self action:@selector(showPopover)];
+    NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
+    dateFormatter.dateFormat = @"dd.MM.yyyy";
+    dateFormatter.locale = [NSLocale localeWithLocaleIdentifier:@"Ru-ru"];
+    self.dateLabel.text = [dateFormatter stringFromDate:self.filterDate];
 
+    [self setupCalendar];
+    [self reloadData];
+}
 
-    //[self performSelector:@selector(selectObjectAtIndex:) withObject:0 afterDelay:1];
-    [self selectObjectAtIndex:0];
-    [self.table selectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] animated:NO scrollPosition:UITableViewScrollPositionNone];
+- (void)viewWillAppear:(BOOL)animated
+{
+    self.calendarWidget.frame = CGRectMake(0, self.view.frame.size.height - delta, panelWidth, calendarHeight);
+    self.calendarHeader.frame = CGRectMake(0, self.view.frame.size.height - headerHeight - delta, panelWidth, headerHeight);
+    self.table.frame = CGRectMake(0, filterHeight, panelWidth, self.view.frame.size.height - filterHeight - headerHeight - delta);
+    self.calendarOn = NO;
+}
+
+- (void)reloadData
+{
+    [self loadVisits];
+    [self sortVisits];
+    [self.table reloadData];
+    [self selectFirstFromList];
+}
+
+- (void)loadVisits
+{
+    NSManagedObjectContext* context = [AppDelegate sharedDelegate].managedObjectContext;
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:[NSEntityDescription entityForName:@"Visit" inManagedObjectContext:context]];
+    NSError *error = nil;
     
+    NSPredicate* filterByUserPredicate = [NSPredicate predicateWithFormat:@"user.userId=%@", [AppDelegate sharedDelegate].currentUser.userId];
+    if (self.filterDate)
+    {
+        //get date without time component. We don't need it in fact, because we already have it without time from calendar control
+        NSDate* startDate;
+        [[NSCalendar currentCalendar] rangeOfUnit:NSDayCalendarUnit startDate:&startDate interval:NULL forDate:self.filterDate];
+        //Add one day
+        NSDateComponents *oneDay = [NSDateComponents new];
+        oneDay.day = 1;
+        NSDate *endDate = [[NSCalendar currentCalendar] dateByAddingComponents:oneDay
+                                                                        toDate:startDate
+                                                                       options:0];
+        NSPredicate* datePredicate = [NSPredicate predicateWithFormat:@"(date>=%@) AND (date<%@)", startDate, endDate];
+        NSPredicate* compoundPredicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[filterByUserPredicate, datePredicate]];
+        request.predicate = compoundPredicate;
+    }
+    else
+    {
+        request.predicate = filterByUserPredicate;
+    }
+    
+    _visits = [[context executeFetchRequest:request error:&error]mutableCopy];
+}
+
+- (void)sortVisits
+{
+    
+    NSSortDescriptor* statusDescriptor = [[NSSortDescriptor alloc]initWithKey:@"pharmacy.status" ascending:NO];
+    NSSortDescriptor* visitsDescriptor = [[NSSortDescriptor alloc]initWithKey:@"pharmacy.visitsInCurrentQuarter.@count" ascending:YES];
+    [self.visits sortUsingDescriptors:@[statusDescriptor, visitsDescriptor]];
+}
+
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+#pragma mark table methods
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return self.visits.count;
+}
+
+- (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    VisitsCell* cell = [tableView dequeueReusableCellWithIdentifier:@"visitsCell"];
+    if (cell == nil)
+    {
+        cell = [[[NSBundle mainBundle]loadNibNamed:@"VisitsCell" owner:self options:Nil]objectAtIndex:0];
+    }
+    Visit* visit = self.visits[indexPath.row];
+    [cell setupCellWithPharmacy:visit.pharmacy andVisit:visit];
+    [cell disableButtons];
+    return cell;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [self selectVisitAtIndex:indexPath.row];
+}
+
+- (void)selectVisitAtIndex:(NSInteger)index
+{
+    //Setup map
+    NSMutableArray* allPharmacies = [NSMutableArray new];
+    for (Visit* visit in self.visits)
+    {
+        [allPharmacies addObject:visit.pharmacy];
+    }
+    self.visitViewController.allPharmacies = allPharmacies;
+    self.visitViewController.planDate = self.filterDate;
+
+    //Setup visit
+    Visit* visit = self.visits[index];
+    [self.visitViewController showVisit:visit];
+}
+
+- (void)selectFirstFromList
+{
+    if (self.visits.count > 0)
+        [self selectVisitAtIndex:0];
+}
+
+#pragma mark calendar
+- (void)setupCalendar
+{
     self.calendarWidget = [[CKCalendarView alloc]init];
     self.calendarWidget.dayOfWeekTextColor = [UIColor whiteColor];
     self.calendarWidget.dateOfWeekFont = [UIFont systemFontOfSize:10];
@@ -106,30 +191,6 @@ static const int filterHeight = 0;
     {
         delta = 0;
     }
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-
-    self.calendarWidget.frame = CGRectMake(0, self.view.frame.size.height - delta, panelWidth, calendarHeight);
-    self.calendarHeader.frame = CGRectMake(0, self.view.frame.size.height - headerHeight - delta, panelWidth, headerHeight);
-    self.table.frame = CGRectMake(0, filterHeight, panelWidth, self.view.frame.size.height - filterHeight - headerHeight - delta);
-    
-    self.calendarOn = NO;
-    
-    self.filterDate = [NSDate currentDate];
-    
-    [self.calendarWidget selectDate:self.filterDate makeVisible:NO];
-    [self reloadData];
-    [self filterVisits];
-    [self.table reloadData];
-    
-    NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
-    dateFormatter.dateFormat = @"dd.MM.yyyy";
-    dateFormatter.locale = [NSLocale localeWithLocaleIdentifier:@"Ru-ru"];
-    self.dateLabel.text = [dateFormatter stringFromDate:self.filterDate];
-    
-    [self selectFirstFromList];
 }
 
 - (void)moveCalendar:(UIPanGestureRecognizer*)recognizer
@@ -174,121 +235,6 @@ static const int filterHeight = 0;
     }
 }
 
-- (void)clearFilter
-{
-    self.filterDate = nil;
-    [self filterVisits];
-    [self.table reloadData];
-}
-
-- (void)reloadData
-{
-    NSManagedObjectContext* context = [AppDelegate sharedDelegate].managedObjectContext;
-    NSFetchRequest *request = [[NSFetchRequest alloc] init];
-    [request setEntity:[NSEntityDescription entityForName:@"Visit" inManagedObjectContext:context]];
-    NSError *error = nil;
-    _visits = [[context executeFetchRequest:request error:&error]mutableCopy];
-}
-
-- (void)filterVisits
-{
-    NSPredicate* filterByUserPredicate = [NSPredicate predicateWithFormat:@"user.userId=%@", [AppDelegate sharedDelegate].currentUser.userId];
-    if (self.filterDate)
-    {
-        //get date without time component. We don't need it in fact, because we already have it without time from calendar control
-        NSDate* startDate;
-        [[NSCalendar currentCalendar] rangeOfUnit:NSDayCalendarUnit startDate:&startDate interval:NULL forDate:self.filterDate];
-        //Add one day
-        NSDateComponents *oneDay = [NSDateComponents new];
-        oneDay.day = 1;
-        NSDate *endDate = [[NSCalendar currentCalendar] dateByAddingComponents:oneDay
-                                                                        toDate:startDate
-                                                                       options:0];
-        NSPredicate* datePredicate = [NSPredicate predicateWithFormat:@"(date>=%@) AND (date<%@)", startDate, endDate];
-        NSPredicate* compoundPredicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[filterByUserPredicate, datePredicate]];
-        [self.visits filterUsingPredicate:compoundPredicate];
-    }
-    else
-    {
-        [self.visits filterUsingPredicate:filterByUserPredicate];
-    }
-    NSSortDescriptor* statusDescriptor = [[NSSortDescriptor alloc]initWithKey:@"pharmacy.status" ascending:NO];
-    NSSortDescriptor* visitsDescriptor = [[NSSortDescriptor alloc]initWithKey:@"pharmacy.visitsInCurrentQuarter.@count" ascending:YES];
-    [self.visits sortUsingDescriptors:@[statusDescriptor, visitsDescriptor]];
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-        return self.visits.count;
-}
-
-- (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-        VisitsCell* cell = [tableView dequeueReusableCellWithIdentifier:@"visitsCell"];
-        if (cell == nil)
-        {
-            cell = [[[NSBundle mainBundle]loadNibNamed:@"VisitsCell" owner:self options:Nil]objectAtIndex:0];
-        }
-        Visit* visit = self.visits[indexPath.row];
-        [cell setupCellWithPharmacy:visit.pharmacy andVisit:visit];
-    cell.commerceVisitButton.enabled = NO;
-    cell.promoVisitButton.enabled = NO;
-    cell.pharmacyCircleButton.enabled = NO;
-        return cell;
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    [self selectObjectAtIndex:indexPath.row];
-}
-
-- (void)selectObjectAtIndex:(NSInteger)index
-{
-    UINavigationController* hostController = [AppDelegate sharedDelegate].visitsSplitController.viewControllers[1];
-    [hostController popToRootViewControllerAnimated:NO];
-    VisitViewController* visitViewController = (VisitViewController*)hostController.topViewController;
-    
-    NSMutableArray* allPharmacies = [NSMutableArray new];
-    for (Visit* visit in self.visits)
-    {
-        [allPharmacies addObject:visit.pharmacy];
-    }
-    visitViewController.allPharmacies = allPharmacies;
-    visitViewController.planDate = self.filterDate;
-    
-    NSLog(@"Clicked, row = %ld", (long)index);
-    NSObject* object = self.visits[index];
-
-    Visit* visit = (Visit*)object;
-    visitViewController.visit = visit;
-    visitViewController.isConference = NO;
-
-    [visitViewController reloadContent];
-}
-
-- (void)calendar:(CKCalendarView *)calendar didSelectDate:(NSDate *)date
-{
-    self.filterDate = date;
-    //TODO: optimize it
-    [self reloadData];
-    [self filterVisits];
-    [self.table reloadData];
-    
-    NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
-    dateFormatter.dateFormat = @"dd.MM.yyyy";
-    dateFormatter.locale = [NSLocale localeWithLocaleIdentifier:@"Ru-ru"];
-    self.dateLabel.text = [dateFormatter stringFromDate:self.filterDate];
-    
-   // [Flurry logEvent:@"Выбор даты" withParameters:@{@"Выбранная дата" : date, @"Экран" : @"Визиты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
-    [self toggleCalendar];
-}
-
 - (void)toggleCalendar
 {
     if (self.calendarOn)
@@ -298,7 +244,7 @@ static const int filterHeight = 0;
             self.calendarHeader.frame = CGRectMake(0, self.view.frame.size.height - headerHeight - delta, panelWidth, headerHeight);
             self.table.frame = CGRectMake(0, filterHeight, panelWidth, self.view.frame.size.height - filterHeight - headerHeight - delta);
         } completion:^(BOOL finished) {
-           // [Flurry logEvent:@"Календарь" withParameters:@{@"Действие" : @"Закрыть", @"Метод" : @"Тап", @"Экран" : @"Визиты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
+            // [Flurry logEvent:@"Календарь" withParameters:@{@"Действие" : @"Закрыть", @"Метод" : @"Тап", @"Экран" : @"Визиты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
             self.calendarOn = NO;
         }];
     }
@@ -309,15 +255,25 @@ static const int filterHeight = 0;
             self.calendarHeader.frame = CGRectMake(0, self.view.frame.size.height - calendarHeight - headerHeight - delta, panelWidth, headerHeight);
             self.table.frame = CGRectMake(0, filterHeight, panelWidth, self.view.frame.size.height - calendarHeight - headerHeight - filterHeight - delta);
         } completion:^(BOOL finished) {
-           // [Flurry logEvent:@"Календарь" withParameters:@{@"Действие" : @"Открыть", @"Метод" : @"Тап", @"Экран" : @"Визиты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
+            // [Flurry logEvent:@"Календарь" withParameters:@{@"Действие" : @"Открыть", @"Метод" : @"Тап", @"Экран" : @"Визиты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
             self.calendarOn = YES;
         }];
     }
 }
 
-- (void)selectFirstFromList
+- (void)calendar:(CKCalendarView *)calendar didSelectDate:(NSDate *)date
 {
-    if (self.visits.count > 0)
-        [self selectObjectAtIndex:0];
+    [self toggleCalendar];
+    
+    self.filterDate = date;
+    
+    NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
+    dateFormatter.dateFormat = @"dd.MM.yyyy";
+    dateFormatter.locale = [NSLocale localeWithLocaleIdentifier:@"Ru-ru"];
+    self.dateLabel.text = [dateFormatter stringFromDate:self.filterDate];
+    
+    [self reloadData];
+    
+    // [Flurry logEvent:@"Выбор даты" withParameters:@{@"Выбранная дата" : date, @"Экран" : @"Визиты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
 }
 @end

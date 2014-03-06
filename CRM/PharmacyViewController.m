@@ -17,7 +17,6 @@
 @interface PharmacyViewController ()
 @property (nonatomic, weak) IBOutlet YMKMapView* mapView;
 @property (nonatomic, strong) Pharmacy* pharmacy;
-@property (nonatomic, strong) IBOutlet UITableView* table;
 @end
 
 @implementation PharmacyViewController
@@ -36,7 +35,6 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     self.navigationController.navigationBar.translucent = NO;
-    
     [self.navigationController setNavigationBarHidden:YES animated:NO];
 }
 
@@ -52,37 +50,6 @@
     [self.table reloadData];
 }
 
-//- (void)setMapLocationForPharmacy:(Pharmacy*)pharmacy
-//{
-//    self.mapView.showTraffic = NO;
-//    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-//    manager.responseSerializer = [RaptureXMLResponseSerializer serializer];
-//    manager.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/xml"];
-//    NSString* address = [NSString stringWithFormat:@"г. %@ %@ %@", pharmacy.city, pharmacy.street, pharmacy.house];
-//    NSString* urlString = [[NSString stringWithFormat:@"http://geocode-maps.yandex.ru/1.x/?geocode=%@", address]stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-//    [manager GET:urlString parameters:nil success:^(AFHTTPRequestOperation *operation, NSArray* positionArray)
-//     {
-//         NSLog(@"JSON: %@", positionArray);
-//         if (positionArray.count == 0)
-//         {
-//             NSLog(@"Not found");
-//             return;
-//         }
-//         CLLocation* location = positionArray[0];
-//         
-//         [self.mapView setCenterCoordinate:location.coordinate atZoomLevel:15 animated:YES];
-//         MapAnnotation* annotation = [MapAnnotation new];
-//         annotation.coordinate = location.coordinate;
-//         annotation.title = address;
-//         annotation.subtitle = @"";
-//         [self.mapView removeAnnotations:self.mapView.annotations];
-//         [self.mapView addAnnotation:annotation];
-//     }
-//         failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-//             NSLog(@"Error: %@", error);
-//         }];
-//}
-
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     return 2;
@@ -97,28 +64,25 @@
         {
             cell =[[NSBundle mainBundle]loadNibNamed:@"VisitInfoCell" owner:self options:nil][0];
         }
-        cell.closeVisitButton.hidden = YES;
         
         [cell showPharmacy:self.pharmacy];
-        if (self.favourite)
-        {
-            cell.favouriteButton.hidden = NO;
-        }
-        else
-        {
-            cell.favouriteButton.hidden = YES;
-        }
+    
+        cell.closeVisitButton.hidden = YES;
+        //cell.favouriteButton.hidden = !self.favourite;
+        cell.favouriteButton.hidden = YES;
+        
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         return cell;
     }
-    else //if (indexPath.row == 2)
+    else
     {
         VisitMapCell* cell = [tableView dequeueReusableCellWithIdentifier:@"VisitMapCell"];
         if (cell == nil)
         {
             cell = [[NSBundle mainBundle]loadNibNamed:@"VisitMapCell" owner:self options:nil][0];
         }
-        [cell setMapLocationsForPharmacies:self.allPharmacies onDate:self.planDate];
+        //TODO: switch off map for now
+        //[cell setMapLocationsForPharmacies:self.allPharmacies onDate:self.planDate];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         return cell;
     }
@@ -141,16 +105,6 @@
     [[NSNotificationCenter defaultCenter]postNotificationName:@"RemoveFromFavourites" object:self userInfo:userDic];
     
     [self.table reloadData];
-}
-
--(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
-{
-    NSLog(@"Touches began");
-}
-
-- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
-{
-    NSLog(@"Touches moved");
 }
 
 - (void)reloadMap

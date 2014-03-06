@@ -30,9 +30,20 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
+    [self hideLoader];
 }
 
+- (void)showLoader
+{
+    self.overlay.alpha = 0.5;
+    [self.activityIndicator startAnimating];
+}
 
+- (void)hideLoader
+{
+    self.overlay.alpha = 0;
+    [self.activityIndicator stopAnimating];
+}
 
 - (void)didReceiveMemoryWarning
 {
@@ -59,9 +70,9 @@
     {
         [AppDelegate sharedDelegate].currentUser = user;
         //[Flurry logEvent:@"Логин" withParameters:@{@"Пользователь" : user.login, @"Дата" : [NSDate date]}];
-        [[AppDelegate sharedDelegate]syncVisits];
-        [[AppDelegate sharedDelegate]reloadData];
-        [self dismissViewControllerAnimated:YES completion:nil];
+        [self showLoader];
+        [[AppDelegate sharedDelegate]loadDataFromServer];
+        //[self dismissViewControllerAnimated:YES completion:nil];
     }
     else
     {

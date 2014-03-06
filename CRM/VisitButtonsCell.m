@@ -7,6 +7,7 @@
 //
 
 #import "VisitButtonsCell.h"
+#import "Visit.h"
 
 @implementation VisitButtonsCell
 
@@ -26,4 +27,21 @@
     // Configure the view for the selected state
 }
 
+- (void)showVisit:(Visit*)visit
+{
+    if (visit.commerceVisit)
+        self.salesButton.hidden = NO;
+    else
+        self.salesButton.hidden = YES;
+    
+    if (visit.pharmacyCircle)
+        self.pharmacyCircleButton.hidden = NO;
+    else
+        self.pharmacyCircleButton.hidden = YES;
+    
+    if (visit.promoVisit)
+        self.promoVisitButton.hidden = NO;
+    else
+        self.promoVisitButton.hidden = YES;
+}
 @end

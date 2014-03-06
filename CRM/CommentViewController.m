@@ -30,8 +30,6 @@
     
    // [Flurry logEvent:@"Переход" withParameters:@{@"Экран":@"Комментарий", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
     
-    // Do any additional setup after loading the view from its nib.
-    //self.textView.text = self.comment;
     self.title = @"Комментарий";
     
     UIButton* leftButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 63, 20)];

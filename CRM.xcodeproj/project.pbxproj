@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		30B8BD5518C87A7C00044E91 /* PreparatDose.json in Resources */ = {isa = PBXBuildFile; fileRef = 30B8BD5418C87A7C00044E91 /* PreparatDose.json */; };
 		30E70B2118C267A7001B3066 /* PharmacyCalloutView.m in Sources */ = {isa = PBXBuildFile; fileRef = 30E70B1F18C267A7001B3066 /* PharmacyCalloutView.m */; };
 		30E70B2218C267A7001B3066 /* PharmacyCalloutView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 30E70B2018C267A7001B3066 /* PharmacyCalloutView.xib */; };
 		70043F811855A70A006138CC /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70043F801855A70A006138CC /* Foundation.framework */; };
@@ -47,7 +48,7 @@
 		702FEBC1185752BB009A95BA /* ChoiseTableController.m in Sources */ = {isa = PBXBuildFile; fileRef = 702FEBC0185752BB009A95BA /* ChoiseTableController.m */; };
 		702FEBC518585656009A95BA /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 702FEBC318585656009A95BA /* LoginViewController.m */; };
 		702FEBC618585656009A95BA /* LoginViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 702FEBC418585656009A95BA /* LoginViewController.xib */; };
-		702FEBC818586458009A95BA /* Users.json in Resources */ = {isa = PBXBuildFile; fileRef = 702FEBC718586458009A95BA /* Users.json */; };
+		702FEBC818586458009A95BA /* User.json in Resources */ = {isa = PBXBuildFile; fileRef = 702FEBC718586458009A95BA /* User.json */; };
 		702FEBD11858759D009A95BA /* SaleCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 702FEBD01858759D009A95BA /* SaleCell.m */; };
 		702FEBD3185875B6009A95BA /* SaleCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 702FEBD2185875B6009A95BA /* SaleCell.xib */; };
 		702FEBD51858A3E2009A95BA /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 702FEBD41858A3E2009A95BA /* CoreData.framework */; };
@@ -82,7 +83,7 @@
 		70744B9A18995948005E3536 /* left_arrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 70744B9418995948005E3536 /* left_arrow@2x.png */; };
 		70744B9B18995948005E3536 /* right_arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 70744B9518995948005E3536 /* right_arrow.png */; };
 		70744B9C18995948005E3536 /* right_arrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 70744B9618995948005E3536 /* right_arrow@2x.png */; };
-		70999BA518B792F600394CAF /* Regions.json in Resources */ = {isa = PBXBuildFile; fileRef = 70999BA418B792F600394CAF /* Regions.json */; };
+		70999BA518B792F600394CAF /* Region.json in Resources */ = {isa = PBXBuildFile; fileRef = 70999BA418B792F600394CAF /* Region.json */; };
 		70A2BA4918630C960028E1E6 /* libstdc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 70A2BA4718630C960028E1E6 /* libstdc++.dylib */; };
 		70A2BA4B18630D100028E1E6 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 70A2BA4A18630D100028E1E6 /* libz.dylib */; };
 		70AEE91D18630D4D00148B0A /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 70AEE91C18630D4D00148B0A /* libxml2.dylib */; };
@@ -97,8 +98,8 @@
 		70C4ADFB1855ABD300BD0E8B /* VisitViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70C4ADF91855ABD300BD0E8B /* VisitViewController.xib */; };
 		70C4AE031855B4BF00BD0E8B /* PharmaciesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 70C4AE011855B4BF00BD0E8B /* PharmaciesViewController.m */; };
 		70C4AE041855B4BF00BD0E8B /* PharmaciesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70C4AE021855B4BF00BD0E8B /* PharmaciesViewController.xib */; };
-		70C4AE211855E8FB00BD0E8B /* Drugs.json in Resources */ = {isa = PBXBuildFile; fileRef = 70C4AE1B1855E8FB00BD0E8B /* Drugs.json */; };
-		70C4AE231855E8FB00BD0E8B /* Pharmacies.json in Resources */ = {isa = PBXBuildFile; fileRef = 70C4AE1D1855E8FB00BD0E8B /* Pharmacies.json */; };
+		70C4AE211855E8FB00BD0E8B /* Preparat.json in Resources */ = {isa = PBXBuildFile; fileRef = 70C4AE1B1855E8FB00BD0E8B /* Preparat.json */; };
+		70C4AE231855E8FB00BD0E8B /* Pharm.json in Resources */ = {isa = PBXBuildFile; fileRef = 70C4AE1D1855E8FB00BD0E8B /* Pharm.json */; };
 		70C4AE241855E8FB00BD0E8B /* Visits.json in Resources */ = {isa = PBXBuildFile; fileRef = 70C4AE1E1855E8FB00BD0E8B /* Visits.json */; };
 		70D0CCE618C08AC500A7E629 /* PharmacyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7071FFCD185612C700EF352D /* PharmacyViewController.m */; };
 		70DE57801862F59A00123B1E /* SaleHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70DE577F1862F59A00123B1E /* SaleHeader.xib */; };
@@ -116,6 +117,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		30B8BD5418C87A7C00044E91 /* PreparatDose.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = PreparatDose.json; sourceTree = "<group>"; };
 		30E70B1E18C267A7001B3066 /* PharmacyCalloutView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PharmacyCalloutView.h; sourceTree = "<group>"; };
 		30E70B1F18C267A7001B3066 /* PharmacyCalloutView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PharmacyCalloutView.m; sourceTree = "<group>"; };
 		30E70B2018C267A7001B3066 /* PharmacyCalloutView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PharmacyCalloutView.xib; sourceTree = "<group>"; };
@@ -180,7 +182,7 @@
 		702FEBC218585656009A95BA /* LoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginViewController.h; sourceTree = "<group>"; };
 		702FEBC318585656009A95BA /* LoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginViewController.m; sourceTree = "<group>"; };
 		702FEBC418585656009A95BA /* LoginViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LoginViewController.xib; sourceTree = "<group>"; };
-		702FEBC718586458009A95BA /* Users.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Users.json; sourceTree = "<group>"; };
+		702FEBC718586458009A95BA /* User.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = User.json; sourceTree = "<group>"; };
 		702FEBCF1858759D009A95BA /* SaleCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SaleCell.h; path = CRM/SaleCell.h; sourceTree = SOURCE_ROOT; };
 		702FEBD01858759D009A95BA /* SaleCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SaleCell.m; path = CRM/SaleCell.m; sourceTree = SOURCE_ROOT; };
 		702FEBD2185875B6009A95BA /* SaleCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SaleCell.xib; sourceTree = "<group>"; };
@@ -233,7 +235,7 @@
 		70744B9418995948005E3536 /* left_arrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "left_arrow@2x.png"; sourceTree = "<group>"; };
 		70744B9518995948005E3536 /* right_arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = right_arrow.png; sourceTree = "<group>"; };
 		70744B9618995948005E3536 /* right_arrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "right_arrow@2x.png"; sourceTree = "<group>"; };
-		70999BA418B792F600394CAF /* Regions.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Regions.json; sourceTree = "<group>"; };
+		70999BA418B792F600394CAF /* Region.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Region.json; sourceTree = "<group>"; };
 		70A2BA4618630C960028E1E6 /* libstdc++.6.0.9.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.6.0.9.dylib"; path = "usr/lib/libstdc++.6.0.9.dylib"; sourceTree = SDKROOT; };
 		70A2BA4718630C960028E1E6 /* libstdc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.dylib"; path = "usr/lib/libstdc++.dylib"; sourceTree = SDKROOT; };
 		70A2BA4A18630D100028E1E6 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
@@ -256,8 +258,8 @@
 		70C4AE001855B4BF00BD0E8B /* PharmaciesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PharmaciesViewController.h; sourceTree = "<group>"; };
 		70C4AE011855B4BF00BD0E8B /* PharmaciesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PharmaciesViewController.m; sourceTree = "<group>"; };
 		70C4AE021855B4BF00BD0E8B /* PharmaciesViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PharmaciesViewController.xib; sourceTree = "<group>"; };
-		70C4AE1B1855E8FB00BD0E8B /* Drugs.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Drugs.json; sourceTree = "<group>"; };
-		70C4AE1D1855E8FB00BD0E8B /* Pharmacies.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Pharmacies.json; sourceTree = "<group>"; };
+		70C4AE1B1855E8FB00BD0E8B /* Preparat.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Preparat.json; sourceTree = "<group>"; };
+		70C4AE1D1855E8FB00BD0E8B /* Pharm.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Pharm.json; sourceTree = "<group>"; };
 		70C4AE1E1855E8FB00BD0E8B /* Visits.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Visits.json; sourceTree = "<group>"; };
 		70DE577F1862F59A00123B1E /* SaleHeader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SaleHeader.xib; sourceTree = "<group>"; };
 		82182041B3C04DD69CCC4ACA /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -594,11 +596,12 @@
 		70C4AE181855E8FB00BD0E8B /* JSON */ = {
 			isa = PBXGroup;
 			children = (
-				70999BA418B792F600394CAF /* Regions.json */,
-				702FEBC718586458009A95BA /* Users.json */,
+				70999BA418B792F600394CAF /* Region.json */,
+				702FEBC718586458009A95BA /* User.json */,
 				7053645D18C761FB00C8C1E0 /* UserRegion.json */,
-				70C4AE1B1855E8FB00BD0E8B /* Drugs.json */,
-				70C4AE1D1855E8FB00BD0E8B /* Pharmacies.json */,
+				70C4AE1B1855E8FB00BD0E8B /* Preparat.json */,
+				30B8BD5418C87A7C00044E91 /* PreparatDose.json */,
+				70C4AE1D1855E8FB00BD0E8B /* Pharm.json */,
 				70C4AE1E1855E8FB00BD0E8B /* Visits.json */,
 			);
 			path = JSON;
@@ -702,17 +705,17 @@
 				7028224D1897ABA900ED033B /* PharmacyInfo.xib in Resources */,
 				706745D81889798900022D6B /* TopicSideCell.xib in Resources */,
 				7071FFD0185612C700EF352D /* PharmacyViewController.xib in Resources */,
-				70C4AE231855E8FB00BD0E8B /* Pharmacies.json in Resources */,
+				70C4AE231855E8FB00BD0E8B /* Pharm.json in Resources */,
 				70C4ADF61855AB6000BD0E8B /* VisitsViewController.xib in Resources */,
-				70C4AE211855E8FB00BD0E8B /* Drugs.json in Resources */,
-				70999BA518B792F600394CAF /* Regions.json in Resources */,
+				70C4AE211855E8FB00BD0E8B /* Preparat.json in Resources */,
+				70999BA518B792F600394CAF /* Region.json in Resources */,
 				70C4AE241855E8FB00BD0E8B /* Visits.json in Resources */,
 				70744B9C18995948005E3536 /* right_arrow@2x.png in Resources */,
 				703B1C1818B238B700B3C9DE /* CommentViewController.xib in Resources */,
 				70C4AE041855B4BF00BD0E8B /* PharmaciesViewController.xib in Resources */,
 				703B1C1E18B49F0000B3C9DE /* PharmacyCircleViewController.xib in Resources */,
 				70282236189667F200ED033B /* VisitButtonsCell.xib in Resources */,
-				702FEBC818586458009A95BA /* Users.json in Resources */,
+				702FEBC818586458009A95BA /* User.json in Resources */,
 				70C4ADFB1855ABD300BD0E8B /* VisitViewController.xib in Resources */,
 				70744B9718995948005E3536 /* README.md in Resources */,
 				70282234189667C100ED033B /* VisitInfoCell.xib in Resources */,
@@ -720,6 +723,7 @@
 				70744B9A18995948005E3536 /* left_arrow@2x.png in Resources */,
 				70536F3518BD0655009DE1FA /* ParticipantCell.xib in Resources */,
 				70043F8B1855A70A006138CC /* InfoPlist.strings in Resources */,
+				30B8BD5518C87A7C00044E91 /* PreparatDose.json in Resources */,
 				702822481896689900ED033B /* VisitHistoryHeader.xib in Resources */,
 				702822401896685400ED033B /* VisitHistoryCell.xib in Resources */,
 			);

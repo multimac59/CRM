@@ -20,6 +20,7 @@
 #import "User.h"
 #import "VisitManager.h"
 #import "Region.h"
+#import "User.h"
 
 @interface PharmaciesViewController ()
 {
@@ -28,19 +29,14 @@
     
     int delta;
 }
-@property (nonatomic, strong) NSDate* selectedDate;
 @property (nonatomic, strong) NSMutableArray* pharmacies;
 
+@property (nonatomic, strong) NSDate* selectedDate;
 @property (nonatomic, strong) NSString* filterString;
-
-@property (nonatomic, strong) IBOutlet UITextField* filterField;
 
 @property (nonatomic) BOOL calendarOn;
 
 @property (nonatomic, strong) NSIndexPath* selectedIndexPath;
-
-@property (nonatomic, weak) IBOutlet UILabel* targetLabel;
-
 @end
 
 @implementation PharmaciesViewController
@@ -58,13 +54,9 @@ static const int filterHeight = 110;
         planned = NO; //Выбранные
         targetable = NO; //Таргетные
         self.selectedDate = [NSDate currentDate]; //На текущую дату
+        self.filterString = @"";
     }
     return self;
-}
-
-- (void)reloadAll
-{
-    
 }
 
 - (void)viewDidLoad
@@ -72,49 +64,19 @@ static const int filterHeight = 110;
     [super viewDidLoad];
     
     [self.navigationController setNavigationBarHidden:YES animated:NO];
-    
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(removeFromFavourites:) name:@"RemoveFromFavourites" object:nil];
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(reloadData:) name:@"VisitsUpdated" object:nil];
-    
     self.navigationController.navigationBar.translucent = NO;
     
-    self.calendarWidget = [[CKCalendarView alloc]init];
-    self.calendarWidget.dayOfWeekTextColor = [UIColor whiteColor];
-    self.calendarWidget.dateOfWeekFont = [UIFont systemFontOfSize:10];
-    self.calendarWidget.dateFont = [UIFont systemFontOfSize:15];
-    [self.view addSubview:self.calendarWidget];
-    self.calendarWidget.delegate = self;
-    [self.calendarWidget selectDate:[NSDate currentDate] makeVisible:YES];
-    
-    UIPanGestureRecognizer* panRecognizer1 = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(moveCalendar:)];
-    [self.calendarHeader addGestureRecognizer:panRecognizer1];
-    UIPanGestureRecognizer* panRecognizer2 = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(moveCalendar:)];
-    [self.calendarWidget addGestureRecognizer:panRecognizer2];
-    UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(toggleCalendar)];
-    [self.calendarHeader addGestureRecognizer:tapRecognizer];
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(removeFromFavourites:) name:@"RemoveFromFavourites" object:nil];
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(reloadTable:) name:@"VisitsUpdated" object:nil];
     
     NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
     dateFormatter.dateFormat = @"dd.MM.yyyy";
     self.dateLabel.text = [dateFormatter stringFromDate:self.selectedDate];
     
-    self.filterString = @"";
+    [self setupCalendar];
     
     [self reloadData];
     [self selectFirstFromList];
-    
-    if (SYSTEM_VERSION_LESS_THAN(@"7.0"))
-    {
-        delta = 20;
-    }
-    else
-    {
-        delta = 0;
-    }
-}
-
-- (void)reloadData:(id)sender
-{
-    [self.table reloadData];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -125,129 +87,15 @@ static const int filterHeight = 110;
     self.calendarOn = NO;
 }
 
-- (void)moveCalendar:(UIPanGestureRecognizer*)recognizer
-{
-    CGPoint point = [recognizer locationInView:self.view];
-    
-    if (recognizer.state == UIGestureRecognizerStateEnded)
-    {
-        CGPoint velocity = [recognizer velocityInView:self.view];
-        if (velocity.y < 0)
-        {
-            [UIView animateWithDuration:0.3 animations:^{
-                self.calendarWidget.frame = CGRectMake(0, self.view.frame.size.height - calendarHeight - delta, panelWidth, calendarHeight);
-                self.calendarHeader.frame = CGRectMake(0, self.view.frame.size.height - calendarHeight - headerHeight - delta, panelWidth, headerHeight);
-                self.table.frame = CGRectMake(0, filterHeight, panelWidth, self.view.frame.size.height - calendarHeight - headerHeight - filterHeight - delta);
-            } completion:^(BOOL finished) {
-                //[Flurry logEvent:@"Календарь" withParameters:@{@"Действие" : @"Открыть", @"Метод" : @"Свайп", @"Экран" : @"Клиенты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
-                self.calendarOn = YES;
-            }];
-        }
-        else
-        {
-            [UIView animateWithDuration:0.3 animations:^{
-                self.calendarWidget.frame = CGRectMake(0, self.view.frame.size.height - delta, panelWidth, calendarHeight);
-                self.calendarHeader.frame = CGRectMake(0, self.view.frame.size.height - headerHeight - delta, panelWidth, headerHeight);
-                self.table.frame = CGRectMake(0, filterHeight, panelWidth, self.view.frame.size.height - filterHeight - headerHeight - delta);
-            } completion:^(BOOL finished) {
-               // [Flurry logEvent:@"Календарь" withParameters:@{@"Действие" : @"Закрыть", @"Метод" : @"Свайп", @"Экран" : @"Клиенты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
-                self.calendarOn = NO;
-            }];
-        }
-    }
-    else
-    {
-        int offset = self.view.frame.size.height - point.y;
-        if (offset < 0 || offset > calendarHeight)
-            return;
-        self.calendarWidget.frame = CGRectMake(0, self.view.frame.size.height - offset - delta, panelWidth, calendarHeight);
-        self.calendarHeader.frame = CGRectMake(0, self.view.frame.size.height - offset - headerHeight - delta, panelWidth, headerHeight);
-        self.table.frame = CGRectMake(0, filterHeight, panelWidth, self.view.frame.size.height - offset - headerHeight - filterHeight - delta);
-    }
-}
-
-- (void)toggleCalendar
-{
-    NSLog(@"%f", self.view.frame.size.height);
-    if (self.calendarOn)
-    {
-        [UIView animateWithDuration:0.3 animations:^{
-            self.calendarWidget.frame = CGRectMake(0, self.view.frame.size.height - delta, panelWidth, calendarHeight);
-            self.calendarHeader.frame = CGRectMake(0, self.view.frame.size.height - headerHeight - delta, panelWidth, headerHeight);
-            self.table.frame = CGRectMake(0, filterHeight, panelWidth, self.view.frame.size.height - filterHeight - headerHeight - delta);
-        } completion:^(BOOL finished) {
-           // [Flurry logEvent:@"Календарь" withParameters:@{@"Действие" : @"Закрыть", @"Метод" : @"Тап", @"Экран" : @"Клиенты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
-            self.calendarOn = NO;
-        }];
-    }
-    else
-    {
-        [UIView animateWithDuration:0.3 animations:^{
-            self.calendarWidget.frame = CGRectMake(0, self.view.frame.size.height - calendarHeight - delta, panelWidth, calendarHeight);
-            self.calendarHeader.frame = CGRectMake(0, self.view.frame.size.height - calendarHeight - headerHeight - delta, panelWidth, headerHeight);
-            self.table.frame = CGRectMake(0, filterHeight, panelWidth, self.view.frame.size.height - calendarHeight - headerHeight - filterHeight - delta);
-        } completion:^(BOOL finished) {
-           // [Flurry logEvent:@"Календарь" withParameters:@{@"Действие" : @"Открыть", @"Метод" : @"Тап", @"Экран" : @"Клиенты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
-            self.calendarOn = YES;
-        }];
-    }
-}
-
-- (void)selectFirstFromList
-{
-    if (self.pharmacies.count <= 0)
-        return;
-    Pharmacy* pharmacy = self.pharmacies[0];
-    self.pharmacyViewController.allPharmacies = self.pharmacies;
-    self.pharmacyViewController.planDate = self.selectedDate;
-    [self.pharmacyViewController showPharmacy:pharmacy];
-    [self.table selectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] animated:NO scrollPosition:UITableViewScrollPositionNone];
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    return self.pharmacies.count;
-}
-
-- (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    VisitsCell* cell = [tableView dequeueReusableCellWithIdentifier:@"VisitsCell"];
-    if (cell == nil)
-    {
-        cell = [[[NSBundle mainBundle]loadNibNamed:@"VisitsCell" owner:self options:nil]objectAtIndex:0];
-    }
-    
-    if (indexPath.row == self.selectedIndexPath.row)
-        cell.triangleImage.hidden = NO;
-    else
-        cell.triangleImage.hidden = YES;
-    
-    Pharmacy* pharmacy = self.pharmacies[indexPath.row];
-    Visit* visit = [self visitInPharmacy:pharmacy forDate:self.selectedDate];
-    [cell setupCellWithPharmacy:pharmacy andVisit:visit];
-    return cell;
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    self.selectedIndexPath = indexPath;
-    Pharmacy* pharmacy = self.pharmacies[indexPath.row];
-    UINavigationController* hostController = [AppDelegate sharedDelegate].clientsSplitController.viewControllers[1];
-    PharmacyViewController* pharmacyViewController = (PharmacyViewController*)hostController.topViewController;
-    [pharmacyViewController showPharmacy:pharmacy];
-}
-
+#pragma mark pharmacies
 - (void)reloadData
 {
     [self loadPharmacies];
     [self sortPharmacies];
     [self.table reloadData];
+    
+    self.pharmacyViewController.allPharmacies = self.pharmacies;
+    [self.pharmacyViewController reloadMap];
 }
 
 - (void)loadPharmacies
@@ -258,12 +106,11 @@ static const int filterHeight = 110;
     
     NSMutableArray* filterPredicates = [NSMutableArray new];
     
-    for (Region* region in [AppDelegate sharedDelegate].currentUser.regions)
+    if ([AppDelegate sharedDelegate].currentUser.regions.count > 0)
     {
-        NSLog(@"Region is %@", region.name);
+        NSPredicate* userPredicate = [NSPredicate predicateWithFormat:@"region IN %@", [AppDelegate sharedDelegate].currentUser.regions];
+        [filterPredicates addObject:userPredicate];
     }
-    NSPredicate* userPredicate = [NSPredicate predicateWithFormat:@"region IN %@", [AppDelegate sharedDelegate].currentUser.regions];
-    [filterPredicates addObject:userPredicate];
     
     if (planned)
     {
@@ -280,7 +127,7 @@ static const int filterHeight = 110;
     }
     if (targetable)
     {
-        NSPredicate* targetablePredicate = [NSPredicate predicateWithFormat:@"ANY users==%@", [AppDelegate sharedDelegate].currentUser];
+        NSPredicate* targetablePredicate = [NSPredicate predicateWithFormat:@"ANY users.userId==%@", [AppDelegate sharedDelegate].currentUser.userId] ;
         [filterPredicates addObject:targetablePredicate];
     }
     
@@ -311,69 +158,70 @@ static const int filterHeight = 110;
     [self.pharmacies sortUsingDescriptors:@[statusDescriptor, visitsDescriptor, nameDescriptor, streetDescriptor]];
 }
 
-- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+#pragma mark table
+
+- (void)reloadTable:(id)sender
 {
-    if (textField == self.filterField)
+    [self.table reloadData];
+}
+
+- (void)selectFirstFromList
+{
+    if (self.pharmacies.count > 0)
+        [self selectPharmacyAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+}
+
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return self.pharmacies.count;
+}
+
+- (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    VisitsCell* cell = [tableView dequeueReusableCellWithIdentifier:@"VisitsCell"];
+    if (cell == nil)
     {
-        NSString* finalString = [textField.text stringByReplacingCharactersInRange:range withString:string];
-        self.filterString = finalString;
-        //[Flurry logEvent:@"Фильтр" withParameters:@{@"Тип" : @"Поиск по строке", @"Состояние" : @"Да", @"Строка поиска" : finalString , @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
+        cell = [[[NSBundle mainBundle]loadNibNamed:@"VisitsCell" owner:self options:nil]objectAtIndex:0];
     }
-    [self reloadData];
-    return YES;
+    
+    if (indexPath.row == self.selectedIndexPath.row)
+        cell.triangleImage.hidden = NO;
+    else
+        cell.triangleImage.hidden = YES;
+    
+    Pharmacy* pharmacy = self.pharmacies[indexPath.row];
+    Visit* visit = [[VisitManager sharedManager] visitInPharmacy:pharmacy forDate:self.selectedDate];
+    [cell setupCellWithPharmacy:pharmacy andVisit:visit];
+    return cell;
 }
 
-- (void)calendar:(CKCalendarView *)calendar didSelectDate:(NSDate *)date;
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    self.selectedDate = date;
-    
-    NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
-    dateFormatter.dateFormat = @"dd.MM.yyyy";
-    self.dateLabel.text = [dateFormatter stringFromDate:date];
-    
-    [self reloadData];
-    
-    //[Flurry logEvent:@"Выбор даты" withParameters:@{@"Выбранная дата" : date, @"Экран" : @"Клиенты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
-    
-    [self toggleCalendar];
+    [self selectPharmacyAtIndexPath:indexPath];
 }
 
-- (IBAction)leftSegmentPressed:(id)sender
+- (void)selectPharmacyAtIndexPath:(NSIndexPath*)indexPath
 {
-    if (planned)
-    {
-        [self.leftSegment setBackgroundImage:[UIImage imageNamed:@"leftPinkPressed"] forState:UIControlStateNormal];
-        [self.rightSegment setBackgroundImage:[UIImage imageNamed:@"rightPink"] forState:UIControlStateNormal];
-        [self.leftSegment setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [self.rightSegment setTitleColor:[UIColor purpleColor] forState:UIControlStateNormal];
-        planned = NO;
-        
-        self.selectedIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
-        [self reloadData];
-        [self selectFirstFromList];
-        
-        //[Flurry logEvent:@"Фильтр" withParameters:@{@"Тип" : @"Выбранные", @"Состояние" : @"Нет", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
-    }
+    self.selectedIndexPath = indexPath;
+    
+    Pharmacy* pharmacy = self.pharmacies[indexPath.row];
+    
+    self.pharmacyViewController.allPharmacies = self.pharmacies;
+    self.pharmacyViewController.planDate = self.selectedDate;
+    
+    [self.pharmacyViewController showPharmacy:pharmacy];
+    
+    [self.table reloadData];
 }
 
-- (IBAction)rightSegmentPressed:(id)sender
-{
-    if (!planned)
-    {
-        [self.leftSegment setBackgroundImage:[UIImage imageNamed:@"leftPink"] forState:UIControlStateNormal];
-        [self.rightSegment setBackgroundImage:[UIImage imageNamed:@"rightPinkPressed"] forState:UIControlStateNormal];
-        [self.leftSegment setTitleColor:[UIColor purpleColor] forState:UIControlStateNormal];
-        [self.rightSegment setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        planned = YES;
-        
-        self.selectedIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
-        [self reloadData];
-        [self selectFirstFromList];
-        
-        //[Flurry logEvent:@"Фильтр" withParameters:@{@"Тип" : @"Выбранные", @"Состояние" : @"Да", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
-    }
-}
 
+/*
 - (void)removeFromFavourites:(NSNotification*)notification
 {
     NSDate* startDate;
@@ -395,13 +243,48 @@ static const int filterHeight = 110;
         if ([visit.date compare:startDate] != NSOrderedAscending && [visit.date compare:endDate] == NSOrderedAscending && visit.user.userId == [AppDelegate sharedDelegate].currentUser.userId)
         {
             [context deleteObject:visit];
+            [[AppDelegate sharedDelegate]saveContext];
         }
     }
-    self.selectedIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
     [self reloadData];
     [self selectFirstFromList];
+}*/
+
+
+#pragma mark filters
+- (IBAction)leftSegmentPressed:(id)sender
+{
+    if (planned)
+    {
+        [self.leftSegment setBackgroundImage:[UIImage imageNamed:@"leftPinkPressed"] forState:UIControlStateNormal];
+        [self.rightSegment setBackgroundImage:[UIImage imageNamed:@"rightPink"] forState:UIControlStateNormal];
+        [self.leftSegment setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [self.rightSegment setTitleColor:[UIColor purpleColor] forState:UIControlStateNormal];
+        planned = NO;
+        
+        [self reloadData];
+        [self selectFirstFromList];
+        
+        //[Flurry logEvent:@"Фильтр" withParameters:@{@"Тип" : @"Выбранные", @"Состояние" : @"Нет", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
+    }
 }
 
+- (IBAction)rightSegmentPressed:(id)sender
+{
+    if (!planned)
+    {
+        [self.leftSegment setBackgroundImage:[UIImage imageNamed:@"leftPink"] forState:UIControlStateNormal];
+        [self.rightSegment setBackgroundImage:[UIImage imageNamed:@"rightPinkPressed"] forState:UIControlStateNormal];
+        [self.leftSegment setTitleColor:[UIColor purpleColor] forState:UIControlStateNormal];
+        [self.rightSegment setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        planned = YES;
+        
+        [self reloadData];
+        [self selectFirstFromList];
+        
+        //[Flurry logEvent:@"Фильтр" withParameters:@{@"Тип" : @"Выбранные", @"Состояние" : @"Да", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
+    }
+}
 
 - (IBAction)targetSwitched:(id)sender
 {
@@ -411,62 +294,38 @@ static const int filterHeight = 110;
     {
         [self.targetButton setBackgroundImage:[UIImage imageNamed:@"targetBgPressed"] forState:UIControlStateNormal];
         //[Flurry logEvent:@"Фильтр" withParameters:@{@"Тип" : @"Таргентые", @"Состояние" : @"Да", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
-
     }
     else
     {
         [self.targetButton setBackgroundImage:[UIImage imageNamed:@"targetBg"] forState:UIControlStateNormal];
         //[Flurry logEvent:@"Фильтр" withParameters:@{@"Тип" : @"Таргентые", @"Состояние" : @"Нет", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
-
     }
     self.targetLabel.hidden = !targetable;
+    
     [self reloadData];
+    [self selectFirstFromList];
+}
+
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+{
+    if (textField == self.filterField)
+    {
+        NSString* finalString = [textField.text stringByReplacingCharactersInRange:range withString:string];
+        self.filterString = finalString;
+        //[Flurry logEvent:@"Фильтр" withParameters:@{@"Тип" : @"Поиск по строке", @"Состояние" : @"Да", @"Строка поиска" : finalString , @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
+    }
+    [self reloadData];
+    return YES;
 }
 
 
 #pragma mark helper methods
-
 - (NSIndexPath*)indexPathForSender:(id)sender
 {
     CGPoint center= ((UIButton*)sender).center;
     CGPoint rootViewPoint = [((UIButton*)sender).superview convertPoint:center toView:self.table];
     NSIndexPath *indexPath = [self.table indexPathForRowAtPoint:rootViewPoint];
     return indexPath;
-}
-
-- (Visit*)visitInPharmacy:(Pharmacy*)pharmacy forDate:(NSDate*)date
-{
-    for (Visit* visit in pharmacy.visits)
-    {
-        //get date without time component. We don't need it in fact, because we already have it without time from calendar control
-        NSDate* startDate;
-        [[NSCalendar currentCalendar] rangeOfUnit:NSDayCalendarUnit startDate:&startDate interval:NULL forDate:date];
-        //Add one day
-        NSDateComponents *oneDay = [NSDateComponents new];
-        oneDay.day = 1;
-        NSDate *endDate = [[NSCalendar currentCalendar] dateByAddingComponents:oneDay
-                                                                        toDate:startDate
-                                                                       options:0];
-        if ([visit.date compare:startDate] != NSOrderedAscending && [visit.date compare:endDate] == NSOrderedAscending && visit.user.userId == [AppDelegate sharedDelegate].currentUser.userId)
-        {
-            return visit;
-        }
-    }
-    return nil;
-}
-
-- (Visit*)createVisitInPharamacy:(Pharmacy*)pharmacy forDate:(NSDate*)date
-{
-    Visit* visit = [NSEntityDescription
-                    insertNewObjectForEntityForName:@"Visit"
-                    inManagedObjectContext:[AppDelegate sharedDelegate].managedObjectContext];
-    visit.pharmacy = pharmacy;
-    visit.date = date;
-    visit.user = [AppDelegate sharedDelegate].currentUser;
-    visit.visitId = [[NSUUID UUID]UUIDString];
-    visit.closed = @NO;
-    [pharmacy addVisitsObject:visit];
-    return visit;
 }
 
 #pragma mark plan buttons
@@ -477,7 +336,7 @@ static const int filterHeight = 110;
     [[VisitManager sharedManager]toggleCommerceVisitInPharmacy:pharmacy forDate:self.selectedDate];
     
     if (planned)
-        [self reloadData];
+        [self.table reloadData];
     else
         [self.table reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
     
@@ -491,7 +350,7 @@ static const int filterHeight = 110;
     [[VisitManager sharedManager]togglePromoVisitInPharmacy:pharmacy forDate:self.selectedDate];
     
     if (planned)
-        [self reloadData];
+        [self.table reloadData];
     else
         [self.table reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
     
@@ -505,10 +364,122 @@ static const int filterHeight = 110;
     [[VisitManager sharedManager]togglePharmacyCircleInPharmacy:pharmacy forDate:self.selectedDate];
     
     if (planned)
-        [self reloadData];
+        [self.table reloadData];
     else
         [self.table reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
     
     [self.pharmacyViewController reloadMap];
+}
+
+#pragma mark Calender
+- (void)setupCalendar
+{
+    self.calendarWidget = [[CKCalendarView alloc]init];
+    self.calendarWidget.dayOfWeekTextColor = [UIColor whiteColor];
+    self.calendarWidget.dateOfWeekFont = [UIFont systemFontOfSize:10];
+    self.calendarWidget.dateFont = [UIFont systemFontOfSize:15];
+    [self.view addSubview:self.calendarWidget];
+    self.calendarWidget.delegate = self;
+    [self.calendarWidget selectDate:[NSDate currentDate] makeVisible:YES];
+    
+    UIPanGestureRecognizer* panRecognizer1 = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(moveCalendar:)];
+    [self.calendarHeader addGestureRecognizer:panRecognizer1];
+    UIPanGestureRecognizer* panRecognizer2 = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(moveCalendar:)];
+    [self.calendarWidget addGestureRecognizer:panRecognizer2];
+    UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(toggleCalendar)];
+    [self.calendarHeader addGestureRecognizer:tapRecognizer];
+    
+    if (SYSTEM_VERSION_LESS_THAN(@"7.0"))
+    {
+        delta = 20;
+    }
+    else
+    {
+        delta = 0;
+    }
+}
+
+- (void)moveCalendar:(UIPanGestureRecognizer*)recognizer
+{
+    CGPoint point = [recognizer locationInView:self.view];
+    
+    if (recognizer.state == UIGestureRecognizerStateEnded)
+    {
+        CGPoint velocity = [recognizer velocityInView:self.view];
+        if (velocity.y < 0)
+        {
+            [UIView animateWithDuration:0.3 animations:^{
+                self.calendarWidget.frame = CGRectMake(0, self.view.frame.size.height - calendarHeight - delta, panelWidth, calendarHeight);
+                self.calendarHeader.frame = CGRectMake(0, self.view.frame.size.height - calendarHeight - headerHeight - delta, panelWidth, headerHeight);
+                self.table.frame = CGRectMake(0, filterHeight, panelWidth, self.view.frame.size.height - calendarHeight - headerHeight - filterHeight - delta);
+            } completion:^(BOOL finished) {
+                //[Flurry logEvent:@"Календарь" withParameters:@{@"Действие" : @"Открыть", @"Метод" : @"Свайп", @"Экран" : @"Клиенты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
+                self.calendarOn = YES;
+            }];
+        }
+        else
+        {
+            [UIView animateWithDuration:0.3 animations:^{
+                self.calendarWidget.frame = CGRectMake(0, self.view.frame.size.height - delta, panelWidth, calendarHeight);
+                self.calendarHeader.frame = CGRectMake(0, self.view.frame.size.height - headerHeight - delta, panelWidth, headerHeight);
+                self.table.frame = CGRectMake(0, filterHeight, panelWidth, self.view.frame.size.height - filterHeight - headerHeight - delta);
+            } completion:^(BOOL finished) {
+                // [Flurry logEvent:@"Календарь" withParameters:@{@"Действие" : @"Закрыть", @"Метод" : @"Свайп", @"Экран" : @"Клиенты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
+                self.calendarOn = NO;
+            }];
+        }
+    }
+    else
+    {
+        int offset = self.view.frame.size.height - point.y;
+        if (offset < 0 || offset > calendarHeight)
+        return;
+        self.calendarWidget.frame = CGRectMake(0, self.view.frame.size.height - offset - delta, panelWidth, calendarHeight);
+        self.calendarHeader.frame = CGRectMake(0, self.view.frame.size.height - offset - headerHeight - delta, panelWidth, headerHeight);
+        self.table.frame = CGRectMake(0, filterHeight, panelWidth, self.view.frame.size.height - offset - headerHeight - filterHeight - delta);
+    }
+}
+
+- (void)toggleCalendar
+{
+    NSLog(@"%f", self.view.frame.size.height);
+    if (self.calendarOn)
+    {
+        [UIView animateWithDuration:0.3 animations:^{
+            self.calendarWidget.frame = CGRectMake(0, self.view.frame.size.height - delta, panelWidth, calendarHeight);
+            self.calendarHeader.frame = CGRectMake(0, self.view.frame.size.height - headerHeight - delta, panelWidth, headerHeight);
+            self.table.frame = CGRectMake(0, filterHeight, panelWidth, self.view.frame.size.height - filterHeight - headerHeight - delta);
+        } completion:^(BOOL finished) {
+            // [Flurry logEvent:@"Календарь" withParameters:@{@"Действие" : @"Закрыть", @"Метод" : @"Тап", @"Экран" : @"Клиенты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
+            self.calendarOn = NO;
+        }];
+    }
+    else
+    {
+        [UIView animateWithDuration:0.3 animations:^{
+            self.calendarWidget.frame = CGRectMake(0, self.view.frame.size.height - calendarHeight - delta, panelWidth, calendarHeight);
+            self.calendarHeader.frame = CGRectMake(0, self.view.frame.size.height - calendarHeight - headerHeight - delta, panelWidth, headerHeight);
+            self.table.frame = CGRectMake(0, filterHeight, panelWidth, self.view.frame.size.height - calendarHeight - headerHeight - filterHeight - delta);
+        } completion:^(BOOL finished) {
+            // [Flurry logEvent:@"Календарь" withParameters:@{@"Действие" : @"Открыть", @"Метод" : @"Тап", @"Экран" : @"Клиенты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
+            self.calendarOn = YES;
+        }];
+    }
+}
+
+- (void)calendar:(CKCalendarView *)calendar didSelectDate:(NSDate *)date;
+{
+    [self toggleCalendar];
+    
+    self.selectedDate = date;
+    
+    NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
+    dateFormatter.dateFormat = @"dd.MM.yyyy";
+    self.dateLabel.text = [dateFormatter stringFromDate:date];
+    
+    [self reloadData];
+    [self selectFirstFromList];
+    
+    //[Flurry logEvent:@"Выбор даты" withParameters:@{@"Выбранная дата" : date, @"Экран" : @"Клиенты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
 }
 @end

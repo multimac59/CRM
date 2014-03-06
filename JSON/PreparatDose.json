@@ -1,0 +1,247 @@
+{
+    "PreparatDose":{
+        "add":[
+               {
+               "code":"CRESTOR 10 mg #28",
+               "ord":1,
+               "preparat_dose_id":1,
+               "preparat_id":1,
+               "status":"regular",
+               "ts":"2014-03-03 13:55:28"
+               },
+               {
+               "code":"ATACAND 16 mg #28",
+               "ord":1,
+               "preparat_dose_id":17,
+               "preparat_id":5,
+               "status":"regular",
+               "ts":"2014-03-03 13:55:28"
+               },
+               {
+               "code":"ATACAND tbl 32mg #28",
+               "ord":2,
+               "preparat_dose_id":18,
+               "preparat_id":5,
+               "status":"regular",
+               "ts":"2014-03-03 13:55:28"
+               },
+               {
+               "code":"ATACAND 8 mg #28",
+               "ord":3,
+               "preparat_dose_id":19,
+               "preparat_id":5,
+               "status":"regular",
+               "ts":"2014-03-03 13:55:28"
+               },
+               {
+               "code":"ATACAND Plus 16 mg/ 12,5 mg 28",
+               "ord":4,
+               "preparat_dose_id":20,
+               "preparat_id":5,
+               "status":"regular",
+               "ts":"2014-03-03 13:55:28"
+               },
+               {
+               "code":"VIMOVO 500mg/20mg 60",
+               "ord":1,
+               "preparat_dose_id":21,
+               "preparat_id":6,
+               "status":"regular",
+               "ts":"2014-03-03 13:55:28"
+               },
+               {
+               "code":"VIMOVO 500mg/20mg 30",
+               "ord":2,
+               "preparat_dose_id":22,
+               "preparat_id":6,
+               "status":"regular",
+               "ts":"2014-03-03 13:55:28"
+               },
+               {
+               "code":"VIMOVO 500mg/20mg 6",
+               "ord":3,
+               "preparat_dose_id":23,
+               "preparat_id":6,
+               "status":"regular",
+               "ts":"2014-03-03 13:55:28"
+               },
+               {
+               "code":"SYMBICORT 160ug/4,5g/d, 60ds",
+               "ord":1,
+               "preparat_dose_id":24,
+               "preparat_id":7,
+               "status":"regular",
+               "ts":"2014-03-03 13:55:28"
+               },
+               {
+               "code":"SYMBICORT 160ug/4,5g/d, 120ds",
+               "ord":2,
+               "preparat_dose_id":25,
+               "preparat_id":7,
+               "status":"regular",
+               "ts":"2014-03-03 13:55:28"
+               },
+               {
+               "code":"SYMBICORT 80ug/4,5g/d, 60ds",
+               "ord":3,
+               "preparat_dose_id":26,
+               "preparat_id":7,
+               "status":"regular",
+               "ts":"2014-03-03 13:55:28"
+               },
+               {
+               "code":"SYMBICORT 80ug/4,5g/d, 120ds",
+               "ord":4,
+               "preparat_dose_id":27,
+               "preparat_id":7,
+               "status":"regular",
+               "ts":"2014-03-03 13:55:28"
+               },
+               {
+               "code":"SYMBICORT 320ug/9g/d, 60ds",
+               "ord":5,
+               "preparat_dose_id":28,
+               "preparat_id":7,
+               "status":"regular",
+               "ts":"2014-03-03 13:55:28"
+               },
+               {
+               "code":"PULMICORT RESP 0,5 #20",
+               "ord":1,
+               "preparat_dose_id":29,
+               "preparat_id":8,
+               "status":"regular",
+               "ts":"2014-03-03 13:55:28"
+               },
+               {
+               "code":"LOSEC MUPS 10 mg #14",
+               "ord":2,
+               "preparat_dose_id":16,
+               "preparat_id":4,
+               "status":"regular",
+               "ts":"2014-03-03 13:55:28"
+               },
+               {
+               "code":"LOSEC MUPS 20 mg #14",
+               "ord":1,
+               "preparat_dose_id":15,
+               "preparat_id":4,
+               "status":"regular",
+               "ts":"2014-03-03 13:55:28"
+               },
+               {
+               "code":"CRESTOR 20 mg #28",
+               "ord":2,
+               "preparat_dose_id":2,
+               "preparat_id":1,
+               "status":"regular",
+               "ts":"2014-03-03 13:55:28"
+               },
+               {
+               "code":"CRESTOR 10 mg  #98",
+               "ord":3,
+               "preparat_dose_id":3,
+               "preparat_id":1,
+               "status":"regular",
+               "ts":"2014-03-03 13:55:28"
+               },
+               {
+               "code":"CRESTOR 10 mg #7",
+               "ord":4,
+               "preparat_dose_id":4,
+               "preparat_id":1,
+               "status":"regular",
+               "ts":"2014-03-03 13:55:28"
+               },
+               {
+               "code":"CRESTOR 40 mg #28",
+               "ord":5,
+               "preparat_dose_id":5,
+               "preparat_id":1,
+               "status":"regular",
+               "ts":"2014-03-03 13:55:28"
+               },
+               {
+               "code":"NEXIUM 40 mg #14",
+               "ord":1,
+               "preparat_dose_id":6,
+               "preparat_id":2,
+               "status":"regular",
+               "ts":"2014-03-03 13:55:28"
+               },
+               {
+               "code":"NEXIUM 20 mg #14",
+               "ord":2,
+               "preparat_dose_id":7,
+               "preparat_id":2,
+               "status":"regular",
+               "ts":"2014-03-03 13:55:28"
+               },
+               {
+               "code":"NEXIUM 40 mg  #28 ",
+               "ord":3,
+               "preparat_dose_id":8,
+               "preparat_id":2,
+               "status":"regular",
+               "ts":"2014-03-03 13:55:28"
+               },
+               {
+               "code":"NEXIUM 20 mg  #28 ",
+               "ord":4,
+               "preparat_dose_id":9,
+               "preparat_id":2,
+               "status":"regular",
+               "ts":"2014-03-03 13:55:28"
+               },
+               {
+               "code":"NEXIUM sachet 10mg #28",
+               "ord":5,
+               "preparat_dose_id":10,
+               "preparat_id":2,
+               "status":"regular",
+               "ts":"2014-03-03 13:55:28"
+               },
+               {
+               "code":"BETALOC ZOK 50 mg #30",
+               "ord":1,
+               "preparat_dose_id":11,
+               "preparat_id":3,
+               "status":"regular",
+               "ts":"2014-03-03 13:55:28"
+               },
+               {
+               "code":"BETALOC ZOK 100 mg #30",
+               "ord":2,
+               "preparat_dose_id":12,
+               "preparat_id":3,
+               "status":"regular",
+               "ts":"2014-03-03 13:55:28"
+               },
+               {
+               "code":"BETALOC ZOK 25 mg #14",
+               "ord":3,
+               "preparat_dose_id":13,
+               "preparat_id":3,
+               "status":"regular",
+               "ts":"2014-03-03 13:55:28"
+               },
+               {
+               "code":"BETALOC 100 mg #100",
+               "ord":4,
+               "preparat_dose_id":14,
+               "preparat_id":3,
+               "status":"regular",
+               "ts":"2014-03-03 13:55:28"
+               },
+               {
+               "code":"PULMICORT RESP 0,25 #20",
+               "ord":2,
+               "preparat_dose_id":30,
+               "preparat_id":8,
+               "status":"regular",
+               "ts":"2014-03-03 13:55:28"
+               }
+               ],
+        "date":"2014-03-03 13:55:28"
+    }
+}

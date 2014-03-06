@@ -34,6 +34,7 @@
 
 - (void)showPharmacy:(Pharmacy *)pharmacy
 {
+        self.titleLabel.text = pharmacy.name;
         self.nameLabel.text = pharmacy.name;
         self.networkLabel.text = pharmacy.network.boolValue ?  @"Да" : @"Нет";
         self.phoneLabel.text = pharmacy.phone;

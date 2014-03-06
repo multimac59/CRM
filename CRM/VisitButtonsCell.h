@@ -7,9 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+@class Visit;
 
 @interface VisitButtonsCell : UITableViewCell
 @property (nonatomic, weak) IBOutlet UIButton* salesButton;
 @property (nonatomic, weak) IBOutlet UIButton* promoVisitButton;
 @property (nonatomic, weak) IBOutlet UIButton* pharmacyCircleButton;
+
+- (void)showVisit:(Visit *)visit;
 @end

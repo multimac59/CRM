@@ -19,6 +19,9 @@
 @property (nonatomic, weak) IBOutlet UIButton* leftSegment;
 @property (nonatomic, weak) IBOutlet UIButton* rightSegment;
 
+@property (nonatomic, weak) IBOutlet UILabel* targetLabel;
+@property (nonatomic, strong) IBOutlet UITextField* filterField;
+
 @property (nonatomic, weak) IBOutlet UIView* calendarHeader;
 @property (nonatomic, weak) IBOutlet UILabel* dateLabel;
 
@@ -35,4 +38,5 @@
 - (IBAction)pharmacyCircleClicked:(id)sender;
 
 - (void)reloadData;
+- (void)selectFirstFromList;
 @end

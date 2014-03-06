@@ -7,8 +7,10 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="LoginViewController">
             <connections>
+                <outlet property="activityIndicator" destination="heo-WM-6TZ" id="IrE-ai-cO4"/>
                 <outlet property="loginBgView" destination="ghn-Pg-vlz" id="MRY-BS-aaI"/>
                 <outlet property="loginField" destination="Kq8-zB-H3z" id="aHc-eJ-Poa"/>
+                <outlet property="overlay" destination="0eo-or-coG" id="o0u-Np-Jzv"/>
                 <outlet property="passwordBgView" destination="HON-0p-bvJ" id="fk6-P5-nLF"/>
                 <outlet property="passwordField" destination="6j1-ky-sTj" id="yXN-Gc-bsj"/>
                 <outlet property="view" destination="2" id="3"/>
@@ -23,6 +25,17 @@
                     <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 </imageView>
+                <view alpha="0.49999999999999961" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0eo-or-coG">
+                    <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <subviews>
+                        <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="heo-WM-6TZ">
+                            <rect key="frame" x="493" y="550" width="37" height="37"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        </activityIndicatorView>
+                    </subviews>
+                    <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                </view>
                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="loginField" translatesAutoresizingMaskIntoConstraints="NO" id="ghn-Pg-vlz">
                     <rect key="frame" x="402" y="319" width="213" height="30"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>

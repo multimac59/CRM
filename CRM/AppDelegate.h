@@ -13,10 +13,17 @@
 #import "MFSideMenuCustomContainer.h"
 #import "PharmaciesViewController.h"
 #import "VisitsViewController.h"
+#import "LoginViewController.h"
+
+#define LOCAL 1
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, SidePanelDelegate>
+{
+    NSOperationQueue* bgQueue;
+}
 
 @property (readonly, strong, nonatomic) NSManagedObjectContext *managedObjectContext;
+@property (readonly, strong, nonatomic) NSManagedObjectContext *managedObjectContext2;
 @property (readonly, strong, nonatomic) NSManagedObjectModel *managedObjectModel;
 @property (readonly, strong, nonatomic) NSPersistentStoreCoordinator *persistentStoreCoordinator;
 
@@ -33,6 +40,8 @@
 @property (strong, nonatomic) PharmaciesViewController* pharmaciesViewController;
 @property (strong, nonatomic) VisitsViewController* visitsViewController;
 
+@property (strong, nonatomic) LoginViewController* loginViewController;
+
 + (AppDelegate*)sharedDelegate;
 - (void)saveContext;
 
@@ -43,7 +52,7 @@
 - (void)sendDataToServer;
 - (void)showLoginScreenWithAnimation:(BOOL)animated;
 
-- (void)syncVisits;
+- (void)loadDataFromServer;
 - (void)reloadData;
 
 @end

@@ -71,11 +71,12 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    NSLog(@"Clicked, row = %ld", (long)indexPath.row);
     [self.delegate sidePanelController:self didSelectItem:indexPath.row];
     return;
     
     
-    NSLog(@"Clicked, row = %ld", (long)indexPath.row);
+    
     //[tableView deselectRowAtIndexPath:indexPath animated:YES];
 
     UIViewController* targetController;
