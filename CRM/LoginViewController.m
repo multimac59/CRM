@@ -33,6 +33,17 @@
     [self hideLoader];
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    NSNumber* lastId = [[NSUserDefaults standardUserDefaults]objectForKey:@"lastUserId"];
+    User* user = [[AppDelegate sharedDelegate]findUserById:lastId.integerValue];
+    if (user)
+    {
+        self.loginField.text = user.login;
+    }
+    
+}
+
 - (void)showLoader
 {
     self.overlay.alpha = 0.5;
@@ -60,6 +71,7 @@
 
 - (IBAction)goToMain:(id)sender
 {
+
     NSString* login = self.loginField.text;
     NSString* password = self.passwordField.text;
     
@@ -68,6 +80,8 @@
     User* user = [[AppDelegate sharedDelegate]findUserByLogin:login andPassword:hashedPassword];
     if (user != nil)
     {
+        [[NSUserDefaults standardUserDefaults]setObject:user.userId forKey:@"lastUserId"];
+        [[NSUserDefaults standardUserDefaults]synchronize];
         [AppDelegate sharedDelegate].currentUser = user;
         //[Flurry logEvent:@"Логин" withParameters:@{@"Пользователь" : user.login, @"Дата" : [NSDate date]}];
         [self showLoader];
@@ -98,6 +112,9 @@
 //                }];
                 
                 [AppDelegate sharedDelegate].currentUser = user;
+                
+                [[NSUserDefaults standardUserDefaults]setObject:user.userId forKey:@"lastUserId"];
+                [[NSUserDefaults standardUserDefaults]synchronize];
                 //[Flurry logEvent:@"Логин" withParameters:@{@"Пользователь" : user.login, @"Дата" : [NSDate date]}];
                 [self dismissViewControllerAnimated:YES completion:nil];
             }
@@ -146,6 +163,11 @@
     {
         [self.passwordBgView setImage:[UIImage imageNamed:@"passwordFieldActive"]];
     }
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    [self goToMain:self];
+    return YES;
 }
 
 @end

@@ -17,4 +17,5 @@
 @property (nonatomic, assign) YMKMapCoordinate coordinate;
 @property (nonatomic, assign) Visit* visit;
 @property (nonatomic, assign) Pharmacy* pharmacy;
+@property (nonatomic) BOOL selected;
 @end

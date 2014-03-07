@@ -20,7 +20,7 @@
 {
     NSMutableArray* salesArr = [NSMutableArray new];
     [self.sales enumerateObjectsUsingBlock:^(Sale* sale, BOOL *stop) {
-        if (sale.remainder.integerValue != 0 || sale.order.integerValue != 0 || sale.sold.integerValue != 0)
+        if (sale.remainder.integerValue != 0 || sale.order.integerValue != 0 || sale.sold.integerValue != 0 || sale.comment != nil)
         {
             NSDictionary* saleDic = [sale encodeToJSON];
             [salesArr addObject:saleDic];

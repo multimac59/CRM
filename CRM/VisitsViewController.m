@@ -145,6 +145,8 @@ static const int filterHeight = 0;
 
 - (void)selectVisitAtIndex:(NSInteger)index
 {
+    Visit* visit = self.visits[index];
+    
     //Setup map
     NSMutableArray* allPharmacies = [NSMutableArray new];
     for (Visit* visit in self.visits)
@@ -152,10 +154,10 @@ static const int filterHeight = 0;
         [allPharmacies addObject:visit.pharmacy];
     }
     self.visitViewController.allPharmacies = allPharmacies;
+    self.visitViewController.selectedPharmacy = visit.pharmacy;
     self.visitViewController.planDate = self.filterDate;
 
-    //Setup visit
-    Visit* visit = self.visits[index];
+    //Show visit
     [self.visitViewController showVisit:visit];
 }
 

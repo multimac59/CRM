@@ -170,6 +170,7 @@
         self.navigationController.view.frame = CGRectMake(1024, y, 1024, 768);
     }completion:^(BOOL finished) {
         [self.navigationController.view removeFromSuperview];
+        [[AppDelegate sharedDelegate]reloadData];
     }];
 }
 

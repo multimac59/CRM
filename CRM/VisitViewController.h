@@ -17,6 +17,7 @@
 //Data for map
 @property (nonatomic, strong) NSArray* allPharmacies;
 @property (nonatomic, weak) NSDate* planDate;
+@property (nonatomic, strong) Pharmacy* selectedPharmacy;
 
 - (IBAction)goToSalesList:(id)sender;
 - (IBAction)goToPromoVisit:(id)sender;

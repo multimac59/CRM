@@ -14,6 +14,7 @@
 @interface Visit : NSManagedObject
 
 @property (nonatomic, retain) NSNumber * closed;
+@property (nonatomic, retain) NSNumber * sent;
 @property (nonatomic, retain) NSDate * date;
 @property (nonatomic, retain) NSString * visitId;
 @property (nonatomic, retain) CommerceVisit *commerceVisit;

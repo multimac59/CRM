@@ -14,8 +14,9 @@
 @property (nonatomic) BOOL favourite;
 
 //For map
-@property (nonatomic, weak) NSMutableArray* allPharmacies;
-@property (nonatomic, weak) NSDate* planDate;
+@property (nonatomic, strong) NSMutableArray* allPharmacies;
+@property (nonatomic, strong) Pharmacy* selectedPharmacy;
+@property (nonatomic, strong) NSDate* planDate;
 - (void)reloadMap;
 
 - (IBAction)showPharmacy:(Pharmacy*)pharmacy;

@@ -12,6 +12,7 @@
 #import "PharmacyCircle.h"
 #import "PromoVisit.h"
 #import "User.h"
+#import "Sale.h"
 
 
 @implementation Visit
@@ -24,26 +25,39 @@
 @dynamic pharmacyCircle;
 @dynamic promoVisit;
 @dynamic user;
+@dynamic sent;
 
 - (NSDictionary*)encodeToJSON
 {
     NSMutableDictionary* dic = [NSMutableDictionary dictionary];
     [dic setObject:self.visitId forKey:@"id"];
+    //Pharmacy* pharmacy = self.pharmacy;
+    [dic setObject:self.pharmacy.pharmacyId forKey:@"pharm_id"];
     NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
     dateFormatter.locale = [NSLocale localeWithLocaleIdentifier:@"RU-ru"];
     dateFormatter.dateFormat = @"yyyy-MM-dd";
     [dic setObject:[dateFormatter stringFromDate:self.date] forKey:@"date"];
-    if (self.promoVisit)
+    if (self.promoVisit && (self.promoVisit.brands.count > 0 || self.promoVisit.participants > 0))
     {
         [dic setObject:[self.promoVisit encodeToJSON] forKey:@"promoVisit"];
     }
-    if (self.pharmacyCircle)
+    if (self.pharmacyCircle  && (self.promoVisit.brands.count > 0 || self.promoVisit.participants > 0))
     {
         [dic setObject:[self.pharmacyCircle encodeToJSON] forKey:@"pharmacyCircle"];
     }
     if (self.commerceVisit)
     {
-        [dic setObject:[self.commerceVisit encodeToJSON] forKey:@"sales"];
+        BOOL salesExist = NO;
+        for (Sale* sale in self.commerceVisit.sales)
+        {
+            if (sale.remainder.integerValue != 0 || sale.order.integerValue != 0 || sale.sold.integerValue != 0 || sale.comment != nil)
+            {
+                salesExist = YES;
+                break;
+            }
+        }
+        if (salesExist)
+            [dic setObject:[self.commerceVisit encodeToJSON] forKey:@"sales"];
     }
     return dic;
 }

@@ -39,7 +39,7 @@
 
 
 #pragma mark map setup methods
-- (void)setMapLocationForPharmacy:(Pharmacy*)pharmacy onDate:(NSDate*)date
+- (void)setMapLocationForPharmacy:(Pharmacy*)pharmacy onDate:(NSDate*)date selected:(BOOL)selected
 {
     /*
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
@@ -97,28 +97,45 @@
     annotation.subtitle = pharmacy.name;
     annotation.visit = [[VisitManager sharedManager] visitInPharmacy:pharmacy forDate:date];
     annotation.pharmacy = pharmacy;
+    annotation.selected = selected;
     [mapAnnotations addObject:annotation];
 }
 
-- (void)setMapLocationsForPharmacies:(NSArray*)pharmacies onDate:(NSDate*)date
+- (void)setMapLocationsForPharmacies:(NSArray*)pharmacies withSelectedPharmacy:(Pharmacy*)selectedPharmacy onDate:(NSDate*)date;
 {
     self.selectedDate = date;
     self.mapView.showTraffic = NO;
     self.mapView.delegate = self;
     //total = 0;
+    
+    if (!selectedPharmacy && pharmacies.count == 0)
+        [self.mapView removeAnnotations:self.mapView.annotations];
+    else
+    {
     mapAnnotations = [NSMutableArray new];
     for (int i = 0; i < pharmacies.count; i++)
     {
         Pharmacy* pharmacy = pharmacies[i];
-        [self setMapLocationForPharmacy:pharmacy onDate:date];
+        if (pharmacy != selectedPharmacy)
+            [self setMapLocationForPharmacy:pharmacy onDate:date selected:NO];
     }
+    if (selectedPharmacy)
+        [self setMapLocationForPharmacy:selectedPharmacy onDate:date selected:YES];
     [self zoomMap];
+    }
 }
 
 - (void)zoomMap
 {
     [self.mapView removeAnnotations:self.mapView.annotations];
     [self.mapView addAnnotations:mapAnnotations];
+    
+    if (mapAnnotations.count == 1)
+    {
+        MapAnnotation* ann = mapAnnotations[0];
+        [self.mapView setCenterCoordinate:ann.coordinate atZoomLevel:16 animated:NO];
+    }
+    
     YMKMapRect mapRect = YMKMapRectBoundingAnnotations(mapAnnotations);
     YMKMapRegion region = YMKMapRegionFromMapRect(mapRect);
     [self.mapView setRegion:region];
@@ -132,7 +149,7 @@
     view.canShowCallout = YES;
     MapAnnotation* mapAnnotation = (MapAnnotation*)annotation;
 
-    if (mapAnnotation.visit)
+    if (!mapAnnotation.selected)
         view.pinColor = YMKPinAnnotationColorGreen;
     else
         view.pinColor = YMKPinAnnotationColorBlue;

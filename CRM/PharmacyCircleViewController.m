@@ -16,6 +16,7 @@
 #import "Visit.h"
 
 @interface PharmacyCircleViewController ()
+@property (nonatomic, strong) NSArray* drugs;
 @end
 
 @implementation PharmacyCircleViewController
@@ -32,6 +33,11 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    NSManagedObjectContext* context = [[AppDelegate sharedDelegate]managedObjectContext];
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:[NSEntityDescription entityForName:@"Drug" inManagedObjectContext:context]];
+    NSError *error = nil;
+    self.drugs = [context executeFetchRequest:request error:&error];
     
     //[Flurry logEvent:@"Переход" withParameters:@{@"Экран":@"Промовизит/Фармкружок", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
     // Do any additional setup after loading the view from its nib.
@@ -54,7 +60,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
 
-        return [AppDelegate sharedDelegate].drugs.count;
+    return self.drugs.count;
 
 }
 
@@ -66,7 +72,7 @@
             brandCell = [[NSBundle mainBundle]loadNibNamed:@"BrandCell" owner:self options:nil][0];
         }
         
-        Drug* drug = [AppDelegate sharedDelegate].drugs[indexPath.row];
+        Drug* drug = self.drugs[indexPath.row];
         brandCell.nameLabel.text = drug.name;
         
         if ([self.pharmacyCircle.brands containsObject:drug])
@@ -98,7 +104,7 @@
     if (self.pharmacyCircle.visit.closed.boolValue)
         return;
     
-    Drug* brand = [[AppDelegate sharedDelegate].drugs objectAtIndex:indexPath.row];
+    Drug* brand = [self.drugs objectAtIndex:indexPath.row];
     if ([self.pharmacyCircle.brands containsObject:brand])
     {
         [self.pharmacyCircle removeBrandsObject:brand];

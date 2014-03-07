@@ -93,9 +93,57 @@ static const int filterHeight = 110;
     [self loadPharmacies];
     [self sortPharmacies];
     [self.table reloadData];
+    [self selectFirstFromList];
+}
+
+- (NSArray*)plannedPharmacies
+{
+    NSManagedObjectContext* context = [AppDelegate sharedDelegate].managedObjectContext;
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:[NSEntityDescription entityForName:@"Pharmacy" inManagedObjectContext:context]];
     
-    self.pharmacyViewController.allPharmacies = self.pharmacies;
-    [self.pharmacyViewController reloadMap];
+    NSMutableArray* filterPredicates = [NSMutableArray new];
+    
+    if ([AppDelegate sharedDelegate].currentUser.regions.count > 0)
+    {
+        NSPredicate* userPredicate = [NSPredicate predicateWithFormat:@"region IN %@", [AppDelegate sharedDelegate].currentUser.regions];
+        [filterPredicates addObject:userPredicate];
+    }
+    
+
+        NSDate* startDate;
+        [[NSCalendar currentCalendar] rangeOfUnit:NSDayCalendarUnit startDate:&startDate interval:NULL forDate:self.selectedDate];
+        //Add one day
+        NSDateComponents *oneDay = [NSDateComponents new];
+        oneDay.day = 1;
+        NSDate *endDate = [[NSCalendar currentCalendar] dateByAddingComponents:oneDay
+                                                                        toDate:startDate
+                                                                       options:0];
+        NSPredicate* plannedPredicate = [NSPredicate predicateWithFormat:@"SUBQUERY(visits, $e, $e.date>=%@ && $e.date<%@ && $e.user.userId==%@).@count > 0", startDate, endDate, [AppDelegate sharedDelegate].currentUser.userId];
+        [filterPredicates addObject:plannedPredicate];
+
+    if (targetable)
+    {
+        NSPredicate* targetablePredicate = [NSPredicate predicateWithFormat:@"ANY users.userId==%@", [AppDelegate sharedDelegate].currentUser.userId] ;
+        [filterPredicates addObject:targetablePredicate];
+    }
+    
+    NSArray* words = [self.filterString componentsSeparatedByString:@" "];
+    for (NSString* word in words)
+    {
+        if (word.length > 0)
+        {
+            NSPredicate* predicateTemplate = [NSPredicate predicateWithFormat:@"name contains[cd] $WORD OR city contains[cd] $WORD OR street contains[cd] $WORD OR house contains[cd] $WORD OR region.name contains[cd] $WORD"];
+            NSPredicate *predicate = [predicateTemplate predicateWithSubstitutionVariables:@{@"WORD" : word}];
+            [filterPredicates addObject:predicate];
+        }
+    }
+    
+    NSCompoundPredicate* predicate = [[NSCompoundPredicate alloc]initWithType:NSAndPredicateType subpredicates:filterPredicates];
+    request.predicate = predicate;
+    
+    NSError *error = nil;
+    return [context executeFetchRequest:request error:&error];
 }
 
 - (void)loadPharmacies
@@ -169,6 +217,13 @@ static const int filterHeight = 110;
 {
     if (self.pharmacies.count > 0)
         [self selectPharmacyAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+    else
+    {
+        self.pharmacyViewController.allPharmacies = [NSMutableArray array];
+        self.pharmacyViewController.planDate = self.selectedDate;
+        self.pharmacyViewController.selectedPharmacy = nil;
+        [self.pharmacyViewController reloadMap];
+    }
 }
 
 - (void)didReceiveMemoryWarning
@@ -212,8 +267,9 @@ static const int filterHeight = 110;
     
     Pharmacy* pharmacy = self.pharmacies[indexPath.row];
     
-    self.pharmacyViewController.allPharmacies = self.pharmacies;
+    self.pharmacyViewController.allPharmacies = [[self plannedPharmacies]mutableCopy];
     self.pharmacyViewController.planDate = self.selectedDate;
+    self.pharmacyViewController.selectedPharmacy = pharmacy;
     
     [self.pharmacyViewController showPharmacy:pharmacy];
     
@@ -333,13 +389,26 @@ static const int filterHeight = 110;
 {
     NSIndexPath* indexPath = [self indexPathForSender:sender];
     Pharmacy* pharmacy = self.pharmacies[indexPath.row];
-    [[VisitManager sharedManager]toggleCommerceVisitInPharmacy:pharmacy forDate:self.selectedDate];
+    if ([[VisitManager sharedManager]toggleCommerceVisitInPharmacy:pharmacy forDate:self.selectedDate])
+    {
+        [self.pharmacyViewController.allPharmacies addObject:pharmacy];
+    }
+    else
+    {
+        [self.pharmacies removeObject:pharmacy];
+        [self.pharmacyViewController.allPharmacies removeObject:pharmacy];
+    }
     
     if (planned)
+    {
         [self.table reloadData];
+        [self selectFirstFromList];
+    }
     else
         [self.table reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
     
+    self.pharmacyViewController.allPharmacies = [[self plannedPharmacies]mutableCopy];
+    //Too wasteful
     [self.pharmacyViewController reloadMap];
 }
 
@@ -347,13 +416,25 @@ static const int filterHeight = 110;
 {
     NSIndexPath* indexPath = [self indexPathForSender:sender];
     Pharmacy* pharmacy = self.pharmacies[indexPath.row];
-    [[VisitManager sharedManager]togglePromoVisitInPharmacy:pharmacy forDate:self.selectedDate];
+    if ([[VisitManager sharedManager]togglePromoVisitInPharmacy:pharmacy forDate:self.selectedDate])
+    {
+        [self.pharmacyViewController.allPharmacies addObject:pharmacy];
+    }
+    else
+    {
+        [self.pharmacies removeObject:pharmacy];
+        [self.pharmacyViewController.allPharmacies removeObject:pharmacy];
+    }
     
     if (planned)
+    {
         [self.table reloadData];
+        [self selectFirstFromList];
+    }
     else
         [self.table reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
     
+    self.pharmacyViewController.allPharmacies = [[self plannedPharmacies]mutableCopy];
     [self.pharmacyViewController reloadMap];
 }
 
@@ -361,13 +442,25 @@ static const int filterHeight = 110;
 {
     NSIndexPath* indexPath = [self indexPathForSender:sender];
     Pharmacy* pharmacy = self.pharmacies[indexPath.row];
-    [[VisitManager sharedManager]togglePharmacyCircleInPharmacy:pharmacy forDate:self.selectedDate];
+    if ([[VisitManager sharedManager]togglePharmacyCircleInPharmacy:pharmacy forDate:self.selectedDate])
+    {
+        [self.pharmacyViewController.allPharmacies addObject:pharmacy];
+    }
+    else
+    {
+        [self.pharmacies removeObject:pharmacy];
+        [self.pharmacyViewController.allPharmacies removeObject:pharmacy];
+    }
     
     if (planned)
+    {
         [self.table reloadData];
+        [self selectFirstFromList];
+    }
     else
         [self.table reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
     
+    self.pharmacyViewController.allPharmacies = [[self plannedPharmacies]mutableCopy];
     [self.pharmacyViewController reloadMap];
 }
 

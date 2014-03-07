@@ -18,7 +18,7 @@
 @property (nonatomic, weak) IBOutlet YMKMapView* mapView;
 @property (nonatomic, weak) Pharmacy* pharmacy;
 
-- (void)setMapLocationsForPharmacies:(NSArray*)pharmacies onDate:(NSDate*)date;
+- (void)setMapLocationsForPharmacies:(NSArray*)pharmacies withSelectedPharmacy:(Pharmacy*)selectedPharmacy onDate:(NSDate*)date;
 - (IBAction)commerceVisitButtonClicked:(id)sender;
 - (IBAction)promoVisitButtonClicked:(id)sender;
 - (IBAction)pharmacyCircleButtonClicked:(id)sender;

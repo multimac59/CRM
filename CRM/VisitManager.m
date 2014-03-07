@@ -34,6 +34,7 @@
     visit.user = [AppDelegate sharedDelegate].currentUser;
     visit.visitId = [[NSUUID UUID]UUIDString];
     visit.closed = @NO;
+    visit.sent = @NO;
     [pharmacy addVisitsObject:visit];
     return visit;
 }

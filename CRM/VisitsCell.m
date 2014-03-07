@@ -101,9 +101,17 @@
         [self.pharmacyCircleButton setBackgroundImage:[UIImage imageNamed:@"pharmacyCircleButton"] forState:UIControlStateHighlighted];
     }
     
-    if (visit.closed.boolValue)
+    if (visit.sent.boolValue)
     {
-        self.contentView.backgroundColor = [UIColor yellowColor];
+        self.contentView.backgroundColor = [UIColor greenColor];
+    }
+    else if (visit.closed.boolValue)
+    {
+        self.contentView.backgroundColor = [UIColor redColor];
+    }
+    else
+    {
+        self.contentView.backgroundColor = [UIColor clearColor];
     }
 }
 
