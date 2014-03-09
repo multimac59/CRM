@@ -78,9 +78,11 @@
             self.remainderField.text = @"Ост.";
         else
             self.remainderField.text = [NSString stringWithFormat:@"%@", currentSale.remainder];
+        self.commentMark.hidden = !currentSale.comment || [currentSale.comment isEqualToString:@""];
     }
     else
     {
+        self.commentMark.hidden = YES;
         self.orderField.text = @"0";
         self.soldField.text = @"0";
         self.remainderField.text = @"0";

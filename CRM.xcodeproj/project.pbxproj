@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		306C664418CBE29900936833 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 306C664318CBE29900936833 /* libPods.a */; };
+		306C664D18CBE48100936833 /* libstdc++.6.0.9.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 70A2BA4618630C960028E1E6 /* libstdc++.6.0.9.dylib */; };
 		3086E69218CA1598007206FC /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 3086E69118CA1598007206FC /* User.m */; };
 		30B8BD5518C87A7C00044E91 /* PreparatDose.json in Resources */ = {isa = PBXBuildFile; fileRef = 30B8BD5418C87A7C00044E91 /* PreparatDose.json */; };
 		30E70B2118C267A7001B3066 /* PharmacyCalloutView.m in Sources */ = {isa = PBXBuildFile; fileRef = 30E70B1F18C267A7001B3066 /* PharmacyCalloutView.m */; };
@@ -100,7 +102,7 @@
 		70C4AE041855B4BF00BD0E8B /* PharmaciesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70C4AE021855B4BF00BD0E8B /* PharmaciesViewController.xib */; };
 		70C4AE211855E8FB00BD0E8B /* Preparat.json in Resources */ = {isa = PBXBuildFile; fileRef = 70C4AE1B1855E8FB00BD0E8B /* Preparat.json */; };
 		70C4AE231855E8FB00BD0E8B /* Pharm.json in Resources */ = {isa = PBXBuildFile; fileRef = 70C4AE1D1855E8FB00BD0E8B /* Pharm.json */; };
-		70C4AE241855E8FB00BD0E8B /* Visits.json in Resources */ = {isa = PBXBuildFile; fileRef = 70C4AE1E1855E8FB00BD0E8B /* Visits.json */; };
+		70C4AE241855E8FB00BD0E8B /* Visit.json in Resources */ = {isa = PBXBuildFile; fileRef = 70C4AE1E1855E8FB00BD0E8B /* Visit.json */; };
 		70D0CCE618C08AC500A7E629 /* PharmacyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7071FFCD185612C700EF352D /* PharmacyViewController.m */; };
 		70DE57801862F59A00123B1E /* SaleHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70DE577F1862F59A00123B1E /* SaleHeader.xib */; };
 		E409309283D4489A899AFC48 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 82182041B3C04DD69CCC4ACA /* libPods.a */; };
@@ -117,6 +119,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2E1DD7F07C3A435DB89129F5 /* Pods-CRMTests.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CRMTests.xcconfig"; path = "Pods/Pods-CRMTests.xcconfig"; sourceTree = "<group>"; };
+		306C664318CBE29900936833 /* libPods.a */ = {isa = PBXFileReference; lastKnownFileType = file; name = libPods.a; path = "Pods/build/Debug-iphoneos/libPods.a"; sourceTree = "<group>"; };
+		306C664B18CBE44C00936833 /* libxml2.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.2.dylib; path = usr/lib/libxml2.2.dylib; sourceTree = SDKROOT; };
 		3086E69018CA1598007206FC /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = User.h; path = CRM/Model/User.h; sourceTree = "<group>"; };
 		3086E69118CA1598007206FC /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = User.m; path = CRM/Model/User.m; sourceTree = "<group>"; };
 		30B8BD5418C87A7C00044E91 /* PreparatDose.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = PreparatDose.json; sourceTree = "<group>"; };
@@ -260,9 +265,10 @@
 		70C4AE021855B4BF00BD0E8B /* PharmaciesViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PharmaciesViewController.xib; sourceTree = "<group>"; };
 		70C4AE1B1855E8FB00BD0E8B /* Preparat.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Preparat.json; sourceTree = "<group>"; };
 		70C4AE1D1855E8FB00BD0E8B /* Pharm.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Pharm.json; sourceTree = "<group>"; };
-		70C4AE1E1855E8FB00BD0E8B /* Visits.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Visits.json; sourceTree = "<group>"; };
+		70C4AE1E1855E8FB00BD0E8B /* Visit.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Visit.json; sourceTree = "<group>"; };
 		70DE577F1862F59A00123B1E /* SaleHeader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SaleHeader.xib; sourceTree = "<group>"; };
 		82182041B3C04DD69CCC4ACA /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		DF776B7402EC4C51BBA60653 /* libPods-CRMTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-CRMTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -285,6 +291,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				306C664D18CBE48100936833 /* libstdc++.6.0.9.dylib in Frameworks */,
+				306C664418CBE29900936833 /* libPods.a in Frameworks */,
 				70043FA01855A70A006138CC /* XCTest.framework in Frameworks */,
 				70043FA21855A70A006138CC /* UIKit.framework in Frameworks */,
 				70043FA11855A70A006138CC /* Foundation.framework in Frameworks */,
@@ -306,6 +314,7 @@
 				70043F7F1855A70A006138CC /* Frameworks */,
 				70043F7E1855A70A006138CC /* Products */,
 				52792385F4584DFA8DBE0ED0 /* Pods.xcconfig */,
+				2E1DD7F07C3A435DB89129F5 /* Pods-CRMTests.xcconfig */,
 			);
 			sourceTree = "<group>";
 		};
@@ -321,6 +330,8 @@
 		70043F7F1855A70A006138CC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				306C664B18CBE44C00936833 /* libxml2.2.dylib */,
+				306C664318CBE29900936833 /* libPods.a */,
 				70AEE91C18630D4D00148B0A /* libxml2.dylib */,
 				70A2BA4A18630D100028E1E6 /* libz.dylib */,
 				70A2BA4618630C960028E1E6 /* libstdc++.6.0.9.dylib */,
@@ -331,6 +342,7 @@
 				70043F841855A70A006138CC /* UIKit.framework */,
 				70043F9F1855A70A006138CC /* XCTest.framework */,
 				82182041B3C04DD69CCC4ACA /* libPods.a */,
+				DF776B7402EC4C51BBA60653 /* libPods-CRMTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -602,7 +614,7 @@
 				70C4AE1B1855E8FB00BD0E8B /* Preparat.json */,
 				30B8BD5418C87A7C00044E91 /* PreparatDose.json */,
 				70C4AE1D1855E8FB00BD0E8B /* Pharm.json */,
-				70C4AE1E1855E8FB00BD0E8B /* Visits.json */,
+				70C4AE1E1855E8FB00BD0E8B /* Visit.json */,
 			);
 			path = JSON;
 			sourceTree = "<group>";
@@ -633,9 +645,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 70043FB21855A70A006138CC /* Build configuration list for PBXNativeTarget "CRMTests" */;
 			buildPhases = (
+				B16DC7F1B2424499921E5E57 /* Check Pods Manifest.lock */,
 				70043F9A1855A70A006138CC /* Sources */,
 				70043F9B1855A70A006138CC /* Frameworks */,
 				70043F9C1855A70A006138CC /* Resources */,
+				87530919A7F34E528DEFBB3F /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -709,7 +723,7 @@
 				70C4ADF61855AB6000BD0E8B /* VisitsViewController.xib in Resources */,
 				70C4AE211855E8FB00BD0E8B /* Preparat.json in Resources */,
 				70999BA518B792F600394CAF /* Region.json in Resources */,
-				70C4AE241855E8FB00BD0E8B /* Visits.json in Resources */,
+				70C4AE241855E8FB00BD0E8B /* Visit.json in Resources */,
 				70744B9C18995948005E3536 /* right_arrow@2x.png in Resources */,
 				703B1C1818B238B700B3C9DE /* CommentViewController.xib in Resources */,
 				70C4AE041855B4BF00BD0E8B /* PharmaciesViewController.xib in Resources */,
@@ -741,6 +755,36 @@
 
 /* Begin PBXShellScriptBuildPhase section */
 		3526DB206C4A4CF9B8AFC666 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		87530919A7F34E528DEFBB3F /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Pods-CRMTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		B16DC7F1B2424499921E5E57 /* Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -984,6 +1028,7 @@
 		};
 		70043FB31855A70A006138CC /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 52792385F4584DFA8DBE0ED0 /* Pods.xcconfig */;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/CRM.app/CRM";
@@ -998,6 +1043,17 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
+				HEADER_SEARCH_PATHS = (
+					"\"${PODS_ROOT}/Headers\"",
+					"\"${PODS_ROOT}/Headers/AFNetworking\"",
+					"\"${PODS_ROOT}/Headers/FlurrySDK\"",
+					"\"${PODS_ROOT}/Headers/MFSideMenu\"",
+					"\"${PODS_ROOT}/Headers/MGSplitViewController\"",
+					"\"${PODS_ROOT}/Headers/RaptureXML\"",
+					"$(SDKROOT)/usr/include/libxml2",
+					"\"$(SDKROOT)/usr/include/libxml2\"",
+					"\"${PODS_ROOT}/Headers/YandexMapKit\"",
+				);
 				INFOPLIST_FILE = "CRMTests/CRMTests-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
@@ -1007,6 +1063,7 @@
 		};
 		70043FB41855A70A006138CC /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 52792385F4584DFA8DBE0ED0 /* Pods.xcconfig */;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/CRM.app/CRM";
@@ -1017,6 +1074,17 @@
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CRM/CRM-Prefix.pch";
+				HEADER_SEARCH_PATHS = (
+					"\"${PODS_ROOT}/Headers\"",
+					"\"${PODS_ROOT}/Headers/AFNetworking\"",
+					"\"${PODS_ROOT}/Headers/FlurrySDK\"",
+					"\"${PODS_ROOT}/Headers/MFSideMenu\"",
+					"\"${PODS_ROOT}/Headers/MGSplitViewController\"",
+					"\"${PODS_ROOT}/Headers/RaptureXML\"",
+					"$(SDKROOT)/usr/include/libxml2",
+					"\"$(SDKROOT)/usr/include/libxml2\"",
+					"\"${PODS_ROOT}/Headers/YandexMapKit\"",
+				);
 				INFOPLIST_FILE = "CRMTests/CRMTests-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";

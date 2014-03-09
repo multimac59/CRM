@@ -42,6 +42,8 @@
     [super viewDidLoad];
     
     //[Flurry logEvent:@"Переход" withParameters:@{@"Экран":@"Продажи", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(reloadTable:) name:@"UpdateComments" object:nil];
+    
     self.keyboard = [[NSBundle mainBundle]loadNibNamed:@"KeyboardView" owner:self options:nil][0];
 
     self.navigationController.navigationBar.shadowImage =[[UIImage alloc] init];
@@ -62,7 +64,8 @@
     [rightButton addTarget:self action:@selector(saveVisit:) forControlEvents:UIControlEventTouchDown];
 
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:leftButton];
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:rightButton];
+    if (!self.commerceVisit.visit.closed.boolValue)
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:rightButton];
     
     UIImageView *tempImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tableBg"]];
     [tempImageView setFrame:self.table.frame];
@@ -127,7 +130,7 @@
     
     if (indexPath.row == 0)
     {
-        cell.cellBg.image = [UIImage imageNamed:@"groupCellBg"];
+        cell.cellBg.image = self.commerceVisit.visit.closed.boolValue ? [UIImage imageNamed:@"groupCellInactive"] : [UIImage imageNamed:@"groupCellActive"];
         cell.arrowView.hidden = NO;
         
         NSNumber* state = self.sectionStates[indexPath.section];
@@ -138,10 +141,10 @@
     }
     else
     {
-        cell.cellBg.image = [UIImage imageNamed:@"singleCellBg"];
+        cell.cellBg.image = self.commerceVisit.visit.closed.boolValue ? [UIImage imageNamed:@"singleCellInactive"] : [UIImage imageNamed:@"singleCellActive"];
         cell.arrowView.hidden = YES;
     }
-    
+    cell.commentButton.enabled = !self.commerceVisit.visit.closed.boolValue;
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     return cell;
 }
@@ -384,5 +387,10 @@
     commentParentController.modalWidth = 800;
     commentParentController.modalHeight = 700;
     [self presentViewController:commentParentController animated:YES completion:nil];
+}
+
+- (void)reloadTable:(id)sender
+{
+    [self.table reloadData];
 }
 @end

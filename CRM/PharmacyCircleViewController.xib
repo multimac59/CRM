@@ -7,7 +7,9 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="PharmacyCircleViewController">
             <connections>
+                <outlet property="headerView" destination="OUz-JP-cgC" id="7CK-R8-06s"/>
                 <outlet property="participantField" destination="80l-5l-Jic" id="ykv-ki-ZgN"/>
+                <outlet property="screenTitleLabel" destination="gqf-aM-gWp" id="9Gr-GL-Sa8"/>
                 <outlet property="table" destination="9Zg-Rg-dAv" id="z3C-RR-fd2"/>
                 <outlet property="view" destination="2" id="3"/>
             </connections>
@@ -17,6 +19,31 @@
             <rect key="frame" x="0.0" y="0.0" width="768" height="664"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
+                <view contentMode="scaleToFill" id="OUz-JP-cgC">
+                    <rect key="frame" x="0.0" y="0.0" width="768" height="52"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <subviews>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="J7n-4Y-XPb">
+                            <rect key="frame" x="20" y="16" width="76" height="22"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <state key="normal" title="Назад" image="back">
+                                <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                            </state>
+                            <connections>
+                                <action selector="goBack:" destination="-1" eventType="touchUpInside" id="0tf-wt-2LO"/>
+                            </connections>
+                        </button>
+                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Фармкружок" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="gqf-aM-gWp">
+                            <rect key="frame" x="302" y="16" width="137" height="21"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                    <color key="backgroundColor" red="0.58431372549019611" green="0.77647058823529413" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
+                </view>
                 <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="9Zg-Rg-dAv">
                     <rect key="frame" x="0.0" y="144" width="768" height="520"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -26,32 +53,49 @@
                         <outlet property="delegate" destination="-1" id="y8T-dH-bgW"/>
                     </connections>
                 </tableView>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="J7n-4Y-XPb">
-                    <rect key="frame" x="20" y="20" width="76" height="22"/>
+                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="УЧАСТНИКИ" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="C65-HU-jzy">
+                    <rect key="frame" x="20" y="92" width="109" height="21"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <state key="normal" title="Назад" image="back">
-                        <color key="titleColor" red="0.58823531870000001" green="0.21568629149999999" blue="0.41176474089999998" alpha="1" colorSpace="deviceRGB"/>
-                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                    </state>
-                    <connections>
-                        <action selector="goBack:" destination="-1" eventType="touchUpInside" id="0tf-wt-2LO"/>
-                    </connections>
-                </button>
-                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" id="80l-5l-Jic">
-                    <rect key="frame" x="651" y="88" width="97" height="30"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <color key="textColor" red="0.51372549019607838" green="0.0" blue="0.31372549019607843" alpha="1" colorSpace="calibratedRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="countParticipant" id="GrY-BF-ZNh">
+                    <rect key="frame" x="147" y="87" width="56" height="32"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                </imageView>
+                <textField opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="23" textAlignment="center" minimumFontSize="17" id="80l-5l-Jic">
+                    <rect key="frame" x="147" y="88" width="56" height="30"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <color key="textColor" red="0.29411764709999999" green="0.18823529410000001" blue="0.41568627450000001" alpha="1" colorSpace="calibratedRGB"/>
+                    <fontDescription key="fontDescription" type="boldSystem" pointSize="19"/>
                     <textInputTraits key="textInputTraits"/>
                     <connections>
                         <outlet property="delegate" destination="-1" id="q3P-tL-8zF"/>
                     </connections>
                 </textField>
-                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Количество участников:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="C65-HU-jzy">
-                    <rect key="frame" x="20" y="92" width="605" height="21"/>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="VVx-OG-nAW">
+                    <rect key="frame" x="211" y="87" width="32" height="30"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                    <nil key="highlightedColor"/>
-                </label>
+                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <state key="normal" backgroundImage="plusParticipant">
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <connections>
+                        <action selector="increaseParticipants:" destination="-1" eventType="touchUpInside" id="LrL-4E-n1m"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="kVl-CO-jVH">
+                    <rect key="frame" x="251" y="87" width="32" height="30"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <state key="normal" backgroundImage="minusParticipant">
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <connections>
+                        <action selector="decreaseParticipants:" destination="-1" eventType="touchUpInside" id="22s-Xv-xUE"/>
+                    </connections>
+                </button>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
@@ -60,5 +104,8 @@
     </objects>
     <resources>
         <image name="back" width="20" height="20"/>
+        <image name="countParticipant" width="56" height="32"/>
+        <image name="minusParticipant" width="32" height="32"/>
+        <image name="plusParticipant" width="32" height="32"/>
     </resources>
 </document>

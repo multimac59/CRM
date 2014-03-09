@@ -52,5 +52,6 @@
     self.sale.comment = self.textView.text;
     [[AppDelegate sharedDelegate]saveContext];
     [self dismissViewControllerAnimated:YES completion:nil];
+    [[NSNotificationCenter defaultCenter]postNotificationName:@"UpdateComments" object:self];
 }
 @end

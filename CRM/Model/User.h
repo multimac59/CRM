@@ -20,6 +20,7 @@
 @property (nonatomic, retain) NSDate * regionDate;
 @property (nonatomic, retain) NSDate * userDate;
 @property (nonatomic, retain) NSDate * pharmDate;
+@property (nonatomic, retain) NSDate * visitDate;
 @property (nonatomic, retain) NSDate * userRegionDate;
 @property (nonatomic, retain) NSDate * preparatDate;
 @property (nonatomic, retain) NSDate * preparatDoseDate;

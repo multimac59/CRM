@@ -79,12 +79,19 @@ static const int filterHeight = 110;
     [self selectFirstFromList];
 }
 
-- (void)viewWillAppear:(BOOL)animated
+- (void)viewDidAppear:(BOOL)animated
 {
     self.calendarWidget.frame = CGRectMake(0, self.view.frame.size.height - delta, panelWidth, calendarHeight);
     self.calendarHeader.frame = CGRectMake(0, self.view.frame.size.height - headerHeight - delta, panelWidth, headerHeight);
     self.table.frame = CGRectMake(0, filterHeight, panelWidth, self.view.frame.size.height - filterHeight - headerHeight - delta);
     self.calendarOn = NO;
+    
+    UIPanGestureRecognizer* panRecognizer1 = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(moveCalendar:)];
+    [self.calendarHeader addGestureRecognizer:panRecognizer1];
+    UIPanGestureRecognizer* panRecognizer2 = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(moveCalendar:)];
+    [self.calendarWidget addGestureRecognizer:panRecognizer2];
+    UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(toggleCalendar)];
+    [self.calendarHeader addGestureRecognizer:tapRecognizer];
 }
 
 #pragma mark pharmacies
@@ -474,13 +481,6 @@ static const int filterHeight = 110;
     [self.view addSubview:self.calendarWidget];
     self.calendarWidget.delegate = self;
     [self.calendarWidget selectDate:[NSDate currentDate] makeVisible:YES];
-    
-    UIPanGestureRecognizer* panRecognizer1 = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(moveCalendar:)];
-    [self.calendarHeader addGestureRecognizer:panRecognizer1];
-    UIPanGestureRecognizer* panRecognizer2 = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(moveCalendar:)];
-    [self.calendarWidget addGestureRecognizer:panRecognizer2];
-    UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(toggleCalendar)];
-    [self.calendarHeader addGestureRecognizer:tapRecognizer];
     
     if (SYSTEM_VERSION_LESS_THAN(@"7.0"))
     {

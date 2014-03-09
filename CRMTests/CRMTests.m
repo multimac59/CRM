@@ -7,6 +7,8 @@
 //
 
 #import <XCTest/XCTest.h>
+#import "AppDelegate.h"
+#import "NSDate+Additions.h"
 
 @interface CRMTests : XCTestCase
 
@@ -26,9 +28,17 @@
     [super tearDown];
 }
 
-- (void)testExample
+- (void)testClosingVisits
 {
-    XCTFail(@"No implementation for \"%s\"", __PRETTY_FUNCTION__);
+    [[AppDelegate sharedDelegate]closeOldVisits];
+    NSManagedObjectContext* context = [AppDelegate sharedDelegate].managedObjectContext;
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:[NSEntityDescription entityForName:@"Visit" inManagedObjectContext:context]];
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"date<%@ AND closed==NO", [NSDate currentDate]];
+    [request setPredicate:predicate];
+    NSError *error = nil;
+    NSArray *visits = [context executeFetchRequest:request error:&error];
+    XCTAssertEqual(visits.count, (NSUInteger)0, @"Couldn't close all visits");
 }
 
 @end

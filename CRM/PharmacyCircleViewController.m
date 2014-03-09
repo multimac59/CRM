@@ -33,6 +33,18 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    if ([self.pharmacyCircle isKindOfClass:[PharmacyCircle class]])
+    {
+        self.screenTitleLabel.text = @"Фармкружок";
+        self.headerView.backgroundColor = [UIColor colorWithRed:149/255.0 green:198/255.0 blue:51/255.0 alpha:1];
+    }
+    else
+    {
+        self.screenTitleLabel.text = @"Промовизит";
+        self.headerView.backgroundColor = [UIColor colorWithRed:111/255.0 green:89/255.0 blue:136/255.0 alpha:1];
+    }
+    
     NSManagedObjectContext* context = [[AppDelegate sharedDelegate]managedObjectContext];
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     [request setEntity:[NSEntityDescription entityForName:@"Drug" inManagedObjectContext:context]];
@@ -59,9 +71,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-
     return self.drugs.count;
-
 }
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -114,5 +124,24 @@
         [self.pharmacyCircle addBrandsObject:brand];
     }
     [self.table reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+}
+
+- (IBAction)increaseParticipants:(id)sender
+{
+    int participants = self.pharmacyCircle.participants.integerValue;
+    participants++;
+    self.pharmacyCircle.participants = @(participants);
+    self.participantField.text = [NSString stringWithFormat:@"%@", self.pharmacyCircle.participants];
+}
+
+- (IBAction)decreaseParticipants:(id)sender
+{
+    int participants = self.pharmacyCircle.participants.integerValue;
+    if (participants > 0)
+    {
+        participants--;
+        self.pharmacyCircle.participants = @(participants);
+        self.participantField.text = [NSString stringWithFormat:@"%@", self.pharmacyCircle.participants];
+    }
 }
 @end

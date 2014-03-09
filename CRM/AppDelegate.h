@@ -57,4 +57,6 @@
 - (void)loadDataFromServer;
 - (void)reloadData;
 
+- (void)closeOldVisits;
+
 @end

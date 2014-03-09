@@ -9,6 +9,8 @@
 #import "VisitHistoryCell.h"
 #import "Visit.h"
 #import "User.h"
+#import "PromoVisit.h"
+#import "PharmacyCircle.h"
 
 @implementation VisitHistoryCell
 
@@ -30,18 +32,40 @@
 
 - (void)showVisit:(Visit *)visit
 {
-    User* user = visit.user;
-    NSLog(@"User Id = %@, user name = %@", user.userId, user.name);
-    
-    NSLog(@"%@", visit.user.name);
-    NSLog(@"%@", visit.date);
-    
-    self.typeLabel.text = @"Визит";
+    NSMutableString* typeString = [NSMutableString stringWithFormat:@""];
+    if (visit.commerceVisit)
+        [typeString appendString:@"Продажи"];
+    if (visit.promoVisit)
+    {
+        if ([typeString isEqualToString:@""])
+            [typeString appendString:@"Промовизит"];
+        else
+            [typeString appendString:@", промовизит"];
+    }
+    if (visit.pharmacyCircle)
+    {
+        if ([typeString isEqualToString:@""])
+            [typeString appendString:@"Фармкружок"];
+        else
+            [typeString appendString:@", фармкружок"];
+    }
+    self.typeLabel.text = typeString;
     self.nameLabel.text = visit.user.name;
     NSDateFormatter *timeFormatter = [[NSDateFormatter alloc] init];
     [timeFormatter setDateFormat:@"dd.MM.yyyy"];
     self.dateLabel.text = [timeFormatter stringFromDate:visit.date];
-    //self.participantLabel.text = [NSString stringWithFormat:@"%d", visit.participants.count];
+    
+    NSMutableString* participantsString = [NSMutableString stringWithFormat:@""];
+    if (visit.promoVisit)
+        [participantsString appendString:[NSString stringWithFormat:@"%@", visit.promoVisit.participants]];
+    if (visit.pharmacyCircle)
+    {
+        if ([participantsString isEqualToString:@""])
+            [participantsString appendString:[NSString stringWithFormat:@"%@", visit.pharmacyCircle.participants]];
+        else
+            [participantsString appendString:[NSString stringWithFormat:@", %@", visit.pharmacyCircle.participants]];
+    }
+    self.participantLabel.text = participantsString;
 }
 
 @end

@@ -101,12 +101,14 @@ static AppDelegate* sharedDelegate = nil;
     
     self.sidePanelController = [SidePanelController new];
     self.sidePanelController.delegate = self;
-    self.sidePanelController.view.frame = CGRectMake(0, 0, 270, 768);
+    self.sidePanelController.view.frame = CGRectMake(0, 0, 290, 768);
     self.overlay = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 1024, 768)];
     self.overlay.backgroundColor = [UIColor blackColor];
     self.overlay.alpha = 0.8;
     [self.container.view addSubview:self.overlay];
     [self.container.view addSubview:self.sidePanelController.view];
+    //self.sidePanelController.view.frame = CGRectMake(-275, 0, 290, 768);
+    //self.overlay.alpha = 0;
     
     
     UIPanGestureRecognizer* gestureRecognizer = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(movePanel:)];
@@ -127,7 +129,7 @@ static AppDelegate* sharedDelegate = nil;
     
     [[UINavigationBar appearance] setTitleTextAttributes:navbarTitleTextAttributes];
     
-    [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(checkNewDay) userInfo:Nil repeats:YES];
+    [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(closeOldVisits) userInfo:Nil repeats:YES];
     
     [Flurry startSession:@"VF6G7F9XQ8Jss8QM7249DS"];
     
@@ -160,6 +162,9 @@ static AppDelegate* sharedDelegate = nil;
             break;
         default:
             [self sendDataToServer];
+            self.container.centerViewController = self.clientsSplitController;
+            //FAST FIX
+            self.container.centerViewController = self.clientsSplitController;
             break;
     }
     [self reloadData];
@@ -431,13 +436,13 @@ static AppDelegate* sharedDelegate = nil;
 
 #pragma mark main sync methods
 
-- (void)checkNewDay
+- (void)closeOldVisits
 {
     //NSLog(@"Checking new day....");
     NSManagedObjectContext* context = self.managedObjectContext;
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     [request setEntity:[NSEntityDescription entityForName:@"Visit" inManagedObjectContext:context]];
-    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"date<%@", [NSDate currentDate]];
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"date<%@ AND closed==NO", [NSDate currentDate]];
     [request setPredicate:predicate];
     NSError *error = nil;
     NSArray *visits = [context executeFetchRequest:request error:&error];
@@ -452,6 +457,8 @@ static AppDelegate* sharedDelegate = nil;
 {
     self.sidePanelController.nameLabel.text = currentUser.name;
     self.sidePanelController.mailLabel.text = currentUser.login;
+    NSDateFormatter* dateFormatter = [NSDateFormatter new];
+    dateFormatter.dateFormat = @"dd.MM.yyyy   HH:mm";
     _currentUser = currentUser;
 }
 
@@ -492,13 +499,14 @@ static AppDelegate* sharedDelegate = nil;
     //NSDate* userDate = self.currentUser.userDate;
     NSDate* pharmDate = [NSDate dateWithTimeIntervalSince1970:0];
     NSDate* userDate = [NSDate dateWithTimeIntervalSince1970:0];
+    NSDate* visitDate = [NSDate dateWithTimeIntervalSince1970:0];
     
     if (FULL_LOAD || regionDate == nil)
     {
-        regionDate = userRegionDate = pharmDate = preparatDate = preparatDoseDate = userDate = [NSDate dateWithTimeIntervalSince1970:0];
+        visitDate = regionDate = userRegionDate = pharmDate = preparatDate = preparatDoseDate = userDate = [NSDate dateWithTimeIntervalSince1970:0];
     }
     
-    NSString* urlString = [[NSString stringWithFormat:@"http://crm.mydigital.guru/server/sync?clientId=%@&date[Region]=%@&date[UserRegion]=%@&date[Pharm]=%@&date[Preparat]=%@&date[PreparatDose]=%@&date[User]=%@", self.currentUser.userId, [dateFormatter stringFromDate:regionDate], [dateFormatter stringFromDate:userRegionDate], [dateFormatter stringFromDate:pharmDate], [dateFormatter stringFromDate:preparatDate], [dateFormatter stringFromDate:preparatDoseDate], [dateFormatter stringFromDate:userDate]]stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    NSString* urlString = [[NSString stringWithFormat:@"http://crm.mydigital.guru/server/sync?clientId=%@&date[Region]=%@&date[UserRegion]=%@&date[Pharm]=%@&date[Preparat]=%@&date[PreparatDose]=%@&date[User]=%@&date[Visit]=%@", self.currentUser.userId, [dateFormatter stringFromDate:regionDate], [dateFormatter stringFromDate:userRegionDate], [dateFormatter stringFromDate:pharmDate], [dateFormatter stringFromDate:preparatDate], [dateFormatter stringFromDate:preparatDoseDate], [dateFormatter stringFromDate:userDate], [dateFormatter stringFromDate:visitDate]]stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     [manager GET:urlString parameters:Nil success:^(AFHTTPRequestOperation *operation, id responseObject)
      {
@@ -538,7 +546,13 @@ static AppDelegate* sharedDelegate = nil;
              {
                  [self parsePharm:pharmDict];
              }
+             id visitDict = [responseObject objectForKey:@"Visit"];
+             if ([visitDict isKindOfClass:[NSDictionary class]])
+             {
+                 [self parseVisit:visitDict];
+             }
          [self reloadData];
+         self.sidePanelController.syncLabel.text = [dateFormatter stringFromDate:self.currentUser.pharmDate];
          LoginViewController* login = self.loginViewController;
          [login hideLoader];
          [login dismissViewControllerAnimated:YES completion:nil];
@@ -773,7 +787,7 @@ static AppDelegate* sharedDelegate = nil;
     
     for (NSDictionary* obj in addArray)
     {
-        NSString* visitId = [obj objectForKey:@"visit_id"];
+        NSString* visitId = [obj objectForKey:@"code"];
         Visit* visit = [self ById:visitId];
         if (!visit)
         {
@@ -782,80 +796,25 @@ static AppDelegate* sharedDelegate = nil;
                     inManagedObjectContext:self.managedObjectContext];
             visit.visitId = visitId;
         }
-        NSString* visitDateString = [obj objectForKey:@"date"];
+        
+        NSString* visitDateString = [obj objectForKey:@"visit_ts"];
         NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
-        dateFormatter.dateFormat = @"dd.MM.yyyy";
+        dateFormatter.dateFormat = @"yyyy-MM-dd HH:mm:ss";
         visit.date = [dateFormatter dateFromString:visitDateString];
+
         NSNumber* userId = [obj objectForKey:@"userId"];
         visit.user = [self findUserById:userId.integerValue];
-        
-        if ([obj objectForKey:@"sales"] != nil)
-        {
-            CommerceVisit* commerceVisit = [NSEntityDescription
-                                            insertNewObjectForEntityForName:@"CommerceVisit"
-                                            inManagedObjectContext:self.managedObjectContext];
-            visit.commerceVisit = commerceVisit;
-            NSArray* sales = [obj objectForKey:@"sales"];
-            for (NSDictionary* saleObj in sales)
-            {
-                Sale* sale = [NSEntityDescription
-                              insertNewObjectForEntityForName:@"Sale"
-                              inManagedObjectContext:self.managedObjectContext];
-                sale.saleId = (NSNumber*)[saleObj objectForKey:@"id"];
 
-                NSNumber* doseId = [saleObj objectForKey:@"dose"];
-                Dose* dose = [self findDoseById:doseId.integerValue];
-                sale.dose = dose;
-                sale.order = (NSNumber*)[saleObj objectForKey:@"order"];
-                sale.sold = (NSNumber*)[saleObj objectForKey:@"sold"];
-                sale.remainder = (NSNumber*)[saleObj objectForKey:@"remainder"];
-                [commerceVisit addSalesObject:sale];
-            }
-        }
-        
-        if ([obj objectForKey:@"promoVisit"] != nil)
-        {
-            PromoVisit* promoVisit = [NSEntityDescription
-                                            insertNewObjectForEntityForName:@"PromoVisit"
-                                            inManagedObjectContext:self.managedObjectContext];
-            visit.promoVisit = promoVisit;
-            NSDictionary* promoObj = [obj objectForKey:@"promoVisit"];
-            promoVisit.participants = [promoObj objectForKey:@"participants"];
-            NSArray* brandsArr = [promoObj objectForKey:@"brands"];
-            for (NSNumber* brandId in brandsArr)
-            {
-                Drug* drug = [self findDrugById:brandId.integerValue];
-                if (drug)
-                    [promoVisit addBrandsObject:drug];
-            }
-        }
-        
-        if ([obj objectForKey:@"pharmacyCircle"] != nil)
-        {
-            PharmacyCircle* pharmacyCircle = [NSEntityDescription
-                                      insertNewObjectForEntityForName:@"PharmacyCircle"
-                                      inManagedObjectContext:self.managedObjectContext];
-            visit.pharmacyCircle = pharmacyCircle;
-            NSDictionary* circleObj = [obj objectForKey:@"pharmacyCircle"];
-            pharmacyCircle.participants = [circleObj objectForKey:@"participants"];
-            NSArray* brandsArr = [circleObj objectForKey:@"brands"];
-            for (NSNumber* brandId in brandsArr)
-            {
-                Drug* drug = [self findDrugById:brandId.integerValue];
-                if (drug)
-                [pharmacyCircle addBrandsObject:drug];
-            }
-        }
-        NSNumber* pharmacyId = [obj objectForKey:@"pharmacy"];
+        NSNumber* pharmacyId = [obj objectForKey:@"pharm_id"];
+        visit.pharmacy = [self findPharmacyById:pharmacyId.integerValue];
         visit.closed = @YES;
-        Pharmacy* pharmacy = [self findPharmacyById:pharmacyId.integerValue];
-        visit.pharmacy = pharmacy;
+        visit.sent = @YES;
     }
     
     NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
     dateFormatter.dateFormat = @"yyyy-MM-dd HH:mm:ss";
     NSDate* visitDate = [dateFormatter dateFromString:[dict objectForKey:@"date"]];
-    //self.currentUser.preparatDoseDate = preparatDoseDate;
+    self.currentUser.visitDate = visitDate;
     [self saveContext];
 }
 
@@ -866,7 +825,7 @@ static AppDelegate* sharedDelegate = nil;
     NSArray* addArray = [dict objectForKey:@"add"];
     for (NSDictionary* obj in addArray)
     {
-        NSString* pharmacyId = [obj objectForKey:@"id"];
+        NSString* pharmacyId = [obj objectForKey:@"pharm_id"];
         
         Pharmacy* pharmacy = [self findPharmacyById:pharmacyId.integerValue];
         if (!pharmacy)
@@ -998,7 +957,7 @@ static AppDelegate* sharedDelegate = nil;
 
 - (void)parseVisitLocal
 {
-    NSString* visitsFile = [[NSBundle mainBundle]pathForResource:@"Visits" ofType:@"json"];
+    NSString* visitsFile = [[NSBundle mainBundle]pathForResource:@"Visit" ofType:@"json"];
     NSData* visitsData = [NSData dataWithContentsOfFile:visitsFile];
     NSDictionary* visitsJSON = [NSJSONSerialization JSONObjectWithData:visitsData options:kNilOptions error:nil];
     NSDictionary* dic = [visitsJSON objectForKey:@"Visit"];

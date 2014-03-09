@@ -21,6 +21,7 @@
 @dynamic regionDate;
 @dynamic userDate;
 @dynamic pharmDate;
+@dynamic visitDate;
 @dynamic userRegionDate;
 @dynamic preparatDate;
 @dynamic preparatDoseDate;
