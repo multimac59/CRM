@@ -28,7 +28,7 @@
 {
     [super viewDidLoad];
     
-   // [Flurry logEvent:@"Переход" withParameters:@{@"Экран":@"Комментарий", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
+    [Flurry logEvent:@"Переход" withParameters:@{@"Экран":@"Комментарий", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
     
     self.title = @"Комментарий";
     

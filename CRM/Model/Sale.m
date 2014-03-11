@@ -16,7 +16,6 @@
 @dynamic comment;
 @dynamic order;
 @dynamic remainder;
-@dynamic saleId;
 @dynamic sold;
 @dynamic commerceVisit;
 @dynamic dose;

@@ -51,7 +51,7 @@
     NSError *error = nil;
     self.drugs = [context executeFetchRequest:request error:&error];
     
-    //[Flurry logEvent:@"Переход" withParameters:@{@"Экран":@"Промовизит/Фармкружок", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
+    [Flurry logEvent:@"Переход" withParameters:@{@"Экран":@"Промовизит/Фармкружок", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
     // Do any additional setup after loading the view from its nib.
     self.navigationItem.hidesBackButton = YES;
     self.navigationController.navigationItem.leftBarButtonItem = nil;
@@ -123,6 +123,7 @@
     {
         [self.pharmacyCircle addBrandsObject:brand];
     }
+    [[AppDelegate sharedDelegate]saveContext];
     [self.table reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
@@ -132,6 +133,7 @@
     participants++;
     self.pharmacyCircle.participants = @(participants);
     self.participantField.text = [NSString stringWithFormat:@"%@", self.pharmacyCircle.participants];
+    [[AppDelegate sharedDelegate]saveContext];
 }
 
 - (IBAction)decreaseParticipants:(id)sender
@@ -143,5 +145,6 @@
         self.pharmacyCircle.participants = @(participants);
         self.participantField.text = [NSString stringWithFormat:@"%@", self.pharmacyCircle.participants];
     }
+    [[AppDelegate sharedDelegate]saveContext];
 }
 @end

@@ -35,11 +35,11 @@
     [super setSelected:selected animated:animated];
     if (selected)
     {
-        self.triangleImage.hidden = NO;
+        //self.triangleImage.hidden = NO;
     }
     else
     {
-        self.triangleImage.hidden = YES;
+        //self.triangleImage.hidden = YES;
     }
     // Configure the view for the selected state
 }
@@ -100,7 +100,7 @@
         [self.pharmacyCircleButton setBackgroundImage:[UIImage imageNamed:@"typeButton2"] forState:UIControlStateNormal];
         [self.pharmacyCircleButton setBackgroundImage:[UIImage imageNamed:@"pharmacyCircleButton"] forState:UIControlStateHighlighted];
     }
-    
+/*
     if (visit.sent.boolValue)
     {
         self.contentView.backgroundColor = [UIColor greenColor];
@@ -113,6 +113,7 @@
     {
         self.contentView.backgroundColor = [UIColor clearColor];
     }
+ */
 }
 
 - (void)disableButtons

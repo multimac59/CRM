@@ -23,6 +23,7 @@
 @property (nonatomic, strong) NSMutableArray* visits;
 @property (nonatomic, strong) NSDate* filterDate;
 @property (nonatomic) BOOL calendarOn;
+@property (nonatomic, strong) NSIndexPath* selectedIndexPath;
 @end
 
 @implementation VisitsViewController
@@ -132,6 +133,18 @@ static const int filterHeight = 0;
     {
         cell = [[[NSBundle mainBundle]loadNibNamed:@"VisitsCell" owner:self options:Nil]objectAtIndex:0];
     }
+    
+    if (indexPath.row == self.selectedIndexPath.row)
+    {
+        cell.triangle.hidden = NO;
+        cell.contentView.backgroundColor = [UIColor colorWithRed:227/255.0 green:227/255.0 blue:227/255.0 alpha:1];
+    }
+    else
+    {
+        cell.contentView.backgroundColor = [UIColor colorWithRed:241/255.0 green:241/255.0 blue:241/255.0 alpha:1];
+        cell.triangle.hidden = YES;
+    }
+    
     Visit* visit = self.visits[indexPath.row];
     [cell setupCellWithPharmacy:visit.pharmacy andVisit:visit];
     [cell disableButtons];
@@ -140,12 +153,13 @@ static const int filterHeight = 0;
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [self selectVisitAtIndex:indexPath.row];
+    [self selectVisitAtIndexPath:indexPath];
 }
 
-- (void)selectVisitAtIndex:(NSInteger)index
+- (void)selectVisitAtIndexPath:(NSIndexPath*)indexPath
 {
-    Visit* visit = self.visits[index];
+    self.selectedIndexPath = indexPath;
+    Visit* visit = self.visits[indexPath.row];
     
     //Setup map
     NSMutableArray* allPharmacies = [NSMutableArray new];
@@ -159,12 +173,14 @@ static const int filterHeight = 0;
 
     //Show visit
     [self.visitViewController showVisit:visit];
+    
+    [self.table reloadData];
 }
 
 - (void)selectFirstFromList
 {
     if (self.visits.count > 0)
-        [self selectVisitAtIndex:0];
+        [self selectVisitAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
 }
 
 #pragma mark calendar
@@ -208,7 +224,7 @@ static const int filterHeight = 0;
                 self.calendarHeader.frame = CGRectMake(0, self.view.frame.size.height - calendarHeight - headerHeight - delta, panelWidth, headerHeight);
                 self.table.frame = CGRectMake(0, filterHeight, panelWidth, self.view.frame.size.height - calendarHeight - headerHeight - filterHeight - delta);
             } completion:^(BOOL finished) {
-                //[Flurry logEvent:@"Календарь" withParameters:@{@"Действие" : @"Открыть", @"Метод" : @"Свайп", @"Экран" : @"Визиты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
+                [Flurry logEvent:@"Календарь" withParameters:@{@"Действие" : @"Открыть", @"Метод" : @"Свайп", @"Экран" : @"Визиты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
                 self.calendarOn = YES;
             }];
         }
@@ -219,7 +235,7 @@ static const int filterHeight = 0;
                 self.calendarHeader.frame = CGRectMake(0, self.view.frame.size.height - headerHeight - delta, panelWidth, headerHeight);
                 self.table.frame = CGRectMake(0, filterHeight, panelWidth, self.view.frame.size.height - filterHeight - headerHeight - delta);
             } completion:^(BOOL finished) {
-                //[Flurry logEvent:@"Календарь" withParameters:@{@"Действие" : @"Закрыть", @"Метод" : @"Свайп", @"Экран" : @"Визиты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
+                [Flurry logEvent:@"Календарь" withParameters:@{@"Действие" : @"Закрыть", @"Метод" : @"Свайп", @"Экран" : @"Визиты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
                 self.calendarOn = NO;
             }];
         }
@@ -246,7 +262,7 @@ static const int filterHeight = 0;
             self.calendarHeader.frame = CGRectMake(0, self.view.frame.size.height - headerHeight - delta, panelWidth, headerHeight);
             self.table.frame = CGRectMake(0, filterHeight, panelWidth, self.view.frame.size.height - filterHeight - headerHeight - delta);
         } completion:^(BOOL finished) {
-            // [Flurry logEvent:@"Календарь" withParameters:@{@"Действие" : @"Закрыть", @"Метод" : @"Тап", @"Экран" : @"Визиты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
+            [Flurry logEvent:@"Календарь" withParameters:@{@"Действие" : @"Закрыть", @"Метод" : @"Тап", @"Экран" : @"Визиты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
             self.calendarOn = NO;
         }];
     }
@@ -257,7 +273,7 @@ static const int filterHeight = 0;
             self.calendarHeader.frame = CGRectMake(0, self.view.frame.size.height - calendarHeight - headerHeight - delta, panelWidth, headerHeight);
             self.table.frame = CGRectMake(0, filterHeight, panelWidth, self.view.frame.size.height - calendarHeight - headerHeight - filterHeight - delta);
         } completion:^(BOOL finished) {
-            // [Flurry logEvent:@"Календарь" withParameters:@{@"Действие" : @"Открыть", @"Метод" : @"Тап", @"Экран" : @"Визиты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
+            [Flurry logEvent:@"Календарь" withParameters:@{@"Действие" : @"Открыть", @"Метод" : @"Тап", @"Экран" : @"Визиты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
             self.calendarOn = YES;
         }];
     }
@@ -276,6 +292,6 @@ static const int filterHeight = 0;
     
     [self reloadData];
     
-    // [Flurry logEvent:@"Выбор даты" withParameters:@{@"Выбранная дата" : date, @"Экран" : @"Визиты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
+     [Flurry logEvent:@"Выбор даты" withParameters:@{@"Выбранная дата" : date, @"Экран" : @"Визиты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
 }
 @end

@@ -31,6 +31,7 @@
 #import <AFNetworking/AFNetworking.h>
 #import "NSDate+Additions.h"
 #import "Flurry.h"
+#import "NSString+MD5Extension.h"
 
 @implementation AppDelegate
 
@@ -133,6 +134,7 @@ static AppDelegate* sharedDelegate = nil;
     
     [Flurry startSession:@"VF6G7F9XQ8Jss8QM7249DS"];
     
+    //TODO: must do it in loadFromServer in production version
     [self parseUserLocal];
     [self showLoginScreenWithAnimation:NO];
     
@@ -274,12 +276,42 @@ static AppDelegate* sharedDelegate = nil;
         return nil;
 }
 
-- (Visit*)ById:(NSString*)visitId
+- (Sale*)findSaleInVisit:(Visit*)visit byDoseId:(NSInteger)doseId
+{
+    NSManagedObjectContext* context = self.managedObjectContext;
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:[NSEntityDescription entityForName:@"Sale" inManagedObjectContext:context]];
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"commerceVisit.visit=%@ && dose.doseId=%@", visit, [NSNumber numberWithFloat:doseId]];
+    [request setPredicate:predicate];
+    NSError *error = nil;
+    NSArray *results = [context executeFetchRequest:request error:&error];
+    if (results.count > 0)
+    return results[0];
+    else
+    return nil;
+}
+
+- (Visit*)findVisitById:(NSString*)visitId
 {
     NSManagedObjectContext* context = self.managedObjectContext;
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     [request setEntity:[NSEntityDescription entityForName:@"Visit" inManagedObjectContext:context]];
     NSPredicate* predicate = [NSPredicate predicateWithFormat:@"visitId=%@", visitId];
+    [request setPredicate:predicate];
+    NSError *error = nil;
+    NSArray *results = [context executeFetchRequest:request error:&error];
+    if (results.count > 0)
+    return results[0];
+    else
+    return nil;
+}
+
+- (Visit*)findVisitByServerId:(NSInteger)serverId
+{
+    NSManagedObjectContext* context = self.managedObjectContext;
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:[NSEntityDescription entityForName:@"Visit" inManagedObjectContext:context]];
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"serverId=%@", [NSNumber numberWithInteger:serverId]];
     [request setPredicate:predicate];
     NSError *error = nil;
     NSArray *results = [context executeFetchRequest:request error:&error];
@@ -309,8 +341,8 @@ static AppDelegate* sharedDelegate = nil;
     NSManagedObjectContext* context = self.managedObjectContext;
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     [request setEntity:[NSEntityDescription entityForName:@"User" inManagedObjectContext:context]];
-    //NSPredicate* predicate = [NSPredicate predicateWithFormat:@"login=%@ AND password=%@", login, password];
-    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"login=%@", login];
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"login=%@ AND password=%@", login, password];
+    //NSPredicate* predicate = [NSPredicate predicateWithFormat:@"login=%@", login];
     [request setPredicate:predicate];
     NSError *error = nil;
     NSArray *results = [context executeFetchRequest:request error:&error];
@@ -333,6 +365,7 @@ static AppDelegate* sharedDelegate = nil;
     if (coordinator != nil) {
         _managedObjectContext = [[NSManagedObjectContext alloc] init];
         [_managedObjectContext setPersistentStoreCoordinator:coordinator];
+        [_managedObjectContext setMergePolicy:[[NSMergePolicy alloc] initWithMergeType:NSMergeByPropertyObjectTrumpMergePolicyType]];
     }
     return _managedObjectContext;
 }
@@ -478,6 +511,8 @@ static AppDelegate* sharedDelegate = nil;
         [self parsePreparatLocal];
         [self parsePreparatDoseLocal];
         [self parsePharmLocal];
+        [self parseVisitLocal];
+        [self parseVisitSaleLocal];
         
         [self reloadData];
         LoginViewController* login = self.loginViewController;
@@ -491,30 +526,27 @@ static AppDelegate* sharedDelegate = nil;
     NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
     dateFormatter.dateFormat = @"yyyy-MM-dd HH:mm:ss";
     
-    NSDate* regionDate = self.currentUser.regionDate;
-    NSDate* userRegionDate = self.currentUser.userRegionDate;
-    //NSDate* pharmDate = self.currentUser.pharmDate;
-    NSDate* preparatDate = self.currentUser.preparatDate;
-    NSDate* preparatDoseDate = self.currentUser.preparatDoseDate;
-    //NSDate* userDate = self.currentUser.userDate;
-    NSDate* pharmDate = [NSDate dateWithTimeIntervalSince1970:0];
-    NSDate* userDate = [NSDate dateWithTimeIntervalSince1970:0];
-    NSDate* visitDate = [NSDate dateWithTimeIntervalSince1970:0];
+    NSString* regionDate = self.currentUser.regionDate;
+    NSString* userRegionDate = self.currentUser.userRegionDate;
+    NSString* pharmDate = self.currentUser.pharmDate;
+    NSString* preparatDate = self.currentUser.preparatDate;
+    NSString* preparatDoseDate = self.currentUser.preparatDoseDate;
+    //NSString* userDate = self.currentUser.userDate;
+    NSString* visitDate = self.currentUser.visitDate;
+//    pharmDate = [dateFormatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:0]];
+    NSString* userDate = [dateFormatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:0]];
+//    NSDate* visitDate = [NSDate dateWithTimeIntervalSince1970:0];
     
     if (FULL_LOAD || regionDate == nil)
     {
-        visitDate = regionDate = userRegionDate = pharmDate = preparatDate = preparatDoseDate = userDate = [NSDate dateWithTimeIntervalSince1970:0];
+        visitDate = regionDate = userRegionDate = pharmDate = preparatDate = preparatDoseDate = userDate = [dateFormatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:0]];
     }
     
-    NSString* urlString = [[NSString stringWithFormat:@"http://crm.mydigital.guru/server/sync?clientId=%@&date[Region]=%@&date[UserRegion]=%@&date[Pharm]=%@&date[Preparat]=%@&date[PreparatDose]=%@&date[User]=%@&date[Visit]=%@", self.currentUser.userId, [dateFormatter stringFromDate:regionDate], [dateFormatter stringFromDate:userRegionDate], [dateFormatter stringFromDate:pharmDate], [dateFormatter stringFromDate:preparatDate], [dateFormatter stringFromDate:preparatDoseDate], [dateFormatter stringFromDate:userDate], [dateFormatter stringFromDate:visitDate]]stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    NSString* urlString = [[NSString stringWithFormat:@"http://crm.mydigital.guru/server/sync?clientId=%@&date[Region]=%@&date[UserRegion]=%@&date[Pharm]=%@&date[Preparat]=%@&date[PreparatDose]=%@&date[User]=%@&date[Visit]=%@", self.currentUser.userId, regionDate, userRegionDate, pharmDate, preparatDate, preparatDoseDate, userDate, visitDate]stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     [manager GET:urlString parameters:Nil success:^(AFHTTPRequestOperation *operation, id responseObject)
      {
          NSLog(@"Success");
-         
-
-
-             
              /*
               id usersDict = [responseObject objectForKey:@"User"];
               if ([usersDict isKindOfClass:[NSDictionary class]])
@@ -551,11 +583,18 @@ static AppDelegate* sharedDelegate = nil;
              {
                  [self parseVisit:visitDict];
              }
-         [self reloadData];
-         self.sidePanelController.syncLabel.text = [dateFormatter stringFromDate:self.currentUser.pharmDate];
-         LoginViewController* login = self.loginViewController;
-         [login hideLoader];
-         [login dismissViewControllerAnimated:YES completion:nil];
+             id visitSaleDict = [responseObject objectForKey:@"VisitSale"];
+             if ([visitSaleDict isKindOfClass:[NSDictionary class]])
+             {
+                 [self parseVisitSale:visitSaleDict];
+             }
+            [self reloadData];
+            self.sidePanelController.syncLabel.text = self.currentUser.pharmDate;
+            //Because we may do not have it's name after first login before sync
+            self.sidePanelController.nameLabel.text = self.currentUser.name;
+            LoginViewController* login = self.loginViewController;
+            [login hideLoader];
+            [login dismissViewControllerAnimated:YES completion:nil];
      }
          failure:^(AFHTTPRequestOperation *operation, NSError *error)
      {
@@ -635,10 +674,7 @@ static AppDelegate* sharedDelegate = nil;
         Region* region = [self findRegionById:regionId.integerValue];
         [self.managedObjectContext deleteObject:region];
     }
-    NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
-    dateFormatter.dateFormat = @"yyyy-MM-dd HH:mm:ss";
-    NSDate* regionDate = [dateFormatter dateFromString:[dict objectForKey:@"date"]];
-    self.currentUser.regionDate = regionDate;
+    self.currentUser.regionDate = [dict objectForKey:@"date"];
     [self saveContext];
 }
 
@@ -658,7 +694,14 @@ static AppDelegate* sharedDelegate = nil;
         }
         user.name = [obj objectForKey:@"name"];
         if ([obj objectForKey:@"email"]!=[NSNull null])
-        user.login = [obj objectForKey:@"email"];
+        {
+            user.login = [obj objectForKey:@"email"];
+        }
+        if ([obj objectForKey:@"passwd"]!=[NSNull null])
+        {
+            NSString* passRaw = [obj objectForKey:@"passwd"];
+            user.password = [passRaw md5];
+        }
     }
     NSArray* removeArray = [dict objectForKey:@"remove"];
     for (NSNumber* regionId in removeArray)
@@ -666,10 +709,7 @@ static AppDelegate* sharedDelegate = nil;
         User* user = [self findUserById:regionId.integerValue];
         [self.managedObjectContext deleteObject:user];
     }
-    NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
-    dateFormatter.dateFormat = @"yyyy-MM-dd HH:mm:ss";
-    NSDate* userDate = [dateFormatter dateFromString:[dict objectForKey:@"date"]];
-    self.currentUser.userDate = userDate;
+    self.currentUser.userDate = [dict objectForKey:@"date"];
     [self saveContext];
 }
 
@@ -707,10 +747,7 @@ static AppDelegate* sharedDelegate = nil;
             }
         }
     }
-    NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
-    dateFormatter.dateFormat = @"yyyy-MM-dd HH:mm:ss";
-    NSDate* userRegiondate = [dateFormatter dateFromString:[dict objectForKey:@"date"]];
-    self.currentUser.userRegionDate = userRegiondate;
+    self.currentUser.userRegionDate = [dict objectForKey:@"date"];
     [self saveContext];
 }
 
@@ -724,12 +761,16 @@ static AppDelegate* sharedDelegate = nil;
         Drug* drug = [self findDrugById:drugId.integerValue];
         if (!drug)
         {
+            NSLog(@"Creating new drug");
             drug = [NSEntityDescription
                     insertNewObjectForEntityForName:@"Drug"
                     inManagedObjectContext:self.managedObjectContext];
             drug.drugId = drugId;
         }
         drug.name = [obj objectForKey:@"code"];
+        NSLog(@"Drug name = %@", drug.name);
+        NSLog(@"Saving context...");
+        [self saveContext];
         [drugs addObject:drug];
     }
     NSArray* removeArray = [dict objectForKey:@"remove"];
@@ -737,11 +778,9 @@ static AppDelegate* sharedDelegate = nil;
     {
         Drug* drug = [self findDrugById:drugId.integerValue];
         [self.managedObjectContext deleteObject:drug];
+        [self saveContext];
     }
-    NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
-    dateFormatter.dateFormat = @"yyyy-MM-dd HH:mm:ss";
-    NSDate* preparatDate = [dateFormatter dateFromString:[dict objectForKey:@"date"]];
-    self.currentUser.preparatDate = preparatDate;
+    self.currentUser.preparatDate = [dict objectForKey:@"date"];
     [self saveContext];
 }
 
@@ -757,8 +796,8 @@ static AppDelegate* sharedDelegate = nil;
             dose = [NSEntityDescription
                     insertNewObjectForEntityForName:@"Dose"
                     inManagedObjectContext:self.managedObjectContext];
+            dose.doseId = doseId;
         }
-        dose.doseId = doseId;
         dose.name = [obj objectForKey:@"code"];
         
         NSNumber* drugId = (NSNumber*)[obj objectForKey:@"preparat_id"];
@@ -774,10 +813,7 @@ static AppDelegate* sharedDelegate = nil;
         Dose* dose = [self findDoseById:doseId.integerValue];
         [self.managedObjectContext deleteObject:dose];
     }
-    NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
-    dateFormatter.dateFormat = @"yyyy-MM-dd HH:mm:ss";
-    NSDate* preparatDoseDate = [dateFormatter dateFromString:[dict objectForKey:@"date"]];
-    self.currentUser.preparatDoseDate = preparatDoseDate;
+    self.currentUser.preparatDoseDate = [dict objectForKey:@"date"];
     [self saveContext];
 }
 
@@ -788,7 +824,7 @@ static AppDelegate* sharedDelegate = nil;
     for (NSDictionary* obj in addArray)
     {
         NSString* visitId = [obj objectForKey:@"code"];
-        Visit* visit = [self ById:visitId];
+        Visit* visit = [self findVisitById:visitId];
         if (!visit)
         {
             visit = [NSEntityDescription
@@ -796,6 +832,7 @@ static AppDelegate* sharedDelegate = nil;
                     inManagedObjectContext:self.managedObjectContext];
             visit.visitId = visitId;
         }
+        visit.serverId = [obj objectForKey:@"visit_id"];
         
         NSString* visitDateString = [obj objectForKey:@"visit_ts"];
         NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
@@ -807,14 +844,27 @@ static AppDelegate* sharedDelegate = nil;
 
         NSNumber* pharmacyId = [obj objectForKey:@"pharm_id"];
         visit.pharmacy = [self findPharmacyById:pharmacyId.integerValue];
+        
+        NSNumber* circleParticipants = [obj objectForKey:@"circle_participants"];
+        {
+            visit.pharmacyCircle = [NSEntityDescription
+                     insertNewObjectForEntityForName:@"PharmacyCircle"
+                     inManagedObjectContext:self.managedObjectContext];
+            visit.pharmacyCircle.participants = circleParticipants;
+        }
+        
+        NSNumber* promoParticipants = [obj objectForKey:@"promo_participants"];
+        {
+            visit.promoVisit = [NSEntityDescription
+                                    insertNewObjectForEntityForName:@"PromoVisit"
+                                    inManagedObjectContext:self.managedObjectContext];
+            visit.promoVisit.participants = promoParticipants;
+        }
+        
         visit.closed = @YES;
         visit.sent = @YES;
     }
-    
-    NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
-    dateFormatter.dateFormat = @"yyyy-MM-dd HH:mm:ss";
-    NSDate* visitDate = [dateFormatter dateFromString:[dict objectForKey:@"date"]];
-    self.currentUser.visitDate = visitDate;
+    self.currentUser.visitDate = [dict objectForKey:@"date"];
     [self saveContext];
 }
 
@@ -892,12 +942,44 @@ static AppDelegate* sharedDelegate = nil;
         Pharmacy* pharmacy = [self findPharmacyById:pharmId.integerValue];
         [self.managedObjectContext deleteObject:pharmacy];
     }
-    NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
-    dateFormatter.dateFormat = @"yyyy-MM-dd HH:mm:ss";
-    NSDate* pharmDate = [dateFormatter dateFromString:[dict objectForKey:@"date"]];
-    self.currentUser.pharmDate = pharmDate;
+    self.currentUser.pharmDate = [dict objectForKey:@"date"];
     
     [self saveContext];
+}
+
+- (void)parseVisitSale:(NSDictionary*)dict
+{
+    NSArray* addArray = [dict objectForKey:@"add"];
+    for (NSDictionary* obj in addArray)
+    {
+        NSNumber* visitId = [obj objectForKey:@"visit_id"];
+        
+        Visit* visit = [self findVisitByServerId:visitId.integerValue];
+        if (visit)
+        {
+            NSNumber* doseId = [obj objectForKey:@"preparat_dose_id"];
+            Sale* sale = [self findSaleInVisit:visit byDoseId:doseId.integerValue];
+            if (!sale)
+            {
+            
+                sale = [NSEntityDescription
+                        insertNewObjectForEntityForName:@"Sale"
+                        inManagedObjectContext:self.managedObjectContext];
+                sale.dose = [self findDoseById:doseId.integerValue];
+            }
+            id restFlag = [dict objectForKey:@"rest_have"];
+            if (restFlag == [NSNull null])
+            {
+                sale.remainder = [dict objectForKey:@"rest_amount"];
+            }
+            else
+            {
+                sale.remainder = @-1;
+            }
+            sale.comment = [dict objectForKey:@"msg"];
+        }
+    }
+    //Deleting not implemented for this method
 }
 
 #pragma mark local json load methods
@@ -964,6 +1046,15 @@ static AppDelegate* sharedDelegate = nil;
     [self parseVisit:dic];
 }
 
+- (void)parseVisitSaleLocal
+{
+    NSString* salesFile = [[NSBundle mainBundle]pathForResource:@"VisitSale" ofType:@"json"];
+    NSData* salesData = [NSData dataWithContentsOfFile:salesFile];
+    NSDictionary* salesJSON = [NSJSONSerialization JSONObjectWithData:salesData options:kNilOptions error:nil];
+    NSDictionary* dic = [salesJSON objectForKey:@"VisitSale"];
+    [self parseVisitSale:dic];
+}
+
 #pragma mark standard AppDelegate methods
 - (void)applicationWillResignActive:(UIApplication *)application
 {
@@ -980,6 +1071,8 @@ static AppDelegate* sharedDelegate = nil;
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
     // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
+    [self sendDataToServer];
+    [self loadDataFromServer];
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application

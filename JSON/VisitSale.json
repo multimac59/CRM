@@ -1,0 +1,26 @@
+{
+   "VisitSale":{
+      "add":[
+         {
+            "visit_sale_id":1,
+            "visit_id":10,
+            "preparat_dose_id":21,
+            "rest_amount":59,
+            "rest_have":null,
+            "sale":15,
+            "purchase":69,
+            "msg":null
+         },
+         {
+            "visit_sale_id":2,
+            "visit_id":10,
+            "preparat_dose_id":17,
+            "rest_amount":null,
+            "rest_have":1,
+            "sale":56,
+            "purchase":68,
+            "msg":"Sdfdsfsd adgdsgsadg sadgsadgasd"
+         }
+      ]
+   }
+}

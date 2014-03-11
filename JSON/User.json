@@ -642,9 +642,9 @@
            {
            "boss_id":0,
            "code":null,
-           "email":"procionb@yandex.ru",
+           "email":"rbolshakov@nestline.ru",
            "name":"Жельдыбаев Александр Валерьевич",
-           "passwd":null,
+           "passwd":"123456",
            "status":null,
            "ts":null,
            "typ":null,
@@ -653,9 +653,9 @@
            {
            "boss_id":0,
            "code":null,
-           "email":"prociona@ya.ru",
+           "email":"vkomov@nestline.ru",
            "name":"Михайлова Мария Владимировна",
-           "passwd":null,
+           "passwd":"123",
            "status":null,
            "ts":null,
            "typ":null,

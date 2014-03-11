@@ -18,9 +18,6 @@
 #import "ModalNavigationController.h"
 #import "CommerceVisit.h"
 #import "AppDelegate.h"
-
-#import "NumberObject.h"
-
 @interface SalesViewController ()
 @property (nonatomic, strong) NSMutableArray* sectionStates;
 @property (nonatomic, strong) KeyboardView* keyboard;
@@ -41,7 +38,7 @@
 {
     [super viewDidLoad];
     
-    //[Flurry logEvent:@"Переход" withParameters:@{@"Экран":@"Продажи", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
+    [Flurry logEvent:@"Переход" withParameters:@{@"Экран":@"Продажи", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(reloadTable:) name:@"UpdateComments" object:nil];
     
     self.keyboard = [[NSBundle mainBundle]loadNibNamed:@"KeyboardView" owner:self options:nil][0];
@@ -173,7 +170,7 @@
         self.navigationController.view.frame = CGRectMake(1024, y, 1024, 768);
     }completion:^(BOOL finished) {
         [self.navigationController.view removeFromSuperview];
-        [[AppDelegate sharedDelegate]reloadData];
+        //[[AppDelegate sharedDelegate]reloadData];
     }];
 }
 

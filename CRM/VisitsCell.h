@@ -13,7 +13,7 @@
 @interface VisitsCell : UITableViewCell
 @property (nonatomic, weak) IBOutlet UILabel* pharmacyLabel;
 @property (nonatomic, weak) IBOutlet UILabel* visitsLabel;
-@property (nonatomic, weak) IBOutlet UIImageView* triangleImage;
+@property (nonatomic, weak) IBOutlet UIImageView* triangle;
 @property (nonatomic, weak) IBOutlet UILabel* addressLabel;
 @property (nonatomic, weak) IBOutlet UIImageView* statusView;
 @property (nonatomic, weak) IBOutlet UIImageView* pspView;

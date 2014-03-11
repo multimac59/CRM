@@ -8,10 +8,10 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="PharmaciesViewController"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="visitsCell" rowHeight="60" id="Pxx-cs-kHY" customClass="VisitsCell">
-            <rect key="frame" x="0.0" y="0.0" width="330" height="67"/>
+            <rect key="frame" x="0.0" y="0.0" width="320" height="67"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Pxx-cs-kHY" id="gsD-ZC-Do9">
-                <rect key="frame" x="0.0" y="0.0" width="330" height="66"/>
+                <rect key="frame" x="0.0" y="0.0" width="320" height="66"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Центральная аптека" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Zwj-yh-RZz">
@@ -28,10 +28,6 @@
                         <color key="textColor" red="0.54117647058823526" green="0.52941176470588236" blue="0.52941176470588236" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="cellTriangle" id="JlS-d0-X40">
-                        <rect key="frame" x="310" y="18" width="10" height="22"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    </imageView>
                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Москва, Пришвина, 23" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="8Z1-Xb-62G">
                         <rect key="frame" x="15" y="24" width="287" height="15"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -110,8 +106,17 @@
                         <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <nil key="highlightedColor"/>
                     </label>
+                    <view contentMode="scaleToFill" id="15W-4K-RsQ">
+                        <rect key="frame" x="0.0" y="65" width="320" height="1"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                        <color key="backgroundColor" red="0.82352941176470584" green="0.82352941176470584" blue="0.82352941176470584" alpha="1" colorSpace="calibratedRGB"/>
+                    </view>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="cellTriangle" id="mov-pw-a0b">
+                        <rect key="frame" x="310" y="24" width="10" height="17"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                    </imageView>
                 </subviews>
-                <color key="backgroundColor" red="0.92156862750000001" green="0.92156862750000001" blue="0.92156862750000001" alpha="1" colorSpace="calibratedRGB"/>
+                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
             </tableViewCellContentView>
             <connections>
                 <outlet property="addressLabel" destination="8Z1-Xb-62G" id="K3M-Oq-RHk"/>
@@ -121,7 +126,7 @@
                 <outlet property="promoVisitButton" destination="JCx-6t-MoU" id="a0q-e3-oEI"/>
                 <outlet property="pspView" destination="mmm-TH-3mS" id="0W9-Kf-FrG"/>
                 <outlet property="statusView" destination="WDD-wp-Cca" id="oVX-va-tuo"/>
-                <outlet property="triangleImage" destination="JlS-d0-X40" id="gkB-qi-nmf"/>
+                <outlet property="triangle" destination="mov-pw-a0b" id="i4X-Te-dTa"/>
                 <outlet property="visitsLabel" destination="Urd-QC-Nkk" id="tzt-DN-qI0"/>
             </connections>
         </tableViewCell>

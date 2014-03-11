@@ -83,7 +83,7 @@
         [[NSUserDefaults standardUserDefaults]setObject:user.userId forKey:@"lastUserId"];
         [[NSUserDefaults standardUserDefaults]synchronize];
         [AppDelegate sharedDelegate].currentUser = user;
-        //[Flurry logEvent:@"Логин" withParameters:@{@"Пользователь" : user.login, @"Дата" : [NSDate date]}];
+        [Flurry logEvent:@"Логин" withParameters:@{@"Пользователь" : user.login, @"Дата" : [NSDate date]}];
         [self showLoader];
         [[AppDelegate sharedDelegate]loadDataFromServer];
         //[self dismissViewControllerAnimated:YES completion:nil];
@@ -115,8 +115,9 @@
                 
                 [[NSUserDefaults standardUserDefaults]setObject:user.userId forKey:@"lastUserId"];
                 [[NSUserDefaults standardUserDefaults]synchronize];
-                //[Flurry logEvent:@"Логин" withParameters:@{@"Пользователь" : user.login, @"Дата" : [NSDate date]}];
-                [self dismissViewControllerAnimated:YES completion:nil];
+                [Flurry logEvent:@"Логин" withParameters:@{@"Пользователь" : user.login, @"Дата" : [NSDate date]}];
+                [self showLoader];
+                [[AppDelegate sharedDelegate]loadDataFromServer];
             }
             else
             {
@@ -166,6 +167,7 @@
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    [textField resignFirstResponder];
     [self goToMain:self];
     return YES;
 }

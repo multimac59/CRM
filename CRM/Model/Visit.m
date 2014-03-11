@@ -26,6 +26,7 @@
 @dynamic promoVisit;
 @dynamic user;
 @dynamic sent;
+@dynamic serverId;
 
 - (NSDictionary*)encodeToJSON
 {

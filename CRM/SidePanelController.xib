@@ -34,7 +34,7 @@
                     </connections>
                 </tableView>
                 <view contentMode="scaleToFill" id="36K-kq-VVr">
-                    <rect key="frame" x="0.0" y="575" width="272" height="193"/>
+                    <rect key="frame" x="0.0" y="575" width="270" height="193"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                     <subviews>
                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="rbolshakov@nestline.ru" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Fd1-jK-FOi">
@@ -73,12 +73,12 @@
                             <nil key="highlightedColor"/>
                         </label>
                         <view contentMode="scaleToFill" id="swZ-iR-2yX">
-                            <rect key="frame" x="0.0" y="8" width="272" height="1"/>
+                            <rect key="frame" x="0.0" y="8" width="270" height="1"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                         </view>
                         <view contentMode="scaleToFill" id="rNB-fM-Ve0">
-                            <rect key="frame" x="0.0" y="59" width="272" height="1"/>
+                            <rect key="frame" x="0.0" y="59" width="270" height="1"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                         </view>
@@ -95,6 +95,7 @@
                         </button>
                     </subviews>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <inset key="insetFor6xAndEarlier" minX="0.0" minY="20" maxX="0.0" maxY="-20"/>
                 </view>
             </subviews>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>

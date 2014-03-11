@@ -67,7 +67,7 @@ static const int filterHeight = 110;
     self.navigationController.navigationBar.translucent = NO;
     
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(removeFromFavourites:) name:@"RemoveFromFavourites" object:nil];
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(reloadTable:) name:@"VisitsUpdated" object:nil];
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(reloadData) name:@"VisitsUpdated" object:nil];
     
     NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
     dateFormatter.dateFormat = @"dd.MM.yyyy";
@@ -100,7 +100,13 @@ static const int filterHeight = 110;
     [self loadPharmacies];
     [self sortPharmacies];
     [self.table reloadData];
-    [self selectFirstFromList];
+}
+
+- (void)reloadDataAndMap
+{
+    [self reloadData];
+    self.pharmacyViewController.allPharmacies = [[self plannedPharmacies]mutableCopy];
+    [self.pharmacyViewController reloadMap];
 }
 
 - (NSArray*)plannedPharmacies
@@ -215,11 +221,6 @@ static const int filterHeight = 110;
 
 #pragma mark table
 
-- (void)reloadTable:(id)sender
-{
-    [self.table reloadData];
-}
-
 - (void)selectFirstFromList
 {
     if (self.pharmacies.count > 0)
@@ -253,9 +254,15 @@ static const int filterHeight = 110;
     }
     
     if (indexPath.row == self.selectedIndexPath.row)
-        cell.triangleImage.hidden = NO;
+    {
+        cell.triangle.hidden = NO;
+        cell.contentView.backgroundColor = [UIColor colorWithRed:227/255.0 green:227/255.0 blue:227/255.0 alpha:1];
+    }
     else
-        cell.triangleImage.hidden = YES;
+    {
+        cell.contentView.backgroundColor = [UIColor colorWithRed:241/255.0 green:241/255.0 blue:241/255.0 alpha:1];
+        cell.triangle.hidden = YES;
+    }
     
     Pharmacy* pharmacy = self.pharmacies[indexPath.row];
     Visit* visit = [[VisitManager sharedManager] visitInPharmacy:pharmacy forDate:self.selectedDate];
@@ -328,7 +335,7 @@ static const int filterHeight = 110;
         [self reloadData];
         [self selectFirstFromList];
         
-        //[Flurry logEvent:@"Фильтр" withParameters:@{@"Тип" : @"Выбранные", @"Состояние" : @"Нет", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
+        [Flurry logEvent:@"Фильтр" withParameters:@{@"Тип" : @"Выбранные", @"Состояние" : @"Нет", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
     }
 }
 
@@ -345,7 +352,7 @@ static const int filterHeight = 110;
         [self reloadData];
         [self selectFirstFromList];
         
-        //[Flurry logEvent:@"Фильтр" withParameters:@{@"Тип" : @"Выбранные", @"Состояние" : @"Да", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
+        [Flurry logEvent:@"Фильтр" withParameters:@{@"Тип" : @"Выбранные", @"Состояние" : @"Да", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
     }
 }
 
@@ -356,12 +363,12 @@ static const int filterHeight = 110;
     if (targetable)
     {
         [self.targetButton setBackgroundImage:[UIImage imageNamed:@"targetBgPressed"] forState:UIControlStateNormal];
-        //[Flurry logEvent:@"Фильтр" withParameters:@{@"Тип" : @"Таргентые", @"Состояние" : @"Да", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
+        [Flurry logEvent:@"Фильтр" withParameters:@{@"Тип" : @"Таргентые", @"Состояние" : @"Да", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
     }
     else
     {
         [self.targetButton setBackgroundImage:[UIImage imageNamed:@"targetBg"] forState:UIControlStateNormal];
-        //[Flurry logEvent:@"Фильтр" withParameters:@{@"Тип" : @"Таргентые", @"Состояние" : @"Нет", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
+        [Flurry logEvent:@"Фильтр" withParameters:@{@"Тип" : @"Таргентые", @"Состояние" : @"Нет", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
     }
     self.targetLabel.hidden = !targetable;
     
@@ -375,7 +382,7 @@ static const int filterHeight = 110;
     {
         NSString* finalString = [textField.text stringByReplacingCharactersInRange:range withString:string];
         self.filterString = finalString;
-        //[Flurry logEvent:@"Фильтр" withParameters:@{@"Тип" : @"Поиск по строке", @"Состояние" : @"Да", @"Строка поиска" : finalString , @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
+        [Flurry logEvent:@"Фильтр" withParameters:@{@"Тип" : @"Поиск по строке", @"Состояние" : @"Да", @"Строка поиска" : finalString , @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
     }
     [self reloadData];
     return YES;
@@ -391,85 +398,66 @@ static const int filterHeight = 110;
     return indexPath;
 }
 
+- (NSIndexPath*)indexPathForPharmacy:(Pharmacy*)pharmacy
+{
+    int index = [self.pharmacies indexOfObject:pharmacy];
+    if (index != NSNotFound)
+    {
+        NSIndexPath* indexPath = [NSIndexPath indexPathForRow:index inSection:0];
+        return indexPath;
+    }
+    else
+    {
+        return nil;
+    }
+}
+
 #pragma mark plan buttons
 - (IBAction)commerceVisitClicked:(id)sender
 {
     NSIndexPath* indexPath = [self indexPathForSender:sender];
     Pharmacy* pharmacy = self.pharmacies[indexPath.row];
-    if ([[VisitManager sharedManager]toggleCommerceVisitInPharmacy:pharmacy forDate:self.selectedDate])
+    [[VisitManager sharedManager]toggleCommerceVisitInPharmacy:pharmacy forDate:self.selectedDate];
+    if ([self indexPathForPharmacy:pharmacy])
     {
-        [self.pharmacyViewController.allPharmacies addObject:pharmacy];
+        [self selectPharmacyAtIndexPath:indexPath];
     }
     else
     {
-        [self.pharmacies removeObject:pharmacy];
-        [self.pharmacyViewController.allPharmacies removeObject:pharmacy];
-    }
-    
-    if (planned)
-    {
-        [self.table reloadData];
         [self selectFirstFromList];
     }
-    else
-        [self.table reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
-    
-    self.pharmacyViewController.allPharmacies = [[self plannedPharmacies]mutableCopy];
-    //Too wasteful
-    [self.pharmacyViewController reloadMap];
 }
 
 - (IBAction)promoVisitClicked:(id)sender
 {
     NSIndexPath* indexPath = [self indexPathForSender:sender];
     Pharmacy* pharmacy = self.pharmacies[indexPath.row];
-    if ([[VisitManager sharedManager]togglePromoVisitInPharmacy:pharmacy forDate:self.selectedDate])
+    [[VisitManager sharedManager]togglePromoVisitInPharmacy:pharmacy forDate:self.selectedDate];
+    if ([self indexPathForPharmacy:pharmacy])
     {
-        [self.pharmacyViewController.allPharmacies addObject:pharmacy];
+        [self selectPharmacyAtIndexPath:indexPath];
     }
     else
     {
-        [self.pharmacies removeObject:pharmacy];
-        [self.pharmacyViewController.allPharmacies removeObject:pharmacy];
-    }
-    
-    if (planned)
-    {
-        [self.table reloadData];
         [self selectFirstFromList];
     }
-    else
-        [self.table reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
-    
-    self.pharmacyViewController.allPharmacies = [[self plannedPharmacies]mutableCopy];
-    [self.pharmacyViewController reloadMap];
 }
 
 - (IBAction)pharmacyCircleClicked:(id)sender
 {
     NSIndexPath* indexPath = [self indexPathForSender:sender];
     Pharmacy* pharmacy = self.pharmacies[indexPath.row];
-    if ([[VisitManager sharedManager]togglePharmacyCircleInPharmacy:pharmacy forDate:self.selectedDate])
+    [[VisitManager sharedManager]togglePharmacyCircleInPharmacy:pharmacy forDate:self.selectedDate];
+    if ([self indexPathForPharmacy:pharmacy])
     {
-        [self.pharmacyViewController.allPharmacies addObject:pharmacy];
+        [self selectPharmacyAtIndexPath:indexPath];
     }
     else
     {
-        [self.pharmacies removeObject:pharmacy];
-        [self.pharmacyViewController.allPharmacies removeObject:pharmacy];
-    }
-    
-    if (planned)
-    {
-        [self.table reloadData];
         [self selectFirstFromList];
     }
-    else
-        [self.table reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
-    
-    self.pharmacyViewController.allPharmacies = [[self plannedPharmacies]mutableCopy];
-    [self.pharmacyViewController reloadMap];
 }
+
 
 #pragma mark Calender
 - (void)setupCalendar
@@ -506,7 +494,7 @@ static const int filterHeight = 110;
                 self.calendarHeader.frame = CGRectMake(0, self.view.frame.size.height - calendarHeight - headerHeight - delta, panelWidth, headerHeight);
                 self.table.frame = CGRectMake(0, filterHeight, panelWidth, self.view.frame.size.height - calendarHeight - headerHeight - filterHeight - delta);
             } completion:^(BOOL finished) {
-                //[Flurry logEvent:@"Календарь" withParameters:@{@"Действие" : @"Открыть", @"Метод" : @"Свайп", @"Экран" : @"Клиенты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
+                [Flurry logEvent:@"Календарь" withParameters:@{@"Действие" : @"Открыть", @"Метод" : @"Свайп", @"Экран" : @"Клиенты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
                 self.calendarOn = YES;
             }];
         }
@@ -517,7 +505,7 @@ static const int filterHeight = 110;
                 self.calendarHeader.frame = CGRectMake(0, self.view.frame.size.height - headerHeight - delta, panelWidth, headerHeight);
                 self.table.frame = CGRectMake(0, filterHeight, panelWidth, self.view.frame.size.height - filterHeight - headerHeight - delta);
             } completion:^(BOOL finished) {
-                // [Flurry logEvent:@"Календарь" withParameters:@{@"Действие" : @"Закрыть", @"Метод" : @"Свайп", @"Экран" : @"Клиенты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
+                [Flurry logEvent:@"Календарь" withParameters:@{@"Действие" : @"Закрыть", @"Метод" : @"Свайп", @"Экран" : @"Клиенты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
                 self.calendarOn = NO;
             }];
         }
@@ -543,7 +531,7 @@ static const int filterHeight = 110;
             self.calendarHeader.frame = CGRectMake(0, self.view.frame.size.height - headerHeight - delta, panelWidth, headerHeight);
             self.table.frame = CGRectMake(0, filterHeight, panelWidth, self.view.frame.size.height - filterHeight - headerHeight - delta);
         } completion:^(BOOL finished) {
-            // [Flurry logEvent:@"Календарь" withParameters:@{@"Действие" : @"Закрыть", @"Метод" : @"Тап", @"Экран" : @"Клиенты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
+            [Flurry logEvent:@"Календарь" withParameters:@{@"Действие" : @"Закрыть", @"Метод" : @"Тап", @"Экран" : @"Клиенты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
             self.calendarOn = NO;
         }];
     }
@@ -554,7 +542,7 @@ static const int filterHeight = 110;
             self.calendarHeader.frame = CGRectMake(0, self.view.frame.size.height - calendarHeight - headerHeight - delta, panelWidth, headerHeight);
             self.table.frame = CGRectMake(0, filterHeight, panelWidth, self.view.frame.size.height - calendarHeight - headerHeight - filterHeight - delta);
         } completion:^(BOOL finished) {
-            // [Flurry logEvent:@"Календарь" withParameters:@{@"Действие" : @"Открыть", @"Метод" : @"Тап", @"Экран" : @"Клиенты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
+            [Flurry logEvent:@"Календарь" withParameters:@{@"Действие" : @"Открыть", @"Метод" : @"Тап", @"Экран" : @"Клиенты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
             self.calendarOn = YES;
         }];
     }
@@ -573,6 +561,6 @@ static const int filterHeight = 110;
     [self reloadData];
     [self selectFirstFromList];
     
-    //[Flurry logEvent:@"Выбор даты" withParameters:@{@"Выбранная дата" : date, @"Экран" : @"Клиенты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
+    [Flurry logEvent:@"Выбор даты" withParameters:@{@"Выбранная дата" : date, @"Экран" : @"Клиенты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
 }
 @end

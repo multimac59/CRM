@@ -17,6 +17,7 @@
 @property (nonatomic, retain) NSNumber * sent;
 @property (nonatomic, retain) NSDate * date;
 @property (nonatomic, retain) NSString * visitId;
+@property (nonatomic, retain) NSNumber * serverId;
 @property (nonatomic, retain) CommerceVisit *commerceVisit;
 @property (nonatomic, retain) Pharmacy *pharmacy;
 @property (nonatomic, retain) PharmacyCircle *pharmacyCircle;

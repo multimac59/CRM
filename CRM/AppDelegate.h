@@ -16,7 +16,7 @@
 #import "LoginViewController.h"
 
 #define ARC4RANDOM_MAX 0x100000000
-#define LOCAL 1
+#define LOCAL 0
 #define FULL_LOAD 0
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, SidePanelDelegate>

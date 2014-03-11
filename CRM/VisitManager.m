@@ -36,6 +36,7 @@
     visit.closed = @NO;
     visit.sent = @NO;
     [pharmacy addVisitsObject:visit];
+    [[AppDelegate sharedDelegate]saveContext];
     return visit;
 }
 
@@ -77,7 +78,7 @@
                                         insertNewObjectForEntityForName:@"CommerceVisit"
                                         inManagedObjectContext:[AppDelegate sharedDelegate].managedObjectContext];
         visit.commerceVisit = commerceVisit;
-        //[Flurry logEvent:@"Планирование" withParameters:@{@"Событие" : @"Продажи", @"Состояние" : @"Да", @"Аптека" : visit.pharmacy.name, @"Дата визита" : self.selectedDate, @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
+        [Flurry logEvent:@"Планирование" withParameters:@{@"Событие" : @"Продажи", @"Состояние" : @"Да", @"Аптека" : visit.pharmacy.name, @"Дата визита" : date, @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
         [[AppDelegate sharedDelegate]saveContext];
         [[NSNotificationCenter defaultCenter]postNotificationName:@"VisitsUpdated" object:self];
         return YES;
@@ -88,12 +89,12 @@
         {
             [[AppDelegate sharedDelegate].managedObjectContext deleteObject:visit.commerceVisit];
             visit.commerceVisit = nil;
+            [Flurry logEvent:@"Планирование" withParameters:@{@"Событие" : @"Продажи", @"Состояние" : @"Нет", @"Аптека" : visit.pharmacy.name, @"Дата визита" : date, @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
             if (!visit.promoVisit && !visit.pharmacyCircle)
             {
                 [pharmacy removeVisitsObject:visit];
                 [[AppDelegate sharedDelegate].managedObjectContext deleteObject:visit];
             }
-            //[Flurry logEvent:@"Планирование" withParameters:@{@"Событие" : @"Продажи", @"Состояние" : @"Нет", @"Аптека" : visit.pharmacy.name, @"Дата визита" : self.selectedDate, @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
             [[AppDelegate sharedDelegate]saveContext];
             [[NSNotificationCenter defaultCenter]postNotificationName:@"VisitsUpdated" object:self];
             return NO;
@@ -104,7 +105,7 @@
                                             insertNewObjectForEntityForName:@"CommerceVisit"
                                             inManagedObjectContext:[AppDelegate sharedDelegate].managedObjectContext];
             visit.commerceVisit = commerceVisit;
-            //[Flurry logEvent:@"Планирование" withParameters:@{@"Событие" : @"Продажи", @"Состояние" : @"Да", @"Аптека" : visit.pharmacy.name, @"Дата визита" : self.selectedDate, @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
+            [Flurry logEvent:@"Планирование" withParameters:@{@"Событие" : @"Продажи", @"Состояние" : @"Да", @"Аптека" : visit.pharmacy.name, @"Дата визита" : date, @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
             [[AppDelegate sharedDelegate]saveContext];
             [[NSNotificationCenter defaultCenter]postNotificationName:@"VisitsUpdated" object:self];
             return YES;
@@ -129,7 +130,7 @@
                                         insertNewObjectForEntityForName:@"PromoVisit"
                                         inManagedObjectContext:[AppDelegate sharedDelegate].managedObjectContext];
         visit.promoVisit = promoVisit;
-        //[Flurry logEvent:@"Планирование" withParameters:@{@"Событие" : @"Продажи", @"Состояние" : @"Да", @"Аптека" : visit.pharmacy.name, @"Дата визита" : self.selectedDate, @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
+        [Flurry logEvent:@"Планирование" withParameters:@{@"Событие" : @"Продажи", @"Состояние" : @"Да", @"Аптека" : visit.pharmacy.name, @"Дата визита" : date, @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
         [[AppDelegate sharedDelegate]saveContext];
         [[NSNotificationCenter defaultCenter]postNotificationName:@"VisitsUpdated" object:self];
         return YES;
@@ -140,12 +141,12 @@
         {
             [[AppDelegate sharedDelegate].managedObjectContext deleteObject:visit.promoVisit];
             visit.promoVisit = nil;
+            [Flurry logEvent:@"Планирование" withParameters:@{@"Событие" : @"Продажи", @"Состояние" : @"Нет", @"Аптека" : visit.pharmacy.name, @"Дата визита" : date, @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
             if (!visit.commerceVisit && !visit.pharmacyCircle)
             {
                 [pharmacy removeVisitsObject:visit];
                 [[AppDelegate sharedDelegate].managedObjectContext deleteObject:visit];
             }
-            //[Flurry logEvent:@"Планирование" withParameters:@{@"Событие" : @"Продажи", @"Состояние" : @"Нет", @"Аптека" : visit.pharmacy.name, @"Дата визита" : self.selectedDate, @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
             [[AppDelegate sharedDelegate]saveContext];
             [[NSNotificationCenter defaultCenter]postNotificationName:@"VisitsUpdated" object:self];
             return NO;
@@ -156,7 +157,7 @@
                                             insertNewObjectForEntityForName:@"PromoVisit"
                                             inManagedObjectContext:[AppDelegate sharedDelegate].managedObjectContext];
             visit.promoVisit = promoVisit;
-            //[Flurry logEvent:@"Планирование" withParameters:@{@"Событие" : @"Продажи", @"Состояние" : @"Да", @"Аптека" : visit.pharmacy.name, @"Дата визита" : self.selectedDate, @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
+            [Flurry logEvent:@"Планирование" withParameters:@{@"Событие" : @"Продажи", @"Состояние" : @"Да", @"Аптека" : visit.pharmacy.name, @"Дата визита" : date, @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
             [[AppDelegate sharedDelegate]saveContext];
             [[NSNotificationCenter defaultCenter]postNotificationName:@"VisitsUpdated" object:self];
             return YES;
@@ -181,7 +182,7 @@
                                   insertNewObjectForEntityForName:@"PharmacyCircle"
                                   inManagedObjectContext:[AppDelegate sharedDelegate].managedObjectContext];
         visit.pharmacyCircle = pharmacyCircle;
-        //[Flurry logEvent:@"Планирование" withParameters:@{@"Событие" : @"Продажи", @"Состояние" : @"Да", @"Аптека" : visit.pharmacy.name, @"Дата визита" : self.selectedDate, @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
+        [Flurry logEvent:@"Планирование" withParameters:@{@"Событие" : @"Продажи", @"Состояние" : @"Да", @"Аптека" : visit.pharmacy.name, @"Дата визита" : date, @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
         [[AppDelegate sharedDelegate]saveContext];
         [[NSNotificationCenter defaultCenter]postNotificationName:@"VisitsUpdated" object:self];
         return YES;
@@ -192,12 +193,12 @@
         {
             [[AppDelegate sharedDelegate].managedObjectContext deleteObject:visit.pharmacyCircle];
             visit.pharmacyCircle = nil;
+            [Flurry logEvent:@"Планирование" withParameters:@{@"Событие" : @"Продажи", @"Состояние" : @"Нет", @"Аптека" : visit.pharmacy.name, @"Дата визита" : date, @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
             if (!visit.commerceVisit && !visit.promoVisit)
             {
                 [pharmacy removeVisitsObject:visit];
                 [[AppDelegate sharedDelegate].managedObjectContext deleteObject:visit];
             }
-            //[Flurry logEvent:@"Планирование" withParameters:@{@"Событие" : @"Продажи", @"Состояние" : @"Нет", @"Аптека" : visit.pharmacy.name, @"Дата визита" : self.selectedDate, @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
             [[AppDelegate sharedDelegate]saveContext];
             [[NSNotificationCenter defaultCenter]postNotificationName:@"VisitsUpdated" object:self];
             return NO;
@@ -208,7 +209,7 @@
                                       insertNewObjectForEntityForName:@"PharmacyCircle"
                                       inManagedObjectContext:[AppDelegate sharedDelegate].managedObjectContext];
             visit.pharmacyCircle = pharmacyCircle;
-            //[Flurry logEvent:@"Планирование" withParameters:@{@"Событие" : @"Продажи", @"Состояние" : @"Да", @"Аптека" : visit.pharmacy.name, @"Дата визита" : self.selectedDate, @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
+            [Flurry logEvent:@"Планирование" withParameters:@{@"Событие" : @"Продажи", @"Состояние" : @"Да", @"Аптека" : visit.pharmacy.name, @"Дата визита" : date, @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
             [[AppDelegate sharedDelegate]saveContext];
             [[NSNotificationCenter defaultCenter]postNotificationName:@"VisitsUpdated" object:self];
             return YES;

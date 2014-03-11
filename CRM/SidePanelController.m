@@ -45,7 +45,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 3;
+    return 2;
 }
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -84,11 +84,11 @@
     {
         case 0:
             targetController = [AppDelegate sharedDelegate].visitsSplitController;
-            //[Flurry logEvent:@"Переход" withParameters:@{@"Экран":@"Визиты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
+            [Flurry logEvent:@"Переход" withParameters:@{@"Экран":@"Визиты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
             break;
         case 1:
             targetController = [AppDelegate sharedDelegate].clientsSplitController;
-            //[Flurry logEvent:@"Переход" withParameters:@{@"Экран":@"Клиенты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
+            [Flurry logEvent:@"Переход" withParameters:@{@"Экран":@"Клиенты", @"Пользователь" : [AppDelegate sharedDelegate].currentUser.login, @"Дата" : [NSDate date]}];
         default:
             break;
     }
