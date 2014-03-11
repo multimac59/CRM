@@ -70,6 +70,8 @@
 		70536F4118BE449B009DE1FA /* NSDate+Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = 70536F4018BE449B009DE1FA /* NSDate+Additions.m */; };
 		70541E671886895600B9C64A /* VisitsCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 70541E661886895600B9C64A /* VisitsCell.m */; };
 		70541E691886896700B9C64A /* VisitsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70541E681886896700B9C64A /* VisitsCell.xib */; };
+		7066601718CF4A7D0081429D /* SyncLoader.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7066601618CF4A7D0081429D /* SyncLoader.xib */; };
+		7066601A18CF4AD90081429D /* SyncLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 7066601918CF4AD90081429D /* SyncLoader.m */; };
 		706745B61887EFDD00022D6B /* PopoverController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 706745B51887EFDD00022D6B /* PopoverController.xib */; };
 		706745BE18881D9E00022D6B /* ModalNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 706745BD18881D9E00022D6B /* ModalNavigationController.m */; };
 		706745D61889796400022D6B /* TopicSideCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 706745D51889796400022D6B /* TopicSideCell.m */; };
@@ -120,7 +122,7 @@
 
 /* Begin PBXFileReference section */
 		2E1DD7F07C3A435DB89129F5 /* Pods-CRMTests.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CRMTests.xcconfig"; path = "Pods/Pods-CRMTests.xcconfig"; sourceTree = "<group>"; };
-		306C664318CBE29900936833 /* libPods.a */ = {isa = PBXFileReference; lastKnownFileType = file; name = libPods.a; path = "Pods/build/Debug-iphoneos/libPods.a"; sourceTree = "<group>"; };
+		306C664318CBE29900936833 /* libPods.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPods.a; path = "Pods/build/Debug-iphoneos/libPods.a"; sourceTree = "<group>"; };
 		306C664B18CBE44C00936833 /* libxml2.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.2.dylib; path = usr/lib/libxml2.2.dylib; sourceTree = SDKROOT; };
 		306C66C918CE35C100936833 /* VisitSale.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = VisitSale.json; sourceTree = "<group>"; };
 		3086E69018CA1598007206FC /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = User.h; path = CRM/Model/User.h; sourceTree = "<group>"; };
@@ -216,6 +218,9 @@
 		70541E651886895600B9C64A /* VisitsCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VisitsCell.h; sourceTree = "<group>"; };
 		70541E661886895600B9C64A /* VisitsCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VisitsCell.m; sourceTree = "<group>"; };
 		70541E681886896700B9C64A /* VisitsCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = VisitsCell.xib; sourceTree = "<group>"; };
+		7066601618CF4A7D0081429D /* SyncLoader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = SyncLoader.xib; path = CRM/SyncLoader.xib; sourceTree = "<group>"; };
+		7066601818CF4AD90081429D /* SyncLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SyncLoader.h; path = CRM/SyncLoader.h; sourceTree = "<group>"; };
+		7066601918CF4AD90081429D /* SyncLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SyncLoader.m; path = CRM/SyncLoader.m; sourceTree = "<group>"; };
 		706745B51887EFDD00022D6B /* PopoverController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PopoverController.xib; sourceTree = "<group>"; };
 		706745BC18881D9E00022D6B /* ModalNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModalNavigationController.h; sourceTree = "<group>"; };
 		706745BD18881D9E00022D6B /* ModalNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ModalNavigationController.m; sourceTree = "<group>"; };
@@ -598,6 +603,9 @@
 				70536F3C18BD06D2009DE1FA /* ParticipantCell.h */,
 				70536F3D18BD06D2009DE1FA /* ParticipantCell.m */,
 				70536F3418BD0655009DE1FA /* ParticipantCell.xib */,
+				7066601618CF4A7D0081429D /* SyncLoader.xib */,
+				7066601818CF4AD90081429D /* SyncLoader.h */,
+				7066601918CF4AD90081429D /* SyncLoader.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -727,6 +735,7 @@
 				70C4AE041855B4BF00BD0E8B /* PharmaciesViewController.xib in Resources */,
 				306C66CA18CE35C100936833 /* VisitSale.json in Resources */,
 				703B1C1E18B49F0000B3C9DE /* PharmacyCircleViewController.xib in Resources */,
+				7066601718CF4A7D0081429D /* SyncLoader.xib in Resources */,
 				70282236189667F200ED033B /* VisitButtonsCell.xib in Resources */,
 				702FEBC818586458009A95BA /* User.json in Resources */,
 				70C4ADFB1855ABD300BD0E8B /* VisitViewController.xib in Resources */,
@@ -831,6 +840,7 @@
 				7053645918C46FA900C8C1E0 /* VisitManager.m in Sources */,
 				70536F3818BD06AC009DE1FA /* BrandCell.m in Sources */,
 				702822431896686000ED033B /* VisitHistoryCell.m in Sources */,
+				7066601A18CF4AD90081429D /* SyncLoader.m in Sources */,
 				70B188881868449300C5A211 /* MapAnnotation.m in Sources */,
 				3086E69218CA1598007206FC /* User.m in Sources */,
 				70744B8B189958B3005E3536 /* MFSideMenuCustomContainer.m in Sources */,
@@ -986,11 +996,14 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 52792385F4584DFA8DBE0ED0 /* Pods.xcconfig */;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD)";
+				ARCHS = (
+					armv7,
+					armv7s,
+				);
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Damir Samigullin (7GJNQ4MWXT)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Damir Samigullin (7GJNQ4MWXT)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CRM/CRM-Prefix.pch";
 				INFOPLIST_FILE = "CRM/CRM-Info.plist";
@@ -998,7 +1011,8 @@
 				MOMC_NO_INVERSE_RELATIONSHIP_WARNINGS = NO;
 				MOMC_NO_WARNINGS = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "19F9FDDF-8797-409D-83AA-2F7B440E86E2";
+				PROVISIONING_PROFILE = "42851F1A-9D8E-4CEB-B9B5-96BB5DE191CE";
+				VALID_ARCHS = "armv7 armv7s";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -1007,11 +1021,14 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 52792385F4584DFA8DBE0ED0 /* Pods.xcconfig */;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD)";
+				ARCHS = (
+					armv7,
+					armv7s,
+				);
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Damir Samigullin (7GJNQ4MWXT)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Damir Samigullin (7GJNQ4MWXT)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CRM/CRM-Prefix.pch";
 				INFOPLIST_FILE = "CRM/CRM-Info.plist";
@@ -1019,7 +1036,8 @@
 				MOMC_NO_INVERSE_RELATIONSHIP_WARNINGS = NO;
 				MOMC_NO_WARNINGS = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "19F9FDDF-8797-409D-83AA-2F7B440E86E2";
+				PROVISIONING_PROFILE = "42851F1A-9D8E-4CEB-B9B5-96BB5DE191CE";
+				VALID_ARCHS = "armv7 armv7s";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

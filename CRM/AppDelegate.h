@@ -14,6 +14,7 @@
 #import "PharmaciesViewController.h"
 #import "VisitsViewController.h"
 #import "LoginViewController.h"
+#import "SyncLoader.h"
 
 #define ARC4RANDOM_MAX 0x100000000
 #define LOCAL 0
@@ -43,6 +44,8 @@
 @property (strong, nonatomic) VisitsViewController* visitsViewController;
 
 @property (strong, nonatomic) LoginViewController* loginViewController;
+
+@property (strong, nonatomic) SyncLoader* loader;
 
 + (AppDelegate*)sharedDelegate;
 - (void)saveContext;

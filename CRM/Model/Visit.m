@@ -28,6 +28,61 @@
 @dynamic sent;
 @dynamic serverId;
 
+- (BOOL)isValid
+{
+    if ([self commerceVisitIsValid] || [self promoVisitIsValid] || [self pharmacyCirceIsValid])
+        return YES;
+    else
+        return NO;
+}
+
+- (BOOL)promoVisitIsValid
+{
+    if (self.promoVisit)
+    {
+        if (self.promoVisit.brands.count > 0 || self.promoVisit.participants.integerValue > 0)
+            return YES;
+        else
+            return NO;
+    }
+    else
+    {
+        return NO;
+    }
+}
+
+- (BOOL)pharmacyCirceIsValid
+{
+    if (self.pharmacyCircle)
+    {
+        if (self.pharmacyCircle.brands.count > 0 || self.pharmacyCircle.participants.integerValue > 0)
+            return YES;
+        else
+            return NO;
+    }
+    else
+    {
+        return NO;
+    }
+}
+
+- (BOOL)commerceVisitIsValid
+{
+    if (self.commerceVisit)
+    {
+        for (Sale* sale in self.commerceVisit.sales)
+        {
+            if ([sale isValid])
+                return YES;
+        }
+        return NO;
+    }
+    else
+    {
+        return NO;
+    }
+}
+
 - (NSDictionary*)encodeToJSON
 {
     NSMutableDictionary* dic = [NSMutableDictionary dictionary];
@@ -38,27 +93,17 @@
     dateFormatter.locale = [NSLocale localeWithLocaleIdentifier:@"RU-ru"];
     dateFormatter.dateFormat = @"yyyy-MM-dd";
     [dic setObject:[dateFormatter stringFromDate:self.date] forKey:@"date"];
-    if (self.promoVisit && (self.promoVisit.brands.count > 0 || self.promoVisit.participants > 0))
+    if ([self promoVisitIsValid])
     {
         [dic setObject:[self.promoVisit encodeToJSON] forKey:@"promoVisit"];
     }
-    if (self.pharmacyCircle  && (self.promoVisit.brands.count > 0 || self.promoVisit.participants > 0))
+    if ([self pharmacyCirceIsValid])
     {
         [dic setObject:[self.pharmacyCircle encodeToJSON] forKey:@"pharmacyCircle"];
     }
-    if (self.commerceVisit)
+    if ([self commerceVisitIsValid])
     {
-        BOOL salesExist = NO;
-        for (Sale* sale in self.commerceVisit.sales)
-        {
-            if (sale.remainder.integerValue != 0 || sale.order.integerValue != 0 || sale.sold.integerValue != 0 || sale.comment != nil)
-            {
-                salesExist = YES;
-                break;
-            }
-        }
-        if (salesExist)
-            [dic setObject:[self.commerceVisit encodeToJSON] forKey:@"sales"];
+        [dic setObject:[self.commerceVisit encodeToJSON] forKey:@"sales"];
     }
     return dic;
 }

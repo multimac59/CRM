@@ -89,6 +89,8 @@
              }
          }];*/
     
+    if (pharmacy.latitude.doubleValue == 0 || pharmacy.latitude.doubleValue == 1)
+        return;
     MapAnnotation* annotation = [MapAnnotation new];
     CLLocation* location = [[CLLocation alloc]initWithLatitude:pharmacy.latitude.doubleValue longitude:pharmacy.longitude.doubleValue];
     annotation.coordinate = location.coordinate;

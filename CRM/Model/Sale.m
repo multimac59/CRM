@@ -44,4 +44,14 @@
     return dic;
 }
 
+- (BOOL)isValid
+{
+    if (self.remainder.integerValue != 0 || self.order.integerValue != 0 || self.sold.integerValue != 0 || self.comment != nil)
+    {
+        return YES;
+    }
+    else
+        return NO;
+}
+
 @end

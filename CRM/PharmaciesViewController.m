@@ -213,7 +213,7 @@ static const int filterHeight = 110;
 - (void)sortPharmacies
 {
     NSSortDescriptor* statusDescriptor = [[NSSortDescriptor alloc]initWithKey:@"status" ascending:NO];
-    NSSortDescriptor* visitsDescriptor = [[NSSortDescriptor alloc]initWithKey:@"visitsInCurrentQuarter.@count" ascending:YES];
+    NSSortDescriptor* visitsDescriptor = [[NSSortDescriptor alloc]initWithKey:@"visitsInQuarter" ascending:YES];
     NSSortDescriptor* nameDescriptor = [[NSSortDescriptor alloc]initWithKey:@"name" ascending:YES];
     NSSortDescriptor* streetDescriptor = [[NSSortDescriptor alloc]initWithKey:@"street" ascending:YES];
     [self.pharmacies sortUsingDescriptors:@[statusDescriptor, visitsDescriptor, nameDescriptor, streetDescriptor]];

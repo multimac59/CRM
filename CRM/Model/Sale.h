@@ -21,5 +21,6 @@
 @property (nonatomic, retain) Dose *dose;
 
 - (NSDictionary*)encodeToJSON;
+- (BOOL)isValid;
 
 @end

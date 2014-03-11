@@ -25,5 +25,6 @@
 @property (nonatomic, retain) User *user;
 
 - (NSDictionary*)encodeToJSON;
+- (BOOL)isValid;
 
 @end

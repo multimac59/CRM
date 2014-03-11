@@ -40,6 +40,8 @@
         self.phoneLabel.text = pharmacy.phone;
         self.doctorLabel.text = pharmacy.doctorName;
         self.addressLabel.text = [NSString stringWithFormat:@"%@, %@, %@", pharmacy.city, pharmacy.street, pharmacy.house];
+        if (!pharmacy.city)
+            self.addressLabel.text = @"";
         switch (pharmacy.status)
         {
             case GoldStatus:

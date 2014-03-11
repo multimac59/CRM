@@ -103,6 +103,7 @@
                 user.userId = [okDict objectForKey:@"id"];
                 user.login = login;
                 user.password = hashedPassword;
+                [[AppDelegate sharedDelegate]saveContext];
                 
 //                NSArray* regions = @[@1, @2];
 //                [regions enumerateObjectsUsingBlock:^(NSNumber* regionObj, NSUInteger idx, BOOL *stop) {

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="3401" systemVersion="13B42" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="5063" systemVersion="13B42" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="CommerceVisit" representedClassName="CommerceVisit" syncable="YES">
         <relationship name="sales" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Sale" inverseName="commerceVisit" inverseEntity="Sale" syncable="YES"/>
         <relationship name="visit" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Visit" inverseName="commerceVisit" inverseEntity="Visit" syncable="YES"/>
@@ -30,6 +30,7 @@
         <attribute name="sales" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="status" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="street" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="visitsInQuarter" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <relationship name="region" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Region" inverseName="pharmacies" inverseEntity="Region" syncable="YES"/>
         <relationship name="users" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="User" inverseName="targetablePharmacies" inverseEntity="User" syncable="YES"/>
         <relationship name="visits" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Visit" inverseName="pharmacy" inverseEntity="Visit" syncable="YES"/>
@@ -84,15 +85,15 @@
         <relationship name="user" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="User" inverseName="visits" inverseEntity="User" syncable="YES"/>
     </entity>
     <elements>
-        <element name="CommerceVisit" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="Dose" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="Drug" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="Pharmacy" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="PharmacyCircle" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="PromoVisit" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="Region" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="Sale" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="User" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="Visit" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="CommerceVisit" positionX="0" positionY="0" width="128" height="75"/>
+        <element name="Dose" positionX="0" positionY="0" width="128" height="120"/>
+        <element name="Drug" positionX="0" positionY="0" width="128" height="90"/>
+        <element name="Pharmacy" positionX="0" positionY="0" width="128" height="300"/>
+        <element name="PharmacyCircle" positionX="0" positionY="0" width="128" height="45"/>
+        <element name="PromoVisit" positionX="0" positionY="0" width="128" height="90"/>
+        <element name="Region" positionX="0" positionY="0" width="128" height="105"/>
+        <element name="Sale" positionX="0" positionY="0" width="128" height="150"/>
+        <element name="User" positionX="0" positionY="0" width="128" height="255"/>
+        <element name="Visit" positionX="0" positionY="0" width="128" height="195"/>
     </elements>
 </model>

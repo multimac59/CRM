@@ -154,6 +154,10 @@
 
 - (void)saveVisit:(id)sender
 {
+    if (![self.commerceVisit.visit isValid])
+    {
+        [[[UIAlertView alloc]initWithTitle:@"" message:@"Данные визита не были заполнены." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil]show];
+    }
     self.commerceVisit.visit.closed = @YES;
     [self back];
 }
@@ -302,12 +306,20 @@
     return sale;
 }
 
+- (NSIndexPath*)indexPathForSender:(id)sender
+{
+    CGPoint center= ((UIButton*)sender).center;
+    CGPoint rootViewPoint = [((UIButton*)sender).superview convertPoint:center toView:self.table];
+    NSIndexPath *indexPath = [self.table indexPathForRowAtPoint:rootViewPoint];
+    return indexPath;
+}
+
 - (void)saveInput
 {
     if (!self.activeField)
         return;
-    SaleCell* cell = (SaleCell*)self.activeField.superview.superview.superview;
-    NSIndexPath* indexPath = [self.table indexPathForCell:cell];
+    NSIndexPath* indexPath = [self indexPathForSender:self.activeField];
+    SaleCell* cell = (SaleCell*)[self.table cellForRowAtIndexPath:indexPath];
     Drug* drug = self.drugs[indexPath.section];
     NSArray* doses = [drug.doses.allObjects sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"priority" ascending:YES]]];
     Dose* dose = doses[indexPath.row];

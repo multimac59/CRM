@@ -109,8 +109,10 @@ static const int filterHeight = 0;
 {
     
     NSSortDescriptor* statusDescriptor = [[NSSortDescriptor alloc]initWithKey:@"pharmacy.status" ascending:NO];
-    NSSortDescriptor* visitsDescriptor = [[NSSortDescriptor alloc]initWithKey:@"pharmacy.visitsInCurrentQuarter.@count" ascending:YES];
-    [self.visits sortUsingDescriptors:@[statusDescriptor, visitsDescriptor]];
+    NSSortDescriptor* visitsDescriptor = [[NSSortDescriptor alloc]initWithKey:@"pharmacy.visitsInQuarter" ascending:YES];
+    NSSortDescriptor* nameDescriptor = [[NSSortDescriptor alloc]initWithKey:@"pharmacy.name" ascending:YES];
+    NSSortDescriptor* streetDescriptor = [[NSSortDescriptor alloc]initWithKey:@"pharmacy.street" ascending:YES];
+    [self.visits sortUsingDescriptors:@[statusDescriptor, visitsDescriptor, nameDescriptor, streetDescriptor]];
 }
 
 - (void)didReceiveMemoryWarning

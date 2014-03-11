@@ -132,10 +132,10 @@ static AppDelegate* sharedDelegate = nil;
     
     [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(closeOldVisits) userInfo:Nil repeats:YES];
     
-    [Flurry startSession:@"VF6G7F9XQ8Jss8QM7249DS"];
+    [Flurry startSession:@"VF6G7F9XQ8J8QM7249DS"];
     
     //TODO: must do it in loadFromServer in production version
-    [self parseUserLocal];
+    //[self parseUserLocal];
     [self showLoginScreenWithAnimation:NO];
     
     return YES;
@@ -169,13 +169,14 @@ static AppDelegate* sharedDelegate = nil;
             self.container.centerViewController = self.clientsSplitController;
             break;
     }
-    [self reloadData];
     //Seems that container removes panel after change in centerviewcontroller, so we reuse it here
     [self.container.view addSubview:self.overlay];
     [self.container.view addSubview:self.sidePanelController.view];
     [UIView animateWithDuration:0.3 animations:^{
         self.sidePanelController.view.frame = CGRectMake(-275, 0, 290, 768);
         self.overlay.alpha = 0;
+    }completion:^(BOOL finished) {
+        [self reloadData];
     }];
 }
 
@@ -274,6 +275,18 @@ static AppDelegate* sharedDelegate = nil;
         return results[0];
     else
         return nil;
+}
+
+- (NSArray*)pharmaciesForUser:(User*)user
+{
+    NSManagedObjectContext* context = self.managedObjectContext;
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:[NSEntityDescription entityForName:@"Pharmacy" inManagedObjectContext:context]];
+     NSPredicate* predicate = [NSPredicate predicateWithFormat:@"region IN %@", user.regions];
+    [request setPredicate:predicate];
+    NSError *error = nil;
+    NSArray *results = [context executeFetchRequest:request error:&error];
+    return results;
 }
 
 - (Sale*)findSaleInVisit:(Visit*)visit byDoseId:(NSInteger)doseId
@@ -482,6 +495,8 @@ static AppDelegate* sharedDelegate = nil;
     for (Visit* visit in visits)
     {
         visit.closed = @YES;
+        if (![visit isValid])
+            [self.managedObjectContext deleteObject:visit];
     }
     [self saveContext];
 }
@@ -506,6 +521,7 @@ static AppDelegate* sharedDelegate = nil;
 {
     if (LOCAL)
     {
+        [self parseUserLocal];
         [self parseRegionLocal];
         [self parseUserRegionLocal];
         [self parsePreparatLocal];
@@ -513,6 +529,7 @@ static AppDelegate* sharedDelegate = nil;
         [self parsePharmLocal];
         [self parseVisitLocal];
         [self parseVisitSaleLocal];
+        [self recalculateVisitsCount];
         
         [self reloadData];
         LoginViewController* login = self.loginViewController;
@@ -531,10 +548,10 @@ static AppDelegate* sharedDelegate = nil;
     NSString* pharmDate = self.currentUser.pharmDate;
     NSString* preparatDate = self.currentUser.preparatDate;
     NSString* preparatDoseDate = self.currentUser.preparatDoseDate;
-    //NSString* userDate = self.currentUser.userDate;
+    NSString* userDate = self.currentUser.userDate;
     NSString* visitDate = self.currentUser.visitDate;
 //    pharmDate = [dateFormatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:0]];
-    NSString* userDate = [dateFormatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:0]];
+ //   NSString* userDate = [dateFormatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:0]];
 //    NSDate* visitDate = [NSDate dateWithTimeIntervalSince1970:0];
     
     if (FULL_LOAD || regionDate == nil)
@@ -547,12 +564,12 @@ static AppDelegate* sharedDelegate = nil;
     [manager GET:urlString parameters:Nil success:^(AFHTTPRequestOperation *operation, id responseObject)
      {
          NSLog(@"Success");
-             /*
+         
               id usersDict = [responseObject objectForKey:@"User"];
               if ([usersDict isKindOfClass:[NSDictionary class]])
               {
-              [self parseServerUsers:usersDict];
-              }*/
+              [self parseUser:usersDict];
+              }
              id regionDict = [responseObject objectForKey:@"Region"];
              if ([regionDict isKindOfClass:[NSDictionary class]])
              {
@@ -588,17 +605,28 @@ static AppDelegate* sharedDelegate = nil;
              {
                  [self parseVisitSale:visitSaleDict];
              }
+            [self recalculateVisitsCount];
             [self reloadData];
-            self.sidePanelController.syncLabel.text = self.currentUser.pharmDate;
+
+            NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
+            dateFormatter.dateFormat = @"dd.MM.yyyy";
+            self.sidePanelController.syncLabel.text = [dateFormatter stringFromDate:[NSDate date]];
             //Because we may do not have it's name after first login before sync
             self.sidePanelController.nameLabel.text = self.currentUser.name;
             LoginViewController* login = self.loginViewController;
             [login hideLoader];
             [login dismissViewControllerAnimated:YES completion:nil];
+         [self hideLoader];
      }
          failure:^(AFHTTPRequestOperation *operation, NSError *error)
      {
          NSLog(@"Failure");
+         [self reloadData];
+         self.sidePanelController.nameLabel.text = self.currentUser.name;
+         LoginViewController* login = self.loginViewController;
+         [login hideLoader];
+         [login dismissViewControllerAnimated:YES completion:nil];
+          [self hideLoader];
      }];
     }
 }
@@ -839,13 +867,14 @@ static AppDelegate* sharedDelegate = nil;
         dateFormatter.dateFormat = @"yyyy-MM-dd HH:mm:ss";
         visit.date = [dateFormatter dateFromString:visitDateString];
 
-        NSNumber* userId = [obj objectForKey:@"userId"];
+        NSNumber* userId = [obj objectForKey:@"user_id"];
         visit.user = [self findUserById:userId.integerValue];
 
         NSNumber* pharmacyId = [obj objectForKey:@"pharm_id"];
         visit.pharmacy = [self findPharmacyById:pharmacyId.integerValue];
         
         NSNumber* circleParticipants = [obj objectForKey:@"circle_participants"];
+        if (circleParticipants.integerValue > 0)
         {
             visit.pharmacyCircle = [NSEntityDescription
                      insertNewObjectForEntityForName:@"PharmacyCircle"
@@ -854,6 +883,7 @@ static AppDelegate* sharedDelegate = nil;
         }
         
         NSNumber* promoParticipants = [obj objectForKey:@"promo_participants"];
+        if (promoParticipants.integerValue > 0)
         {
             visit.promoVisit = [NSEntityDescription
                                     insertNewObjectForEntityForName:@"PromoVisit"
@@ -895,17 +925,34 @@ static AppDelegate* sharedDelegate = nil;
         pharmacy.sales = [obj objectForKey:@"sales"];
         pharmacy.doctorName = [obj objectForKey:@"contact"];
         
-        //pharmacy.latitude = [obj objectForKey:@"longitude"];
-        //pharmacy.longitude = [obj objectForKey:@"latitude"];
+        if ([obj objectForKey:@"latitude"] != [NSNull null])
+        {
+            pharmacy.latitude = [obj objectForKey:@"latitude"];
+            //NSLog(@"Latitude = %@", pharmacy.latitude);
+        }
+        else
+            pharmacy.latitude = @0;
+        if ([obj objectForKey:@"longitude"] != [NSNull null])
+        {
+            pharmacy.longitude = [obj objectForKey:@"longitude"];
+             //NSLog(@"Longitude = %@", pharmacy.longitude);
+        }
+        else
+            pharmacy.longitude = @0;
         
-        double maxLat = 56.0;
-        double minLat = 55.0;
-        double minLon = 37.0;
-        double maxLon = 38.0;
-        double latitude = ((double)arc4random() / ARC4RANDOM_MAX) * (maxLat - minLat) + minLat;
-        double longitude = ((double)arc4random() / ARC4RANDOM_MAX) * (maxLon - minLon) + minLon;
-        pharmacy.latitude = @(latitude);
-        pharmacy.longitude = @(longitude);
+        if (pharmacy.latitude.integerValue == 1)
+        {
+            NSLog(@"Address not found for pharmacy: %@ %@ %@", pharmacy.city, pharmacy.street, pharmacy.house);
+        }
+        
+//        double maxLat = 56.0;
+//        double minLat = 55.0;
+//        double minLon = 37.0;
+//        double maxLon = 38.0;
+//        double latitude = ((double)arc4random() / ARC4RANDOM_MAX) * (maxLat - minLat) + minLat;
+//        double longitude = ((double)arc4random() / ARC4RANDOM_MAX) * (maxLon - minLon) + minLon;
+//        pharmacy.latitude = @(latitude);
+//        pharmacy.longitude = @(longitude);
         
         NSInteger regionId = [[obj objectForKey:@"region_id"]integerValue];
         Region* region = [self findRegionById:regionId];
@@ -957,6 +1004,12 @@ static AppDelegate* sharedDelegate = nil;
         Visit* visit = [self findVisitByServerId:visitId.integerValue];
         if (visit)
         {
+            if (!visit.commerceVisit)
+            {
+                visit.commerceVisit = [NSEntityDescription
+                                       insertNewObjectForEntityForName:@"CommerceVisit"
+                                       inManagedObjectContext:self.managedObjectContext];
+            }
             NSNumber* doseId = [obj objectForKey:@"preparat_dose_id"];
             Sale* sale = [self findSaleInVisit:visit byDoseId:doseId.integerValue];
             if (!sale)
@@ -977,6 +1030,7 @@ static AppDelegate* sharedDelegate = nil;
                 sale.remainder = @-1;
             }
             sale.comment = [dict objectForKey:@"msg"];
+            [visit.commerceVisit addSalesObject:sale];
         }
     }
     //Deleting not implemented for this method
@@ -1055,6 +1109,38 @@ static AppDelegate* sharedDelegate = nil;
     [self parseVisitSale:dic];
 }
 
+- (void)recalculateVisitsCount
+{
+    NSDateComponents* todayComponents = [[NSCalendar currentCalendar]components:NSCalendarUnitMonth | NSCalendarUnitYear fromDate:[NSDate date]];
+    NSInteger currentMonth = todayComponents.month;
+    NSInteger quarter = currentMonth / 3 + 1;
+    NSDateComponents* startComponents = [[NSDateComponents alloc]init];
+    NSDateComponents* endComponents = [[NSDateComponents alloc]init];
+    startComponents.month = (quarter - 1) * 3 + 1;
+    endComponents.month = (quarter - 1) * 3 + 4;
+    startComponents.day = endComponents.day = 1;
+    startComponents.hour = endComponents.hour = 0;
+    startComponents.minute = endComponents.minute = 0;
+    startComponents.second = endComponents.second = 0;
+    startComponents.year = endComponents.year = todayComponents.year;
+    //startComponents.year = endComponents.year - 10; //TODO: just for test, delete it later!
+    NSDate* startDate = [[NSCalendar currentCalendar]dateFromComponents:startComponents];
+    NSDate* endDate = [[NSCalendar currentCalendar]dateFromComponents:endComponents];
+    
+    if ([endDate compare:[NSDate currentDate]] == NSOrderedDescending)
+    {
+        endDate = [NSDate currentDate];
+    }
+    
+    NSArray* pharmacies = [self pharmaciesForUser:self.currentUser];
+    for (Pharmacy* pharmacy in pharmacies)
+    {
+        NSPredicate* predicate = [NSPredicate predicateWithFormat:@"date>=%@ && date < %@ && user=%@", startDate, endDate, self.currentUser];
+        NSArray* visitsForQuarter = [pharmacy.visits.allObjects filteredArrayUsingPredicate:predicate];
+        pharmacy.visitsInQuarter = @(visitsForQuarter.count);
+    }
+}
+
 #pragma mark standard AppDelegate methods
 - (void)applicationWillResignActive:(UIApplication *)application
 {
@@ -1071,6 +1157,7 @@ static AppDelegate* sharedDelegate = nil;
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
     // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
+    [self showLoader];
     [self sendDataToServer];
     [self loadDataFromServer];
 }
@@ -1083,5 +1170,20 @@ static AppDelegate* sharedDelegate = nil;
 - (void)applicationWillTerminate:(UIApplication *)application
 {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+}
+
+- (void)showLoader
+{
+    return;
+    self.loader = [[NSBundle mainBundle]loadNibNamed:@"SyncLoader" owner:self options:nil][0];
+    self.loader.frame = CGRectMake(0, 0, 1024, 768);
+    [self.container.view addSubview:self.loader];
+    [self.loader.activityIndicator startAnimating];
+}
+- (void)hideLoader
+{
+    return;
+    [self.loader.activityIndicator stopAnimating];
+    [self.loader removeFromSuperview];
 }
 @end

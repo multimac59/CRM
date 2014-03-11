@@ -31,6 +31,7 @@ typedef enum {
 @property (nonatomic, retain) NSNumber * psp;
 @property (nonatomic, retain) NSNumber * latitude;
 @property (nonatomic, retain) NSNumber * longitude;
+@property (nonatomic, retain) NSNumber * visitsInQuarter;
 @property (nonatomic) PharmacyStatus status;
 @property (nonatomic, retain) NSString * street;
 @property (nonatomic, retain) Region *region;

@@ -30,5 +30,6 @@
 @dynamic sales;
 @dynamic latitude;
 @dynamic longitude;
+@dynamic visitsInQuarter;
 
 @end

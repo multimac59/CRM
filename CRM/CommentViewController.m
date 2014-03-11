@@ -41,6 +41,11 @@
     self.textView.text = self.sale.comment;
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    [self.textView becomeFirstResponder];
+}
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
