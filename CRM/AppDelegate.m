@@ -36,6 +36,7 @@
 @implementation AppDelegate
 
 @synthesize managedObjectContext = _managedObjectContext;
+@synthesize childManagedObjectContext = _childManagedObjectContext;
 @synthesize managedObjectModel = _managedObjectModel;
 @synthesize persistentStoreCoordinator = _persistentStoreCoordinator;
 
@@ -138,6 +139,15 @@ static AppDelegate* sharedDelegate = nil;
     //[self parseUserLocal];
     [self showLoginScreenWithAnimation:NO];
     
+    [[NSNotificationCenter defaultCenter]addObserverForName:NSManagedObjectContextDidSaveNotification object:self.childManagedObjectContext queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+        [self.managedObjectContext mergeChangesFromContextDidSaveNotification:note];
+        self.sidePanelController.nameLabel.text = self.currentUser.name;
+        NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
+        dateFormatter.dateFormat = @"dd.MM.yyyy HH:mm";
+        self.sidePanelController.syncLabel.text = [dateFormatter stringFromDate:[NSDate date]];
+        [self reloadData];
+    }];
+    self.syncInProgress = NO;
     return YES;
 }
 
@@ -163,7 +173,7 @@ static AppDelegate* sharedDelegate = nil;
             self.container.centerViewController = self.clientsSplitController;
             break;
         default:
-            [self sendDataToServer];
+            [self syncDataWithServer];
             self.container.centerViewController = self.clientsSplitController;
             //FAST FIX
             self.container.centerViewController = self.clientsSplitController;
@@ -219,7 +229,7 @@ static AppDelegate* sharedDelegate = nil;
 #pragma mark finder methods
 - (Region*)findRegionById:(NSInteger)regionId
 {
-    NSManagedObjectContext* context = self.managedObjectContext;
+    NSManagedObjectContext* context = self.childManagedObjectContext;
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     [request setEntity:[NSEntityDescription entityForName:@"Region" inManagedObjectContext:context]];
     NSPredicate* predicate = [NSPredicate predicateWithFormat:@"regionId=%@", [NSNumber numberWithFloat:regionId]];
@@ -234,7 +244,7 @@ static AppDelegate* sharedDelegate = nil;
 
 - (Drug*)findDrugById:(NSInteger)drugId
 {
-    NSManagedObjectContext* context = self.managedObjectContext;
+    NSManagedObjectContext* context = self.childManagedObjectContext;
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     [request setEntity:[NSEntityDescription entityForName:@"Drug" inManagedObjectContext:context]];
     NSPredicate* predicate = [NSPredicate predicateWithFormat:@"drugId=%@", [NSNumber numberWithFloat:drugId]];
@@ -249,7 +259,7 @@ static AppDelegate* sharedDelegate = nil;
 
 - (Dose*)findDoseById:(NSInteger)drugId
 {
-    NSManagedObjectContext* context = self.managedObjectContext;
+    NSManagedObjectContext* context = self.childManagedObjectContext;
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     [request setEntity:[NSEntityDescription entityForName:@"Dose" inManagedObjectContext:context]];
     NSPredicate* predicate = [NSPredicate predicateWithFormat:@"doseId=%@", [NSNumber numberWithFloat:drugId]];
@@ -264,7 +274,7 @@ static AppDelegate* sharedDelegate = nil;
 
 - (Pharmacy*)findPharmacyById:(NSInteger)pharmacyId
 {
-    NSManagedObjectContext* context = self.managedObjectContext;
+    NSManagedObjectContext* context = self.childManagedObjectContext;
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     [request setEntity:[NSEntityDescription entityForName:@"Pharmacy" inManagedObjectContext:context]];
     NSPredicate* predicate = [NSPredicate predicateWithFormat:@"pharmacyId=%@", [NSNumber numberWithFloat:pharmacyId]];
@@ -291,7 +301,7 @@ static AppDelegate* sharedDelegate = nil;
 
 - (Sale*)findSaleInVisit:(Visit*)visit byDoseId:(NSInteger)doseId
 {
-    NSManagedObjectContext* context = self.managedObjectContext;
+    NSManagedObjectContext* context = self.childManagedObjectContext;
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     [request setEntity:[NSEntityDescription entityForName:@"Sale" inManagedObjectContext:context]];
     NSPredicate* predicate = [NSPredicate predicateWithFormat:@"commerceVisit.visit=%@ && dose.doseId=%@", visit, [NSNumber numberWithFloat:doseId]];
@@ -306,7 +316,7 @@ static AppDelegate* sharedDelegate = nil;
 
 - (Visit*)findVisitById:(NSString*)visitId
 {
-    NSManagedObjectContext* context = self.managedObjectContext;
+    NSManagedObjectContext* context = self.childManagedObjectContext;
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     [request setEntity:[NSEntityDescription entityForName:@"Visit" inManagedObjectContext:context]];
     NSPredicate* predicate = [NSPredicate predicateWithFormat:@"visitId=%@", visitId];
@@ -321,7 +331,7 @@ static AppDelegate* sharedDelegate = nil;
 
 - (Visit*)findVisitByServerId:(NSInteger)serverId
 {
-    NSManagedObjectContext* context = self.managedObjectContext;
+    NSManagedObjectContext* context = self.childManagedObjectContext;
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     [request setEntity:[NSEntityDescription entityForName:@"Visit" inManagedObjectContext:context]];
     NSPredicate* predicate = [NSPredicate predicateWithFormat:@"serverId=%@", [NSNumber numberWithInteger:serverId]];
@@ -334,9 +344,13 @@ static AppDelegate* sharedDelegate = nil;
     return nil;
 }
 
-- (User*)findUserById:(NSInteger)userId
+- (User*)findUserById:(NSInteger)userId inMainContext:(BOOL)inMainContext
 {
-    NSManagedObjectContext* context = self.managedObjectContext;
+    NSManagedObjectContext* context;
+    if (inMainContext)
+        context = self.managedObjectContext;
+    else
+        context = self.childManagedObjectContext;
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     [request setEntity:[NSEntityDescription entityForName:@"User" inManagedObjectContext:context]];
     NSPredicate* predicate = [NSPredicate predicateWithFormat:@"userId=%@", [NSNumber numberWithFloat:userId]];
@@ -376,7 +390,7 @@ static AppDelegate* sharedDelegate = nil;
     
     NSPersistentStoreCoordinator *coordinator = [self persistentStoreCoordinator];
     if (coordinator != nil) {
-        _managedObjectContext = [[NSManagedObjectContext alloc] init];
+        _managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
         [_managedObjectContext setPersistentStoreCoordinator:coordinator];
         [_managedObjectContext setMergePolicy:[[NSMergePolicy alloc] initWithMergeType:NSMergeByPropertyObjectTrumpMergePolicyType]];
     }
@@ -458,6 +472,20 @@ static AppDelegate* sharedDelegate = nil;
     }
 }
 
+- (void)saveChildContext
+{
+    NSError *error = nil;
+    NSManagedObjectContext *managedObjectContext = self.childManagedObjectContext;
+    if (managedObjectContext != nil) {
+        if ([managedObjectContext hasChanges] && ![managedObjectContext save:&error]) {
+            // Replace this implementation with code to handle the error appropriately.
+            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+            NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+            abort();
+        }
+    }
+}
+
 - (void) deleteAllObjects: (NSString *) entityDescription
 {
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
@@ -513,127 +541,125 @@ static AppDelegate* sharedDelegate = nil;
 - (void)reloadData
 {
     [self.pharmaciesViewController reloadData];
-    [self.pharmaciesViewController selectFirstFromList];
+    //[self.pharmaciesViewController selectFirstFromList];
     [self.visitsViewController reloadData];
 }
 
 - (void)loadDataFromServer
 {
+    //Do we need to recreate child context every time to synchronize with changes on main context?
+    NSPersistentStoreCoordinator *coordinator = [self persistentStoreCoordinator];
+    if (coordinator != nil) {
+        _childManagedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+        [_childManagedObjectContext setPersistentStoreCoordinator:coordinator];
+        [_childManagedObjectContext setMergePolicy:[[NSMergePolicy alloc] initWithMergeType:NSMergeByPropertyObjectTrumpMergePolicyType]];
+    }
+    
+    self.sidePanelController.nameLabel.text = self.currentUser.name;
+    
+    LoginViewController* login = self.loginViewController;
+    //[login hideLoader];
+    [login dismissViewControllerAnimated:YES completion:nil];
+    //[self hideLoader];
+    
+    self.currentUserId = self.currentUser.userId.integerValue;
+    
     if (LOCAL)
     {
-        [self parseUserLocal];
-        [self parseRegionLocal];
-        [self parseUserRegionLocal];
-        [self parsePreparatLocal];
-        [self parsePreparatDoseLocal];
-        [self parsePharmLocal];
-        [self parseVisitLocal];
-        [self parseVisitSaleLocal];
-        [self recalculateVisitsCount];
-        
-        [self reloadData];
-        LoginViewController* login = self.loginViewController;
-        [login hideLoader];
-        [login dismissViewControllerAnimated:YES completion:nil];
+        [self.childManagedObjectContext performBlock:^{
+            [self parseUserLocal];
+            [self parseRegionLocal];
+            [self parseUserRegionLocal];
+            [self parsePreparatLocal];
+            [self parsePreparatDoseLocal];
+            [self parsePharmLocal];
+            [self parseVisitLocal];
+            [self parseVisitSaleLocal];
+            [self recalculateVisitsCount];}];
     }
     else
     {
-    
-    
-    NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
-    dateFormatter.dateFormat = @"yyyy-MM-dd HH:mm:ss";
-    
-    NSString* regionDate = self.currentUser.regionDate;
-    NSString* userRegionDate = self.currentUser.userRegionDate;
-    NSString* pharmDate = self.currentUser.pharmDate;
-    NSString* preparatDate = self.currentUser.preparatDate;
-    NSString* preparatDoseDate = self.currentUser.preparatDoseDate;
-    NSString* userDate = self.currentUser.userDate;
-    NSString* visitDate = self.currentUser.visitDate;
-//    pharmDate = [dateFormatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:0]];
- //   NSString* userDate = [dateFormatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:0]];
-//    NSDate* visitDate = [NSDate dateWithTimeIntervalSince1970:0];
-    
-    if (FULL_LOAD || regionDate == nil)
-    {
-        visitDate = regionDate = userRegionDate = pharmDate = preparatDate = preparatDoseDate = userDate = [dateFormatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:0]];
-    }
-    
-    NSString* urlString = [[NSString stringWithFormat:@"http://crm.mydigital.guru/server/sync?clientId=%@&date[Region]=%@&date[UserRegion]=%@&date[Pharm]=%@&date[Preparat]=%@&date[PreparatDose]=%@&date[User]=%@&date[Visit]=%@", self.currentUser.userId, regionDate, userRegionDate, pharmDate, preparatDate, preparatDoseDate, userDate, visitDate]stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-    [manager GET:urlString parameters:Nil success:^(AFHTTPRequestOperation *operation, id responseObject)
-     {
-         NSLog(@"Success");
-         
-              id usersDict = [responseObject objectForKey:@"User"];
-              if ([usersDict isKindOfClass:[NSDictionary class]])
-              {
-              [self parseUser:usersDict];
-              }
-             id regionDict = [responseObject objectForKey:@"Region"];
-             if ([regionDict isKindOfClass:[NSDictionary class]])
-             {
-                 [self parseRegion:regionDict];
-             }
-             id userRegionDict = [responseObject objectForKey:@"UserRegion"];
-             if ([userRegionDict isKindOfClass:[NSDictionary class]])
-             {
-                 [self parseUserRegion:userRegionDict];
-             }
-             id preparatDict = [responseObject objectForKey:@"Preparat"];
-             if ([preparatDict isKindOfClass:[NSDictionary class]])
-             {
-                 [self parsePreparat:preparatDict];
-             }
-             id doseDict = [responseObject objectForKey:@"PreparatDose"];
-             if ([doseDict isKindOfClass:[NSDictionary class]])
-             {
-                 [self parsePreparatDose:doseDict];
-             }
-             id pharmDict = [responseObject objectForKey:@"Pharm"];
-             if ([pharmDict isKindOfClass:[NSDictionary class]])
-             {
-                 [self parsePharm:pharmDict];
-             }
-             id visitDict = [responseObject objectForKey:@"Visit"];
-             if ([visitDict isKindOfClass:[NSDictionary class]])
-             {
-                 [self parseVisit:visitDict];
-             }
-             id visitSaleDict = [responseObject objectForKey:@"VisitSale"];
-             if ([visitSaleDict isKindOfClass:[NSDictionary class]])
-             {
-                 [self parseVisitSale:visitSaleDict];
-             }
-            [self recalculateVisitsCount];
-            [self reloadData];
-
-            NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
-            dateFormatter.dateFormat = @"dd.MM.yyyy";
-            self.sidePanelController.syncLabel.text = [dateFormatter stringFromDate:[NSDate date]];
-            //Because we may do not have it's name after first login before sync
-            self.sidePanelController.nameLabel.text = self.currentUser.name;
-            LoginViewController* login = self.loginViewController;
-            [login hideLoader];
-            [login dismissViewControllerAnimated:YES completion:nil];
-         [self hideLoader];
-     }
-         failure:^(AFHTTPRequestOperation *operation, NSError *error)
-     {
-         NSLog(@"Failure");
-         [self reloadData];
-         self.sidePanelController.nameLabel.text = self.currentUser.name;
-         LoginViewController* login = self.loginViewController;
-         [login hideLoader];
-         [login dismissViewControllerAnimated:YES completion:nil];
-          [self hideLoader];
-     }];
+        
+        
+        NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
+        dateFormatter.dateFormat = @"yyyy-MM-dd HH:mm:ss";
+        
+        NSString* regionDate = self.currentUser.regionDate;
+        NSString* userRegionDate = self.currentUser.userRegionDate;
+        NSString* pharmDate = self.currentUser.pharmDate;
+        NSString* preparatDate = self.currentUser.preparatDate;
+        NSString* preparatDoseDate = self.currentUser.preparatDoseDate;
+        NSString* userDate = self.currentUser.userDate;
+        NSString* visitDate = self.currentUser.visitDate;
+        
+        if (FULL_LOAD || regionDate == nil)
+        {
+            visitDate = regionDate = userRegionDate = pharmDate = preparatDate = preparatDoseDate = userDate = [dateFormatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:0]];
+        }
+        
+        NSString* urlString = [[NSString stringWithFormat:@"http://crm.mydigital.guru/server/sync?clientId=%@&date[Region]=%@&date[UserRegion]=%@&date[Pharm]=%@&date[Preparat]=%@&date[PreparatDose]=%@&date[User]=%@&date[Visit]=%@", self.currentUser.userId, regionDate, userRegionDate, pharmDate, preparatDate, preparatDoseDate, userDate, visitDate]stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+        [manager GET:urlString parameters:Nil success:^(AFHTTPRequestOperation *operation, id responseObject)
+         {
+             NSLog(@"Load successful. Start parsing...");
+             
+             [self.childManagedObjectContext performBlock:^{
+                 
+                 id usersDict = [responseObject objectForKey:@"User"];
+                 if ([usersDict isKindOfClass:[NSDictionary class]])
+                 {
+                     [self parseUser:usersDict];
+                 }
+                 id regionDict = [responseObject objectForKey:@"Region"];
+                 if ([regionDict isKindOfClass:[NSDictionary class]])
+                 {
+                     [self parseRegion:regionDict];
+                 }
+                 id userRegionDict = [responseObject objectForKey:@"UserRegion"];
+                 if ([userRegionDict isKindOfClass:[NSDictionary class]])
+                 {
+                     [self parseUserRegion:userRegionDict];
+                 }
+                 id pharmDict = [responseObject objectForKey:@"Pharm"];
+                 if ([pharmDict isKindOfClass:[NSDictionary class]])
+                 {
+                     [self parsePharm:pharmDict];
+                 }
+                 id preparatDict = [responseObject objectForKey:@"Preparat"];
+                 if ([preparatDict isKindOfClass:[NSDictionary class]])
+                 {
+                     [self parsePreparat:preparatDict];
+                 }
+                 id doseDict = [responseObject objectForKey:@"PreparatDose"];
+                 if ([doseDict isKindOfClass:[NSDictionary class]])
+                 {
+                     [self parsePreparatDose:doseDict];
+                 }
+                 id visitDict = [responseObject objectForKey:@"Visit"];
+                 if ([visitDict isKindOfClass:[NSDictionary class]])
+                 {
+                     [self parseVisit:visitDict];
+                 }
+                 id visitSaleDict = [responseObject objectForKey:@"VisitSale"];
+                 if ([visitSaleDict isKindOfClass:[NSDictionary class]])
+                 {
+                     [self parseVisitSale:visitSaleDict];
+                 }
+                 [self recalculateVisitsCount];
+             }];
+         }
+             failure:^(AFHTTPRequestOperation *operation, NSError *error)
+         {
+             NSLog(@"Failure");
+             [self reloadData];
+             
+         }];
     }
 }
 
 
 
-- (void)sendDataToServer
+- (void)syncDataWithServer
 {
     NSLog(@"Sending to server...");
     NSManagedObjectContext* context = self.managedObjectContext;
@@ -669,10 +695,17 @@ static AppDelegate* sharedDelegate = nil;
                 NSLog(@"Visit was sent");
                 visit.sent = @YES;
             }
-            [self reloadData];
+            if (idx == visits.count - 1)
+            {
+                [self loadDataFromServer];
+            }
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+            if (idx == visits.count - 1)
+            {
+                [self loadDataFromServer];
+            }
             NSLog(@"%@", operation.responseString);
-            NSLog(@"Error: %@", error);
+            NSLog(@"Error while sending visit: %@", error);
         }];
     }];
 }
@@ -680,44 +713,18 @@ static AppDelegate* sharedDelegate = nil;
 
 
 #pragma mark json parser methods
-- (void)parseRegion:(NSDictionary*)dict
-{
-    NSArray* addArray = [dict objectForKey:@"add"];
-    for (NSDictionary* obj in addArray)
-    {
-        NSNumber* regionId = (NSNumber*)[obj objectForKey:@"region_id"];
-        Region* region = [self findRegionById:regionId.integerValue];
-        if (!region)
-        {
-            region = [NSEntityDescription
-                      insertNewObjectForEntityForName:@"Region"
-                      inManagedObjectContext:self.managedObjectContext];
-            region.regionId = regionId;
-        }
-        region.name = [obj objectForKey:@"name"];
-    }
-    NSArray* removeArray = [dict objectForKey:@"remove"];
-    for (NSNumber* regionId in removeArray)
-    {
-        Region* region = [self findRegionById:regionId.integerValue];
-        [self.managedObjectContext deleteObject:region];
-    }
-    self.currentUser.regionDate = [dict objectForKey:@"date"];
-    [self saveContext];
-}
-
 - (void)parseUser:(NSDictionary*)dict
 {
     NSArray* addArray = [dict objectForKey:@"add"];
     for (NSDictionary* obj in addArray)
     {
         NSNumber* userId = (NSNumber*)[obj objectForKey:@"user_id"];
-        User* user = [self findUserById:userId.integerValue];
+        User* user = [self findUserById:userId.integerValue inMainContext:NO];
         if (!user)
         {
             user = [NSEntityDescription
                     insertNewObjectForEntityForName:@"User"
-                    inManagedObjectContext:self.managedObjectContext];
+                    inManagedObjectContext:self.childManagedObjectContext];
             user.userId = userId;
         }
         user.name = [obj objectForKey:@"name"];
@@ -734,11 +741,40 @@ static AppDelegate* sharedDelegate = nil;
     NSArray* removeArray = [dict objectForKey:@"remove"];
     for (NSNumber* regionId in removeArray)
     {
-        User* user = [self findUserById:regionId.integerValue];
-        [self.managedObjectContext deleteObject:user];
+        User* user = [self findUserById:regionId.integerValue inMainContext:NO];
+        [self.childManagedObjectContext deleteObject:user];
     }
-    self.currentUser.userDate = [dict objectForKey:@"date"];
-    [self saveContext];
+    User* currentUser = [self findUserById:self.currentUserId inMainContext:NO];
+    currentUser.userDate = [dict objectForKey:@"date"];
+    [self saveChildContext];
+}
+
+
+- (void)parseRegion:(NSDictionary*)dict
+{
+    NSArray* addArray = [dict objectForKey:@"add"];
+    for (NSDictionary* obj in addArray)
+    {
+        NSNumber* regionId = (NSNumber*)[obj objectForKey:@"region_id"];
+        Region* region = [self findRegionById:regionId.integerValue];
+        if (!region)
+        {
+            region = [NSEntityDescription
+                      insertNewObjectForEntityForName:@"Region"
+                      inManagedObjectContext:self.childManagedObjectContext];
+            region.regionId = regionId;
+        }
+        region.name = [obj objectForKey:@"name"];
+    }
+    NSArray* removeArray = [dict objectForKey:@"remove"];
+    for (NSNumber* regionId in removeArray)
+    {
+        Region* region = [self findRegionById:regionId.integerValue];
+        [self.childManagedObjectContext deleteObject:region];
+    }
+    User* currentUser = [self findUserById:self.currentUserId inMainContext:NO];
+    currentUser.regionDate = [dict objectForKey:@"date"];
+    [self saveChildContext];
 }
 
 - (void)parseUserRegion:(NSDictionary*)dict
@@ -747,7 +783,7 @@ static AppDelegate* sharedDelegate = nil;
     for (NSDictionary* obj in addArray)
     {
         NSInteger userId = [[[obj objectForKey:@"user_id"]stringValue]integerValue];
-        User* user = [self findUserById:userId];
+        User* user = [self findUserById:userId inMainContext:NO];
         if (user)
         {
             NSInteger regionId = [[(NSNumber*)[obj objectForKey:@"region_id"]stringValue]integerValue];
@@ -763,7 +799,7 @@ static AppDelegate* sharedDelegate = nil;
     for (NSDictionary* obj in removeArray)
     {
         NSInteger userId = [[[obj objectForKey:@"user_id"]stringValue]integerValue];
-        User* user = [self findUserById:userId];
+        User* user = [self findUserById:userId inMainContext:NO];
         if (user)
         {
             NSInteger regionId = [[(NSNumber*)[obj objectForKey:@"region_id"]stringValue]integerValue];
@@ -775,133 +811,14 @@ static AppDelegate* sharedDelegate = nil;
             }
         }
     }
-    self.currentUser.userRegionDate = [dict objectForKey:@"date"];
-    [self saveContext];
+    User* currentUser = [self findUserById:self.currentUserId inMainContext:NO];
+    currentUser.userRegionDate = [dict objectForKey:@"date"];
+    [self saveChildContext];
 }
-
-- (void)parsePreparat:(NSDictionary*)dict
-{
-    NSMutableArray* drugs = [NSMutableArray new];
-    NSArray* addArray = [dict objectForKey:@"add"];
-    for (NSDictionary* obj in addArray)
-    {
-        NSNumber* drugId = (NSNumber*)[obj objectForKey:@"preparat_id"];
-        Drug* drug = [self findDrugById:drugId.integerValue];
-        if (!drug)
-        {
-            NSLog(@"Creating new drug");
-            drug = [NSEntityDescription
-                    insertNewObjectForEntityForName:@"Drug"
-                    inManagedObjectContext:self.managedObjectContext];
-            drug.drugId = drugId;
-        }
-        drug.name = [obj objectForKey:@"code"];
-        NSLog(@"Drug name = %@", drug.name);
-        NSLog(@"Saving context...");
-        [self saveContext];
-        [drugs addObject:drug];
-    }
-    NSArray* removeArray = [dict objectForKey:@"remove"];
-    for (NSNumber* drugId in removeArray)
-    {
-        Drug* drug = [self findDrugById:drugId.integerValue];
-        [self.managedObjectContext deleteObject:drug];
-        [self saveContext];
-    }
-    self.currentUser.preparatDate = [dict objectForKey:@"date"];
-    [self saveContext];
-}
-
-- (void)parsePreparatDose:(NSDictionary*)dict
-{
-    NSArray* addArray = [dict objectForKey:@"add"];
-    for (NSDictionary* obj in addArray)
-    {
-        NSNumber* doseId = (NSNumber*)[obj objectForKey:@"preparat_dose_id"];
-        Dose* dose = [self findDoseById:doseId.integerValue];
-        if (!dose)
-        {
-            dose = [NSEntityDescription
-                    insertNewObjectForEntityForName:@"Dose"
-                    inManagedObjectContext:self.managedObjectContext];
-            dose.doseId = doseId;
-        }
-        dose.name = [obj objectForKey:@"code"];
-        
-        NSNumber* drugId = (NSNumber*)[obj objectForKey:@"preparat_id"];
-        Drug* drug = [self findDrugById:drugId.integerValue];
-        if (drug)
-        {
-            [drug addDosesObject:dose];
-        }
-    }
-    NSArray* removeArray = [dict objectForKey:@"remove"];
-    for (NSNumber* doseId in removeArray)
-    {
-        Dose* dose = [self findDoseById:doseId.integerValue];
-        [self.managedObjectContext deleteObject:dose];
-    }
-    self.currentUser.preparatDoseDate = [dict objectForKey:@"date"];
-    [self saveContext];
-}
-
-- (void)parseVisit:(NSDictionary*)dict
-{
-    NSArray* addArray = [dict objectForKey:@"add"];
-    
-    for (NSDictionary* obj in addArray)
-    {
-        NSString* visitId = [obj objectForKey:@"code"];
-        Visit* visit = [self findVisitById:visitId];
-        if (!visit)
-        {
-            visit = [NSEntityDescription
-                    insertNewObjectForEntityForName:@"Visit"
-                    inManagedObjectContext:self.managedObjectContext];
-            visit.visitId = visitId;
-        }
-        visit.serverId = [obj objectForKey:@"visit_id"];
-        
-        NSString* visitDateString = [obj objectForKey:@"visit_ts"];
-        NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
-        dateFormatter.dateFormat = @"yyyy-MM-dd HH:mm:ss";
-        visit.date = [dateFormatter dateFromString:visitDateString];
-
-        NSNumber* userId = [obj objectForKey:@"user_id"];
-        visit.user = [self findUserById:userId.integerValue];
-
-        NSNumber* pharmacyId = [obj objectForKey:@"pharm_id"];
-        visit.pharmacy = [self findPharmacyById:pharmacyId.integerValue];
-        
-        NSNumber* circleParticipants = [obj objectForKey:@"circle_participants"];
-        if (circleParticipants.integerValue > 0)
-        {
-            visit.pharmacyCircle = [NSEntityDescription
-                     insertNewObjectForEntityForName:@"PharmacyCircle"
-                     inManagedObjectContext:self.managedObjectContext];
-            visit.pharmacyCircle.participants = circleParticipants;
-        }
-        
-        NSNumber* promoParticipants = [obj objectForKey:@"promo_participants"];
-        if (promoParticipants.integerValue > 0)
-        {
-            visit.promoVisit = [NSEntityDescription
-                                    insertNewObjectForEntityForName:@"PromoVisit"
-                                    inManagedObjectContext:self.managedObjectContext];
-            visit.promoVisit.participants = promoParticipants;
-        }
-        
-        visit.closed = @YES;
-        visit.sent = @YES;
-    }
-    self.currentUser.visitDate = [dict objectForKey:@"date"];
-    [self saveContext];
-}
-
-
 
 - (void)parsePharm:(NSDictionary*)dict
 {
+    int count = 0;
     NSArray* addArray = [dict objectForKey:@"add"];
     for (NSDictionary* obj in addArray)
     {
@@ -912,7 +829,7 @@ static AppDelegate* sharedDelegate = nil;
         {
             pharmacy = [NSEntityDescription
                         insertNewObjectForEntityForName:@"Pharmacy"
-                        inManagedObjectContext:self.managedObjectContext];
+                        inManagedObjectContext:self.childManagedObjectContext];
             pharmacy.pharmacyId = @(pharmacyId.integerValue);
         }
         pharmacy.name = [obj objectForKey:@"name"];
@@ -935,7 +852,7 @@ static AppDelegate* sharedDelegate = nil;
         if ([obj objectForKey:@"longitude"] != [NSNull null])
         {
             pharmacy.longitude = [obj objectForKey:@"longitude"];
-             //NSLog(@"Longitude = %@", pharmacy.longitude);
+            //NSLog(@"Longitude = %@", pharmacy.longitude);
         }
         else
             pharmacy.longitude = @0;
@@ -945,14 +862,14 @@ static AppDelegate* sharedDelegate = nil;
             NSLog(@"Address not found for pharmacy: %@ %@ %@", pharmacy.city, pharmacy.street, pharmacy.house);
         }
         
-//        double maxLat = 56.0;
-//        double minLat = 55.0;
-//        double minLon = 37.0;
-//        double maxLon = 38.0;
-//        double latitude = ((double)arc4random() / ARC4RANDOM_MAX) * (maxLat - minLat) + minLat;
-//        double longitude = ((double)arc4random() / ARC4RANDOM_MAX) * (maxLon - minLon) + minLon;
-//        pharmacy.latitude = @(latitude);
-//        pharmacy.longitude = @(longitude);
+        //        double maxLat = 56.0;
+        //        double minLat = 55.0;
+        //        double minLon = 37.0;
+        //        double maxLon = 38.0;
+        //        double latitude = ((double)arc4random() / ARC4RANDOM_MAX) * (maxLat - minLat) + minLat;
+        //        double longitude = ((double)arc4random() / ARC4RANDOM_MAX) * (maxLon - minLon) + minLon;
+        //        pharmacy.latitude = @(latitude);
+        //        pharmacy.longitude = @(longitude);
         
         NSInteger regionId = [[obj objectForKey:@"region_id"]integerValue];
         Region* region = [self findRegionById:regionId];
@@ -961,7 +878,7 @@ static AppDelegate* sharedDelegate = nil;
         if ([obj objectForKey:@"target_user_id"]!=[NSNull null])
         {
             NSInteger targetUserId = [[obj objectForKey:@"target_user_id"]integerValue];
-            User* user = [self findUserById:targetUserId];
+            User* user = [self findUserById:targetUserId inMainContext:NO];
             [user addTargetablePharmaciesObject:pharmacy];
         }
         
@@ -982,16 +899,140 @@ static AppDelegate* sharedDelegate = nil;
         {
             pharmacy.status = GoldStatus;
         }
+        count++;
+        if (count % 10 == 0)
+        {
+            //Show first results immediately
+            [self.childManagedObjectContext save:nil];
+        }
     }
     NSArray* removeArray = [dict objectForKey:@"remove"];
     for (NSNumber* pharmId in removeArray)
     {
         Pharmacy* pharmacy = [self findPharmacyById:pharmId.integerValue];
-        [self.managedObjectContext deleteObject:pharmacy];
+        [self.childManagedObjectContext deleteObject:pharmacy];
     }
-    self.currentUser.pharmDate = [dict objectForKey:@"date"];
+    User* currentUser = [self findUserById:self.currentUserId inMainContext:NO];
+    currentUser.pharmDate = [dict objectForKey:@"date"];
+    [self saveChildContext];
+    //[self saveContext];
+}
+
+- (void)parsePreparat:(NSDictionary*)dict
+{
+    NSMutableArray* drugs = [NSMutableArray new];
+    NSArray* addArray = [dict objectForKey:@"add"];
+    for (NSDictionary* obj in addArray)
+    {
+        NSNumber* drugId = (NSNumber*)[obj objectForKey:@"preparat_id"];
+        Drug* drug = [self findDrugById:drugId.integerValue];
+        if (!drug)
+        {
+            drug = [NSEntityDescription
+                    insertNewObjectForEntityForName:@"Drug"
+                    inManagedObjectContext:self.childManagedObjectContext];
+            drug.drugId = drugId;
+        }
+        drug.name = [obj objectForKey:@"code"];
+        [drugs addObject:drug];
+    }
+    NSArray* removeArray = [dict objectForKey:@"remove"];
+    for (NSNumber* drugId in removeArray)
+    {
+        Drug* drug = [self findDrugById:drugId.integerValue];
+        [self.childManagedObjectContext deleteObject:drug];
+    }
+    User* currentUser = [self findUserById:self.currentUserId inMainContext:NO];
+    currentUser.preparatDate = [dict objectForKey:@"date"];
+    [self saveChildContext];
+}
+
+- (void)parsePreparatDose:(NSDictionary*)dict
+{
+    NSArray* addArray = [dict objectForKey:@"add"];
+    for (NSDictionary* obj in addArray)
+    {
+        NSNumber* doseId = (NSNumber*)[obj objectForKey:@"preparat_dose_id"];
+        Dose* dose = [self findDoseById:doseId.integerValue];
+        if (!dose)
+        {
+            dose = [NSEntityDescription
+                    insertNewObjectForEntityForName:@"Dose"
+                    inManagedObjectContext:self.childManagedObjectContext];
+            dose.doseId = doseId;
+        }
+        dose.name = [obj objectForKey:@"code"];
+        
+        NSNumber* drugId = (NSNumber*)[obj objectForKey:@"preparat_id"];
+        Drug* drug = [self findDrugById:drugId.integerValue];
+        if (drug)
+        {
+            [drug addDosesObject:dose];
+        }
+    }
+    NSArray* removeArray = [dict objectForKey:@"remove"];
+    for (NSNumber* doseId in removeArray)
+    {
+        Dose* dose = [self findDoseById:doseId.integerValue];
+        [self.childManagedObjectContext deleteObject:dose];
+    }
+    User* currentUser = [self findUserById:self.currentUserId inMainContext:NO];
+    currentUser.preparatDoseDate = [dict objectForKey:@"date"];
+    [self saveChildContext];
+}
+
+- (void)parseVisit:(NSDictionary*)dict
+{
+    NSArray* addArray = [dict objectForKey:@"add"];
     
-    [self saveContext];
+    for (NSDictionary* obj in addArray)
+    {
+        NSString* visitId = [obj objectForKey:@"code"];
+        Visit* visit = [self findVisitById:visitId];
+        if (!visit)
+        {
+            visit = [NSEntityDescription
+                    insertNewObjectForEntityForName:@"Visit"
+                    inManagedObjectContext:self.childManagedObjectContext];
+            visit.visitId = visitId;
+        }
+        visit.serverId = [obj objectForKey:@"visit_id"];
+        
+        NSString* visitDateString = [obj objectForKey:@"visit_ts"];
+        NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
+        dateFormatter.dateFormat = @"yyyy-MM-dd HH:mm:ss";
+        visit.date = [dateFormatter dateFromString:visitDateString];
+
+        NSNumber* userId = [obj objectForKey:@"user_id"];
+        visit.user = [self findUserById:userId.integerValue inMainContext:NO];
+
+        NSNumber* pharmacyId = [obj objectForKey:@"pharm_id"];
+        visit.pharmacy = [self findPharmacyById:pharmacyId.integerValue];
+        
+        NSNumber* circleParticipants = [obj objectForKey:@"circle_participants"];
+        if (circleParticipants.integerValue > 0)
+        {
+            visit.pharmacyCircle = [NSEntityDescription
+                     insertNewObjectForEntityForName:@"PharmacyCircle"
+                     inManagedObjectContext:self.childManagedObjectContext];
+            visit.pharmacyCircle.participants = circleParticipants;
+        }
+        
+        NSNumber* promoParticipants = [obj objectForKey:@"promo_participants"];
+        if (promoParticipants.integerValue > 0)
+        {
+            visit.promoVisit = [NSEntityDescription
+                                    insertNewObjectForEntityForName:@"PromoVisit"
+                                    inManagedObjectContext:self.childManagedObjectContext];
+            visit.promoVisit.participants = promoParticipants;
+        }
+        
+        visit.closed = @YES;
+        visit.sent = @YES;
+    }
+    User* currentUser = [self findUserById:self.currentUserId inMainContext:NO];
+    currentUser.visitDate = [dict objectForKey:@"date"];
+    [self saveChildContext];
 }
 
 - (void)parseVisitSale:(NSDictionary*)dict
@@ -1008,7 +1049,7 @@ static AppDelegate* sharedDelegate = nil;
             {
                 visit.commerceVisit = [NSEntityDescription
                                        insertNewObjectForEntityForName:@"CommerceVisit"
-                                       inManagedObjectContext:self.managedObjectContext];
+                                       inManagedObjectContext:self.childManagedObjectContext];
             }
             NSNumber* doseId = [obj objectForKey:@"preparat_dose_id"];
             Sale* sale = [self findSaleInVisit:visit byDoseId:doseId.integerValue];
@@ -1017,7 +1058,7 @@ static AppDelegate* sharedDelegate = nil;
             
                 sale = [NSEntityDescription
                         insertNewObjectForEntityForName:@"Sale"
-                        inManagedObjectContext:self.managedObjectContext];
+                        inManagedObjectContext:self.childManagedObjectContext];
                 sale.dose = [self findDoseById:doseId.integerValue];
             }
             id restFlag = [dict objectForKey:@"rest_have"];
@@ -1034,6 +1075,7 @@ static AppDelegate* sharedDelegate = nil;
         }
     }
     //Deleting not implemented for this method
+    [self saveChildContext];
 }
 
 #pragma mark local json load methods
@@ -1139,6 +1181,9 @@ static AppDelegate* sharedDelegate = nil;
         NSArray* visitsForQuarter = [pharmacy.visits.allObjects filteredArrayUsingPredicate:predicate];
         pharmacy.visitsInQuarter = @(visitsForQuarter.count);
     }
+    
+    //Is it correct that we share this variable between threads? Shoud we use main queue?
+    self.syncInProgress = NO;
 }
 
 #pragma mark standard AppDelegate methods
@@ -1157,9 +1202,11 @@ static AppDelegate* sharedDelegate = nil;
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
     // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
-    [self showLoader];
-    [self sendDataToServer];
-    [self loadDataFromServer];
+    if (!self.syncInProgress)
+    {
+        self.syncInProgress = YES;
+        [self syncDataWithServer];
+    }
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application
@@ -1172,6 +1219,7 @@ static AppDelegate* sharedDelegate = nil;
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
 
+/*
 - (void)showLoader
 {
     return;
@@ -1185,5 +1233,5 @@ static AppDelegate* sharedDelegate = nil;
     return;
     [self.loader.activityIndicator stopAnimating];
     [self.loader removeFromSuperview];
-}
+}*/
 @end

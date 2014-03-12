@@ -26,7 +26,8 @@
 }
 
 @property (readonly, strong, nonatomic) NSManagedObjectContext *managedObjectContext;
-@property (readonly, strong, nonatomic) NSManagedObjectContext *managedObjectContext2;
+@property (readonly, strong, nonatomic) NSManagedObjectContext *childManagedObjectContext;
+
 @property (readonly, strong, nonatomic) NSManagedObjectModel *managedObjectModel;
 @property (readonly, strong, nonatomic) NSPersistentStoreCoordinator *persistentStoreCoordinator;
 
@@ -38,6 +39,8 @@
 @property (nonatomic, strong) UIView* overlay;
 
 @property (strong, nonatomic) User* currentUser;
+@property (nonatomic) NSInteger currentUserId;
+
 @property (strong, nonatomic) NSArray* drugs;
 
 @property (strong, nonatomic) PharmaciesViewController* pharmaciesViewController;
@@ -47,14 +50,15 @@
 
 @property (strong, nonatomic) SyncLoader* loader;
 
+@property (nonatomic) BOOL syncInProgress;
+
 + (AppDelegate*)sharedDelegate;
 - (void)saveContext;
 
-- (User*)findUserById:(NSInteger)userId;
+- (User*)findUserById:(NSInteger)userId inMainContext:(BOOL)inMainContext;
 - (User*)findUserByLogin:(NSString*)login andPassword:(NSString*)password;
-- (Region*)findRegionById:(NSInteger)regionId;
 
-- (void)sendDataToServer;
+- (void)syncDataWithServer;
 - (void)showLoginScreenWithAnimation:(BOOL)animated;
 
 - (void)loadDataFromServer;

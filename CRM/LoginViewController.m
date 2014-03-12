@@ -36,7 +36,7 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     NSNumber* lastId = [[NSUserDefaults standardUserDefaults]objectForKey:@"lastUserId"];
-    User* user = [[AppDelegate sharedDelegate]findUserById:lastId.integerValue];
+    User* user = [[AppDelegate sharedDelegate]findUserById:lastId.integerValue inMainContext:YES];
     if (user)
     {
         self.loginField.text = user.login;
@@ -44,12 +44,13 @@
     
 }
 
+/*
 - (void)showLoader
 {
     self.overlay.alpha = 0.5;
     [self.activityIndicator startAnimating];
 }
-
+*/
 - (void)hideLoader
 {
     self.overlay.alpha = 0;
@@ -84,7 +85,7 @@
         [[NSUserDefaults standardUserDefaults]synchronize];
         [AppDelegate sharedDelegate].currentUser = user;
         [Flurry logEvent:@"Логин" withParameters:@{@"Пользователь" : user.login, @"Дата" : [NSDate date]}];
-        [self showLoader];
+        //[self showLoader];
         [[AppDelegate sharedDelegate]loadDataFromServer];
         //[self dismissViewControllerAnimated:YES completion:nil];
     }
@@ -117,7 +118,7 @@
                 [[NSUserDefaults standardUserDefaults]setObject:user.userId forKey:@"lastUserId"];
                 [[NSUserDefaults standardUserDefaults]synchronize];
                 [Flurry logEvent:@"Логин" withParameters:@{@"Пользователь" : user.login, @"Дата" : [NSDate date]}];
-                [self showLoader];
+                //[self showLoader];
                 [[AppDelegate sharedDelegate]loadDataFromServer];
             }
             else

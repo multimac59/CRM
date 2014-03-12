@@ -48,7 +48,7 @@
 {
     self.pharmacyLabel.text = pharmacy.name;
     self.addressLabel.text = [NSString stringWithFormat:@"%@, %@, %@", pharmacy.city, pharmacy.street, pharmacy.house];
-    self.visitsLabel.text = [NSString stringWithFormat:@"%d", pharmacy.visitsInCurrentQuarter.count];
+    self.visitsLabel.text = [NSString stringWithFormat:@"%@", pharmacy.visitsInQuarter];
     
     switch (pharmacy.status)
     {

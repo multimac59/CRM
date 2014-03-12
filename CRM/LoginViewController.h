@@ -19,6 +19,6 @@
 @property (nonatomic, weak) IBOutlet UIActivityIndicatorView* activityIndicator;
 @property (nonatomic, weak) IBOutlet UIView* overlay;
 
-- (void)showLoader;
-- (void)hideLoader;
+//- (void)showLoader;
+//- (void)hideLoader;
 @end
