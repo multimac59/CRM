@@ -72,6 +72,14 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
+         contextName = "-[AppDelegate parseVisitSale:]:AppDelegate.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "[dict objectForKey:@&quot;rest_have&quot;]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "-[PharmaciesViewController commerceVisitClicked:]:PharmaciesViewController.m">
       </ContextState>
       <ContextState
@@ -109,7 +117,7 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "-[PharmaciesViewController tableView:cellForRowAtIndexPath:]:PharmaciesViewController.m">
+         contextName = "__26-[AppDelegate parseVisits]_block_invoke:AppDelegate.m">
       </ContextState>
       <ContextState
          contextName = "-[MGSplitViewController layoutSubviews]:MGSplitViewController.m">
@@ -120,7 +128,7 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "__26-[AppDelegate parseVisits]_block_invoke:AppDelegate.m">
+         contextName = "-[PharmaciesViewController tableView:cellForRowAtIndexPath:]:PharmaciesViewController.m">
       </ContextState>
       <ContextState
          contextName = "-[SidePanelController tableView:didSelectRowAtIndexPath:]:SidePanelController.m">
@@ -145,17 +153,6 @@
          contextName = "-[VisitsViewController tableView:cellForRowAtIndexPath:]:VisitsViewController.m">
       </ContextState>
       <ContextState
-         contextName = "-[SalesViewController getLastSaleFor:mySale:]:SalesViewController.m">
-      </ContextState>
-      <ContextState
-         contextName = "-[SalesViewController textFieldDidBeginEditing:]:SalesViewController.m">
-         <PersistentStrings>
-            <PersistentString
-               value = "self.view">
-            </PersistentString>
-         </PersistentStrings>
-      </ContextState>
-      <ContextState
          contextName = "-[VisitsViewController loadAll]:VisitsViewController.m">
       </ContextState>
       <ContextState
@@ -163,6 +160,17 @@
          <PersistentStrings>
             <PersistentString
                value = "manager.operations">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "-[SalesViewController getLastSaleFor:mySale:]:SalesViewController.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[SalesViewController textFieldDidBeginEditing:]:SalesViewController.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "self.view">
             </PersistentString>
          </PersistentStrings>
       </ContextState>

@@ -141,7 +141,6 @@
         cell.cellBg.image = self.commerceVisit.visit.closed.boolValue ? [UIImage imageNamed:@"singleCellInactive"] : [UIImage imageNamed:@"singleCellActive"];
         cell.arrowView.hidden = YES;
     }
-    cell.commentButton.enabled = !self.commerceVisit.visit.closed.boolValue;
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     return cell;
 }

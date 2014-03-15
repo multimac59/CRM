@@ -71,7 +71,7 @@ static AppDelegate* sharedDelegate = nil;
         [self deleteAllObjects:@"Pharmacy"];
         [self deleteAllObjects:@"Drug"];
         [self deleteAllObjects:@"Sale"];
-        [self deleteAllObjects:@"User"];
+       // [self deleteAllObjects:@"User"];
     }
     sharedDelegate = self;
     
@@ -289,7 +289,7 @@ static AppDelegate* sharedDelegate = nil;
 
 - (NSArray*)pharmaciesForUser:(User*)user
 {
-    NSManagedObjectContext* context = self.managedObjectContext;
+    NSManagedObjectContext* context = self.childManagedObjectContext;
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     [request setEntity:[NSEntityDescription entityForName:@"Pharmacy" inManagedObjectContext:context]];
      NSPredicate* predicate = [NSPredicate predicateWithFormat:@"region IN %@", user.regions];
@@ -900,7 +900,7 @@ static AppDelegate* sharedDelegate = nil;
             pharmacy.status = GoldStatus;
         }
         count++;
-        if (count % 10 == 0)
+        if (count == 50 || count % 300 == 0)
         {
             //Show first results immediately
             [self.childManagedObjectContext save:nil];
@@ -1045,6 +1045,8 @@ static AppDelegate* sharedDelegate = nil;
         Visit* visit = [self findVisitByServerId:visitId.integerValue];
         if (visit)
         {
+            NSLog(@"User for visit = %@", visit.user.name);
+            NSLog(@"Pharmacy for visit = %@", visit.pharmacy.name);
             if (!visit.commerceVisit)
             {
                 visit.commerceVisit = [NSEntityDescription
@@ -1061,16 +1063,16 @@ static AppDelegate* sharedDelegate = nil;
                         inManagedObjectContext:self.childManagedObjectContext];
                 sale.dose = [self findDoseById:doseId.integerValue];
             }
-            id restFlag = [dict objectForKey:@"rest_have"];
-            if (restFlag == [NSNull null])
+            if ([obj objectForKey:@"rest_have"] == [NSNull null])
             {
-                sale.remainder = [dict objectForKey:@"rest_amount"];
+                sale.remainder = [obj objectForKey:@"rest_amount"];
             }
             else
             {
                 sale.remainder = @-1;
             }
-            sale.comment = [dict objectForKey:@"msg"];
+            if ([obj objectForKey:@"msg"] != [NSNull null])
+                sale.comment = [obj objectForKey:@"msg"];
             [visit.commerceVisit addSalesObject:sale];
         }
     }

@@ -47,6 +47,7 @@
 - (void)setupCellWithPharmacy:(Pharmacy*)pharmacy andVisit:(Visit*)visit
 {
     self.pharmacyLabel.text = pharmacy.name;
+    NSLog (@"Pharmacy name = %@", pharmacy.name);
     self.addressLabel.text = [NSString stringWithFormat:@"%@, %@, %@", pharmacy.city, pharmacy.street, pharmacy.house];
     self.visitsLabel.text = [NSString stringWithFormat:@"%@", pharmacy.visitsInQuarter];
     
@@ -118,9 +119,9 @@
 
 - (void)disableButtons
 {
-    self.commerceVisitButton.enabled = NO;
-    self.promoVisitButton.enabled = NO;
-    self.pharmacyCircleButton.enabled = NO;
+    self.commerceVisitButton.userInteractionEnabled = NO;
+    self.promoVisitButton.userInteractionEnabled = NO;
+    self.pharmacyCircleButton.userInteractionEnabled = NO;
 }
 
 @end

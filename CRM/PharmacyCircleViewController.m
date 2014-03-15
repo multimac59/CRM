@@ -129,6 +129,8 @@
 
 - (IBAction)increaseParticipants:(id)sender
 {
+    if (self.pharmacyCircle.visit.closed.boolValue)
+        return;
     int participants = self.pharmacyCircle.participants.integerValue;
     participants++;
     self.pharmacyCircle.participants = @(participants);
@@ -138,6 +140,8 @@
 
 - (IBAction)decreaseParticipants:(id)sender
 {
+    if (self.pharmacyCircle.visit.closed.boolValue)
+        return;
     int participants = self.pharmacyCircle.participants.integerValue;
     if (participants > 0)
     {

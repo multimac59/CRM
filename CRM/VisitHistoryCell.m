@@ -34,7 +34,7 @@
 {
     NSMutableString* typeString = [NSMutableString stringWithFormat:@""];
     if (visit.commerceVisit)
-        [typeString appendString:@"Продажи"];
+        [typeString appendString:@"Движение товара"];
     if (visit.promoVisit)
     {
         if ([typeString isEqualToString:@""])
