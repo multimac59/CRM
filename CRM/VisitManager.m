@@ -32,6 +32,8 @@
     visit.pharmacy = pharmacy;
     visit.date = date;
     visit.user = [AppDelegate sharedDelegate].currentUser;
+    User* user = [AppDelegate sharedDelegate].currentUser;
+    NSLog(@"User = %@, id = %d", user.name, visit.user.userId.integerValue);
     visit.visitId = [[NSUUID UUID]UUIDString];
     visit.closed = @NO;
     visit.sent = @NO;
@@ -53,7 +55,7 @@
         NSDate *endDate = [[NSCalendar currentCalendar] dateByAddingComponents:oneDay
                                                                         toDate:startDate
                                                                        options:0];
-        if ([visit.date compare:startDate] != NSOrderedAscending && [visit.date compare:endDate] == NSOrderedAscending && visit.user.userId == [AppDelegate sharedDelegate].currentUser.userId)
+        if ([visit.date compare:startDate] != NSOrderedAscending && [visit.date compare:endDate] == NSOrderedAscending && visit.user.userId.integerValue == [AppDelegate sharedDelegate].currentUser.userId.integerValue)
         {
             return visit;
         }

@@ -58,6 +58,14 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
+         contextName = "-[AppDelegate parseVisitSale:]:AppDelegate.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "[dict objectForKey:@&quot;rest_have&quot;]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "-[AppDelegate parseServerUserRegions:]:AppDelegate.m">
       </ContextState>
       <ContextState
@@ -72,14 +80,6 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "-[AppDelegate parseVisitSale:]:AppDelegate.m">
-         <PersistentStrings>
-            <PersistentString
-               value = "[dict objectForKey:@&quot;rest_have&quot;]">
-            </PersistentString>
-         </PersistentStrings>
-      </ContextState>
-      <ContextState
          contextName = "-[PharmaciesViewController commerceVisitClicked:]:PharmaciesViewController.m">
       </ContextState>
       <ContextState
@@ -90,6 +90,14 @@
       </ContextState>
       <ContextState
          contextName = "-[AppDelegate parseBrands]:AppDelegate.m">
+      </ContextState>
+      <ContextState
+         contextName = "__57-[AppDelegate application:didFinishLaunchingWithOptions:]_block_invoke:AppDelegate.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "object">
+            </PersistentString>
+         </PersistentStrings>
       </ContextState>
       <ContextState
          contextName = "-[AppDelegate parseUsersLocal]:AppDelegate.m">
@@ -150,10 +158,10 @@
          contextName = "-[PharmacyCircleViewController tableView:numberOfRowsInSection:]:PharmacyCircleViewController.m">
       </ContextState>
       <ContextState
-         contextName = "-[VisitsViewController tableView:cellForRowAtIndexPath:]:VisitsViewController.m">
+         contextName = "__32-[LoginViewController goToMain:]_block_invoke110:LoginViewController.m">
       </ContextState>
       <ContextState
-         contextName = "-[VisitsViewController loadAll]:VisitsViewController.m">
+         contextName = "-[VisitsViewController tableView:cellForRowAtIndexPath:]:VisitsViewController.m">
       </ContextState>
       <ContextState
          contextName = "__49-[VisitMapCell setMapLocationForPharmacy:onDate:]_block_invoke:VisitMapCell.m">
@@ -164,15 +172,18 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "-[SalesViewController getLastSaleFor:mySale:]:SalesViewController.m">
-      </ContextState>
-      <ContextState
          contextName = "-[SalesViewController textFieldDidBeginEditing:]:SalesViewController.m">
          <PersistentStrings>
             <PersistentString
                value = "self.view">
             </PersistentString>
          </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "-[SalesViewController getLastSaleFor:mySale:]:SalesViewController.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[VisitsViewController loadAll]:VisitsViewController.m">
       </ContextState>
       <ContextState
          contextName = "__26-[AppDelegate parseVisits]_block_invoke_2:AppDelegate.m">

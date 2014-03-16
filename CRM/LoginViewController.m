@@ -138,8 +138,16 @@
         }
         failure:^(AFHTTPRequestOperation *operation, NSError *error)
         {
+            if (error.code == -1009)
+            {
+                UIAlertView* alert = [[UIAlertView alloc]initWithTitle:@"" message:@"Отсутствует соединение с интернетом." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+                [alert show];
+            }
+            else
+            {
             UIAlertView* alert = [[UIAlertView alloc]initWithTitle:@"" message:@"Сервер недоступен." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
             [alert show];
+            }
         }];
     }
 }

@@ -139,14 +139,6 @@ static AppDelegate* sharedDelegate = nil;
     //[self parseUserLocal];
     [self showLoginScreenWithAnimation:NO];
     
-    [[NSNotificationCenter defaultCenter]addObserverForName:NSManagedObjectContextDidSaveNotification object:self.childManagedObjectContext queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-        [self.managedObjectContext mergeChangesFromContextDidSaveNotification:note];
-        self.sidePanelController.nameLabel.text = self.currentUser.name;
-        NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
-        dateFormatter.dateFormat = @"dd.MM.yyyy HH:mm";
-        self.sidePanelController.syncLabel.text = [dateFormatter stringFromDate:[NSDate date]];
-        [self reloadData];
-    }];
     self.syncInProgress = NO;
     return YES;
 }
@@ -512,11 +504,29 @@ static AppDelegate* sharedDelegate = nil;
 
 - (void)closeOldVisits
 {
+    NSDate* targetDate;
+    
+    NSDate* today = [NSDate currentDate];
+    NSDateComponents *componentsToSubtract = [[NSDateComponents alloc] init];
+    [componentsToSubtract setDay:-1];
+    NSDate *yesterday = [[NSCalendar currentCalendar] dateByAddingComponents:componentsToSubtract toDate:[NSDate currentDate] options:0];
+    
+    NSCalendar* calendar = [NSCalendar currentCalendar];
+    NSDateComponents* currentComponents = [calendar components:NSCalendarUnitHour fromDate:[NSDate date]];
+    if (currentComponents.hour < 2)
+    {
+        targetDate = yesterday;
+    }
+    else
+    {
+        targetDate = today;
+    }
+    
     //NSLog(@"Checking new day....");
     NSManagedObjectContext* context = self.managedObjectContext;
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     [request setEntity:[NSEntityDescription entityForName:@"Visit" inManagedObjectContext:context]];
-    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"date<%@ AND closed==NO", [NSDate currentDate]];
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"date<%@ AND closed==NO", targetDate];
     [request setPredicate:predicate];
     NSError *error = nil;
     NSArray *visits = [context executeFetchRequest:request error:&error];
@@ -553,6 +563,17 @@ static AppDelegate* sharedDelegate = nil;
         _childManagedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
         [_childManagedObjectContext setPersistentStoreCoordinator:coordinator];
         [_childManagedObjectContext setMergePolicy:[[NSMergePolicy alloc] initWithMergeType:NSMergeByPropertyObjectTrumpMergePolicyType]];
+        
+        [[NSNotificationCenter defaultCenter]removeObserver:self];
+        
+        [[NSNotificationCenter defaultCenter]addObserverForName:NSManagedObjectContextDidSaveNotification object:self.childManagedObjectContext queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+            [self.managedObjectContext mergeChangesFromContextDidSaveNotification:note];
+            self.sidePanelController.nameLabel.text = self.currentUser.name;
+            NSDateFormatter* dateFormatter = [[NSDateFormatter alloc]init];
+            dateFormatter.dateFormat = @"dd.MM.yyyy HH:mm";
+            self.sidePanelController.syncLabel.text = [dateFormatter stringFromDate:[NSDate date]];
+            [self reloadData];
+        }];
     }
     
     self.sidePanelController.nameLabel.text = self.currentUser.name;
@@ -650,7 +671,6 @@ static AppDelegate* sharedDelegate = nil;
          }
              failure:^(AFHTTPRequestOperation *operation, NSError *error)
          {
-             NSLog(@"Failure");
              [self reloadData];
              
          }];
@@ -670,6 +690,10 @@ static AppDelegate* sharedDelegate = nil;
     NSError *error = nil;
     NSArray *visits = [context executeFetchRequest:request error:&error];
     
+    if (visits.count == 0)
+    {
+        [self loadDataFromServer];
+    }
     [visits enumerateObjectsUsingBlock:^(Visit* visit, NSUInteger idx, BOOL *stop) {
         NSDictionary* arrDic = [visit encodeToJSON];
         
@@ -883,6 +907,8 @@ static AppDelegate* sharedDelegate = nil;
         }
         
         NSString* statusString = [obj objectForKey:@"category"];
+        NSLog(@"status string is %@", statusString);
+        NSLog(@"pharmacy is %@", pharmacy.name);
         if ([statusString isEqualToString:@"common"])
         {
             pharmacy.status = NormalStatus;
@@ -961,6 +987,7 @@ static AppDelegate* sharedDelegate = nil;
                     inManagedObjectContext:self.childManagedObjectContext];
             dose.doseId = doseId;
         }
+        dose.priority = [obj objectForKey:@"ord"];
         dose.name = [obj objectForKey:@"code"];
         
         NSNumber* drugId = (NSNumber*)[obj objectForKey:@"preparat_id"];

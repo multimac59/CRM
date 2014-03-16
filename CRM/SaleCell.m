@@ -49,7 +49,10 @@
         self.doseLabel.text = [dose.name substringFromIndex:firstNumRange.location];
     }
     else
+    {
         self.drugLabel.text = dose.name;
+        self.doseLabel.text = @"";
+    }
     
     if (lastSale)
     {

@@ -83,7 +83,7 @@
     NSManagedObjectContext* context = [AppDelegate sharedDelegate].managedObjectContext;
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     [request setEntity:[NSEntityDescription entityForName:@"Drug" inManagedObjectContext:context]];
-    request.sortDescriptors = @[[[NSSortDescriptor alloc]initWithKey:@"name" ascending:YES]];
+    request.sortDescriptors = @[[[NSSortDescriptor alloc]initWithKey:@"drugId" ascending:YES]];
     self.drugs = [[context executeFetchRequest:request error:nil]mutableCopy];
 }
 
@@ -284,9 +284,9 @@
     }
     else if (key == self.keyboard.doneButton)
     {
-        [self saveInput];
         [self dismissKeyboard];
     }
+    [self saveInput];
 }
 
 - (Sale*)createNewSaleForDose:(Dose*)dose

@@ -48,6 +48,9 @@
     NSManagedObjectContext* context = [[AppDelegate sharedDelegate]managedObjectContext];
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     [request setEntity:[NSEntityDescription entityForName:@"Drug" inManagedObjectContext:context]];
+    request.predicate = [NSPredicate predicateWithFormat:@"name != %@", @"PSP Анкеты"];
+    NSSortDescriptor* sort = [[NSSortDescriptor alloc]initWithKey:@"drugId" ascending:YES];
+    [request setSortDescriptors:@[sort]];
     NSError *error = nil;
     self.drugs = [context executeFetchRequest:request error:&error];
     

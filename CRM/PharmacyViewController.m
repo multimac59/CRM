@@ -82,6 +82,7 @@
             cell = [[NSBundle mainBundle]loadNibNamed:@"VisitMapCell" owner:self options:nil][0];
         }
         //TODO: switch off map for now
+        cell.allowPlanning = YES;
         [cell setMapLocationsForPharmacies:self.allPharmacies withSelectedPharmacy:self.selectedPharmacy onDate:self.planDate];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         return cell;
